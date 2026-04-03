@@ -434,8 +434,15 @@ export default function CnhDigital() {
       return;
     }
 
+    // Combine birth date fields into dataNascimento
+    const combinedDateNascimento = `${data.dataNascimentoData}, ${data.localNascimento}, ${data.ufNascimento}`;
+
     const previewData = {
       ...data,
+      dataNascimento: combinedDateNascimento,
+      foto: fotoPerfil,
+      assinatura: assinatura,
+    };
       foto: fotoPerfil,
       assinatura: assinatura,
     };
