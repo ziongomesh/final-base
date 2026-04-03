@@ -826,6 +826,18 @@ export default function CnhDigital() {
                     )} />
                   </div>
 
+                  <FormField control={form.control} name="localNascimento" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Local de Nascimento <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="RIO DE JANEIRO" className="h-8 text-sm"
+                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
