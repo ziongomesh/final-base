@@ -416,9 +416,9 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
-                            <div className="text-xs text-muted-foreground">créditos</div>
-                            <div className="mt-1">
+                            <div className="text-base font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-[10px] text-muted-foreground">créditos</div>
+                            <div className="mt-0.5">
                               <Badge variant="secondary" className="text-[10px]">
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
