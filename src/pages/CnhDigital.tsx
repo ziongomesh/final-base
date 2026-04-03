@@ -1153,27 +1153,6 @@ export default function CnhDigital() {
                     />
                   </div>
 
-                  <FormField control={form.control} name="pai" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome Pai</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Ex: PEDRO DA SILVA GOMES"
-                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
-                  <FormField control={form.control} name="mae" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome Mãe</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Ex: MARIA DA SILVA GOMES"
-                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
                 </CardContent>
               </Card>
             </div>
