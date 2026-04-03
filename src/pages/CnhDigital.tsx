@@ -1087,9 +1087,7 @@ export default function CnhDigital() {
                 <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="espelho" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Número na parte superior da CNH." />
+                      <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
                       </div>
                       <FormControl>
                         <div className="flex gap-1.5">
