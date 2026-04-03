@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import {
   Anchor, User, CreditCard, Upload, Loader2, Copy, CheckCircle, AlertTriangle, Calendar, KeyRound, Ship, Eye, FileDown, ArrowLeft, FolderOpen, Shield
 } from 'lucide-react';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import iconGovbr from '@/assets/icon-govbr.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
 import AppExamplePreview from '@/components/AppExamplePreview';
