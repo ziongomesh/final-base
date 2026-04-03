@@ -922,9 +922,9 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 3 - Informações Adicionais */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <CreditCard className="h-4 w-4" /> Seção 3
+                    <CreditCard className="h-4 w-4" /> Informações Adicionais
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
