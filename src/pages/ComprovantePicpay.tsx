@@ -114,6 +114,19 @@ export default function ComprovantePicpay() {
                     }}
                   />
                 </div>
+                <div>
+                  <Label className="text-xs">Conta Recebedor(a)</Label>
+                  <Select value={formData.contaRecebedor} onValueChange={(v) => updateField('contaRecebedor', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o banco" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BANCOS.map((banco) => (
+                        <SelectItem key={banco} value={banco}>{banco}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardContent>
             </Card>
           </div>
