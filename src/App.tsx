@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { FormGuardProvider } from "./hooks/useFormGuard";
 
 // Eagerly loaded (lightweight pages)
 import Login from "./pages/Login";
@@ -68,6 +69,7 @@ const App = () => (
         <Toaster />
         <BrowserRouter>
           <AuthProvider>
+            <FormGuardProvider>
             <Suspense fallback={<LazyFallback />}>
               <Routes>
                 <Route path="/" element={<Navigate to="/login" replace />} />
@@ -115,6 +117,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
+            </FormGuardProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

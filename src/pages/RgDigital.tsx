@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { useSearchParams } from 'react-router-dom';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -154,6 +155,12 @@ export default function RgDigital() {
       uf: '', dataEmissao: '', local: '', orgaoExpedidor: '', pai: '', mae: '',
     },
   });
+
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   // Demo auto-fill for RG
   useEffect(() => {

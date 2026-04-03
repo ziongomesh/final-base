@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -96,6 +97,11 @@ export default function CarteiraEstudante() {
       nome: '', cpf: '', rg: '', dataNascimento: '', faculdade: '', graduacao: '',
     },
   });
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {

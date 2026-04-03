@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -123,6 +124,11 @@ export default function CnhNautica() {
       requisitos: '******** / ********', orgaoEmissao: 'CPSP (SP)',
     },
   });
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {

@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuth } from '@/hooks/useAuth';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
@@ -273,6 +274,13 @@ export default function CnhDigital() {
       console.warn('Erro ao carregar arquivos demo:', e);
     }
   };
+
+  // Mark form as dirty when any field changes
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   // Auto MRZ when nome changes
   useEffect(() => {
