@@ -196,7 +196,7 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
 
   // Determine which matrices are affected by a field change
   const getAffectedMatrices = (fieldName: string): ('frente' | 'meio' | 'verso')[] => {
-    const frenteFields = ['nome', 'cpf', 'dataNascimento', 'sexo', 'nacionalidade', 'docIdentidade', 'categoria', 'numeroRegistro', 'dataEmissao', 'dataValidade', 'hab', 'localEmissao', 'cnhDefinitiva', 'espelho', 'pai', 'mae'];
+    const frenteFields = ['nome', 'cpf', 'dataNascimentoData', 'localNascimento', 'ufNascimento', 'sexo', 'nacionalidade', 'docIdentidade', 'categoria', 'numeroRegistro', 'dataEmissao', 'dataValidade', 'hab', 'localEmissao', 'cnhDefinitiva', 'espelho', 'pai', 'mae'];
     const meioFields = ['obs', 'estadoExtenso', 'uf', 'localEmissao', 'categoria', 'dataValidade', 'espelho', 'codigo_seguranca', 'renach'];
     const versoFields = ['nome', 'matrizFinal', 'codigo_seguranca', 'renach', 'espelho', 'numeroRegistro'];
     const affected: ('frente' | 'meio' | 'verso')[] = [];
