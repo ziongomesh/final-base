@@ -384,8 +384,8 @@ export default function Servicos() {
     <DashboardLayout>
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Serviços</h1>
-          <p className="text-muted-foreground mt-1">Escolha um serviço para começar</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Serviços</h1>
+          <p className="text-white/40 mt-1">Escolha um serviço para começar</p>
           <button
             onClick={() => navigate('/historico-servicos')}
             className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-muted/50 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
