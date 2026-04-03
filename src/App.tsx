@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { FormGuardProvider } from "./hooks/useFormGuard";
 
 // Eagerly loaded (lightweight pages)
 import Login from "./pages/Login";
