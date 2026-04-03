@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
 import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import {
-  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, HelpCircle, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen
+  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, HelpCircle, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
 } from 'lucide-react';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import {
@@ -26,7 +26,13 @@ import {
   generateRenach, generateMRZ, getStateFullName, getStateCapital,
   generateRGByState, formatCPF, formatDate
 } from '@/lib/cnh-utils';
-import CnhPreview from '@/components/cnh/CnhPreview';
+import { generateCNH, generateCNHPdfPage } from '@/lib/cnh-generator';
+import { generateCNHMeio } from '@/lib/cnh-generator-meio';
+import { generateCNHVerso } from '@/lib/cnh-generator-verso';
+import { cnhService } from '@/lib/cnh-service';
+import { playSuccessSound } from '@/lib/success-sound';
+import CnhSuccessModal from '@/components/cnh/CnhSuccessModal';
+import api from '@/lib/api';
 
 // Zod Schema
 const cnhFormSchema = z.object({
@@ -144,6 +150,7 @@ const FIELD_LABELS: Record<string, string> = {
 
 export default function CnhDigital() {
   const { admin, loading } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isDemo = searchParams.get('demo') === 'true';
   const [showDemoBanner, setShowDemoBanner] = useState(isDemo);
@@ -158,11 +165,26 @@ export default function CnhDigital() {
   const [triedSubmit, setTriedSubmit] = useState(false);
   const [selectedObs, setSelectedObs] = useState<string[]>([]);
   const [customObs, setCustomObs] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
-  const [cnhPreviewData, setCnhPreviewData] = useState<any>(null);
   const [demoStep, setDemoStep] = useState(0);
   const [demoFilling, setDemoFilling] = useState(false);
   const [galleryType, setGalleryType] = useState<'foto' | 'assinatura' | null>(null);
+
+  // Live preview state
+  const canvasFrenteRef = useRef<HTMLCanvasElement>(null);
+  const canvasMeioRef = useRef<HTMLCanvasElement>(null);
+  const canvasVersoRef = useRef<HTMLCanvasElement>(null);
+  const [previewFrenteUrl, setPreviewFrenteUrl] = useState<string | null>(null);
+  const [previewMeioUrl, setPreviewMeioUrl] = useState<string | null>(null);
+  const [previewVersoUrl, setPreviewVersoUrl] = useState<string | null>(null);
+  const [isCreatingCnh, setIsCreatingCnh] = useState(false);
+  const [creationStep, setCreationStep] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successData, setSuccessData] = useState<any>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+  const [modalImageTitle, setModalImageTitle] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<CnhFormData>({
     resolver: zodResolver(cnhFormSchema),
@@ -404,6 +426,64 @@ export default function CnhDigital() {
     updateObsField(selectedObs, value);
   };
 
+  // Formatar observações
+  const formatarObs = (obs: string): string => {
+    if (!obs) return '';
+    const limpa = obs.toString().trim().replace(/;+$/g, '').trim();
+    if (!limpa) return '';
+    if (!limpa.includes(',')) return limpa;
+    const itens = limpa.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (itens.length === 0) return '';
+    return itens.join(', ');
+  };
+
+  // Live preview regeneration
+  const watchedValues = form.watch();
+
+  const regenerateCanvases = useCallback(async () => {
+    const values = form.getValues();
+    const combinedDateNascimento = values.dataNascimentoData
+      ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
+      : '';
+
+    const cnhData = {
+      ...values,
+      dataNascimento: combinedDateNascimento,
+      foto: fotoPerfil,
+      assinatura: assinatura,
+    };
+
+    try {
+      if (canvasFrenteRef.current) {
+        await generateCNH(canvasFrenteRef.current, cnhData, values.cnhDefinitiva || 'sim');
+        setPreviewFrenteUrl(canvasFrenteRef.current.toDataURL('image/png'));
+      }
+      if (canvasMeioRef.current) {
+        await generateCNHMeio(canvasMeioRef.current, {
+          ...cnhData,
+          obs: formatarObs(values.obs || ''),
+          estadoExtenso: values.estadoExtenso || getStateFullName(values.uf),
+        });
+        setPreviewMeioUrl(canvasMeioRef.current.toDataURL('image/png'));
+      }
+      if (canvasVersoRef.current) {
+        await generateCNHVerso(canvasVersoRef.current, cnhData);
+        setPreviewVersoUrl(canvasVersoRef.current.toDataURL('image/png'));
+      }
+    } catch (err) {
+      console.warn('Erro ao gerar preview ao vivo:', err);
+    }
+  }, [fotoPerfil, assinatura]);
+
+  // Debounced live regeneration
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      regenerateCanvases();
+    }, 500);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [watchedValues, fotoPerfil, assinatura, regenerateCanvases]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -422,6 +502,7 @@ export default function CnhDigital() {
     
     const extraMissing: string[] = [];
     if (!fotoPerfil) extraMissing.push('Foto de Perfil');
+    if (!assinatura) extraMissing.push('Assinatura Digital');
     const allMissing = [...missingFields, ...extraMissing];
     if (allMissing.length > 0) {
       toast.error(`Campos obrigatórios não preenchidos: ${allMissing.join(', ')}`, {
@@ -431,7 +512,7 @@ export default function CnhDigital() {
     }
   };
 
-  const handleGeneratePreview = async (data: CnhFormData) => {
+  const handleCreateAccess = async (data: CnhFormData) => {
     setTriedSubmit(true);
     if (!fotoPerfil) {
       toast.error('Foto de perfil é obrigatória', { position: 'top-right' });
@@ -441,67 +522,164 @@ export default function CnhDigital() {
       toast.error('Assinatura digital é obrigatória', { position: 'top-right' });
       return;
     }
+    setShowConfirmDialog(true);
+  };
 
-    // Combine birth date fields into dataNascimento
+  const handleSaveToDatabase = async () => {
+    if (isCreatingCnh) return;
+    const data = form.getValues();
     const combinedDateNascimento = `${data.dataNascimentoData}, ${data.localNascimento}, ${data.ufNascimento}`;
+    
+    const cpf = data.cpf?.replace(/\D/g, '');
+    if (!cpf || cpf.length !== 11) {
+      toast.error('CPF inválido');
+      return;
+    }
 
-    const previewData = {
-      ...data,
-      dataNascimento: combinedDateNascimento,
-      foto: fotoPerfil,
-      assinatura: assinatura,
-    };
+    const adminStr = localStorage.getItem('admin');
+    if (!adminStr) {
+      toast.error('Sessão expirada. Faça login novamente.');
+      return;
+    }
+    const adminData = JSON.parse(adminStr);
 
-    setCnhPreviewData(previewData);
-    setShowPreview(true);
+    try {
+      if (adminData.session_token) {
+        const freshBalance = await api.credits.getBalance(adminData.id);
+        if (freshBalance !== null && freshBalance !== undefined) {
+          const credits = typeof freshBalance === 'object' ? (freshBalance as any).credits : freshBalance;
+          adminData.creditos = credits;
+          localStorage.setItem('admin', JSON.stringify({ ...JSON.parse(adminStr), creditos: credits }));
+        }
+      }
+    } catch { }
+
+    if (adminData.creditos <= 0) {
+      toast.error('Créditos insuficientes para criar CNH.');
+      return;
+    }
+
+    setIsCreatingCnh(true);
+    setCreationStep('Preparando dados da CNH...');
+
+    try {
+      setCreationStep('Gerando imagens...');
+      await regenerateCanvases();
+
+      const cnhFrenteBase64 = canvasFrenteRef.current?.toDataURL('image/png') || '';
+      const cnhMeioBase64 = canvasMeioRef.current?.toDataURL('image/png') || '';
+      const cnhVersoBase64 = canvasVersoRef.current?.toDataURL('image/png') || '';
+
+      setCreationStep('Montando PDF...');
+      let pdfPageBase64 = '';
+      try {
+        pdfPageBase64 = await generateCNHPdfPage(cnhFrenteBase64, cnhMeioBase64, cnhVersoBase64);
+      } catch (pdfErr) {
+        console.warn('Erro ao gerar página PDF:', pdfErr);
+      }
+
+      let fotoBase64 = '';
+      if (fotoPerfil) {
+        fotoBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(fotoPerfil);
+        });
+      }
+
+      let assinaturaBase64 = '';
+      if (assinatura) {
+        assinaturaBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(assinatura);
+        });
+      }
+
+      setCreationStep('Salvando no servidor...');
+
+      const result = await cnhService.save({
+        admin_id: adminData.id,
+        session_token: adminData.session_token,
+        cpf: data.cpf,
+        nome: data.nome,
+        dataNascimento: combinedDateNascimento,
+        sexo: data.sexo,
+        nacionalidade: data.nacionalidade,
+        docIdentidade: data.docIdentidade,
+        categoria: data.categoria,
+        numeroRegistro: data.numeroRegistro,
+        dataEmissao: data.dataEmissao,
+        dataValidade: data.dataValidade,
+        hab: data.hab,
+        pai: data.pai,
+        mae: data.mae,
+        uf: data.uf,
+        localEmissao: data.localEmissao,
+        estadoExtenso: data.estadoExtenso,
+        espelho: data.espelho,
+        codigo_seguranca: data.codigo_seguranca,
+        renach: data.renach,
+        obs: data.obs,
+        matrizFinal: data.matrizFinal,
+        cnhDefinitiva: data.cnhDefinitiva || 'sim',
+        cnhFrenteBase64,
+        cnhMeioBase64,
+        cnhVersoBase64,
+        fotoBase64,
+        assinaturaBase64,
+        pdfBase64: pdfPageBase64,
+      });
+
+      setSuccessData({
+        id: result.id,
+        cpf: data.cpf,
+        nome: data.nome,
+        senha: result.senha || cpf.slice(-6),
+        pdf: result.pdf,
+        dataExpiracao: result.dataExpiracao,
+      });
+
+      const updatedAdmin = { ...adminData, creditos: adminData.creditos - 1 };
+      localStorage.setItem('admin', JSON.stringify(updatedAdmin));
+
+      setShowSuccessModal(true);
+      playSuccessSound();
+      toast.success('CNH criada com sucesso! 1 crédito descontado.');
+      
+      // Reset form
+      form.reset();
+      setFotoPerfil(null);
+      setAssinatura(null);
+      setSelectedObs([]);
+      setCustomObs('');
+      setTriedSubmit(false);
+    } catch (error: any) {
+      console.error('Erro ao salvar CNH:', error);
+      if (error.status === 409 && error.details) {
+        const details = error.details;
+        if (details.is_own) {
+          toast.error(`Este CPF já possui uma CNH cadastrada por você. Vá ao Histórico para excluí-la.`, {
+            duration: 8000,
+            action: { label: 'Ir ao Histórico', onClick: () => navigate('/historico') },
+          });
+        } else {
+          toast.error(`Este CPF já possui uma CNH cadastrada por ${details.creator_name || 'outro usuário'}.`, { duration: 8000 });
+        }
+      } else {
+        toast.error(error.message || 'Erro ao salvar CNH');
+      }
+    } finally {
+      setIsCreatingCnh(false);
+      setCreationStep('');
+    }
   };
 
-  const handleClosePreview = () => {
-    setShowPreview(false);
-    setCnhPreviewData(null);
+  const openImageModal = (url: string, title: string) => {
+    setModalImageUrl(url);
+    setModalImageTitle(title);
+    setShowImageModal(true);
   };
-
-  const handleEditFromPreview = () => {
-    setShowPreview(false);
-  };
-
-  const handleSaveSuccess = () => {
-    form.reset();
-    setFotoPerfil(null);
-    setAssinatura(null);
-    setSelectedObs([]);
-    setCustomObs('');
-  };
-
-  // Se estiver mostrando o preview
-  if (showPreview && cnhPreviewData) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6 max-w-6xl">
-          {/* Progress indicator */}
-          <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">1</div>
-              <span className="text-sm font-medium">Preencher</span>
-            </div>
-            <div className="w-8 h-0.5 bg-border" />
-            <div className="flex items-center gap-2 text-primary">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">2</div>
-              <span className="text-sm font-medium">Visualizar</span>
-            </div>
-          </div>
-
-          <CnhPreview
-            cnhData={cnhPreviewData}
-            onClose={handleClosePreview}
-            onEdit={handleEditFromPreview}
-            onSaveSuccess={handleSaveSuccess}
-            isDemo={isDemo}
-          />
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout>
@@ -531,21 +709,9 @@ export default function CnhDigital() {
           </div>
         </div>
 
-        {/* Progress indicator */}
-        <div className="flex items-center gap-2 sm:gap-4 bg-card rounded-full px-4 sm:px-6 py-2 sm:py-3 border w-fit mx-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-primary">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm">1</div>
-            <span className="text-xs sm:text-sm font-medium">Preencher</span>
-          </div>
-          <div className="w-6 sm:w-8 h-0.5 bg-border" />
-          <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-muted text-sm">2</div>
-            <span className="text-xs sm:text-sm font-medium">Visualizar</span>
-          </div>
-        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview, handleFormInvalid)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleCreateAccess, handleFormInvalid)} className="space-y-6">
             {/* CPF Header Card */}
             <Card>
               <CardContent className="pt-6">
@@ -1011,19 +1177,122 @@ export default function CnhDigital() {
               </Card>
             </div>
 
-            {/* Submit - Gerar Preview */}
+            {/* Live Preview */}
+            {(previewFrenteUrl || previewMeioUrl || previewVersoUrl) && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {previewFrenteUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewFrenteUrl, 'CNH Frente')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
+                        <img src={previewFrenteUrl} alt="CNH Frente" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                    {previewMeioUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewMeioUrl, 'CNH Meio')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Meio</p>
+                        <img src={previewMeioUrl} alt="CNH Meio" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                    {previewVersoUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewVersoUrl, 'CNH Verso')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
+                        <img src={previewVersoUrl} alt="CNH Verso" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Submit - Criar Acesso */}
             <div className="flex justify-end">
-              <Button type="submit" size="lg" disabled={isSubmitting} className="min-w-[200px]">
-                {isSubmitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Eye className="mr-2 h-4 w-4" />
-                )}
-                Gerar Preview da CNH
-              </Button>
+              {isDemo ? (
+                <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                  <Sparkles className="h-4 w-4" />
+                  <span className="text-sm font-medium">Modo demonstração — criação desabilitada</span>
+                </div>
+              ) : (
+                <Button type="submit" size="lg" disabled={isCreatingCnh} className="min-w-[250px]">
+                  {isCreatingCnh ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {creationStep}
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      Criar Acesso (1 crédito)
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </form>
         </Form>
+
+      {/* Hidden canvases */}
+      <canvas ref={canvasFrenteRef} className="hidden" />
+      <canvas ref={canvasMeioRef} className="hidden" />
+      <canvas ref={canvasVersoRef} className="hidden" />
+
+      {/* Dialog de confirmação */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowConfirmDialog(false)}>
+          <div className="bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-primary/10">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Deseja mesmo gerar o acesso?</h3>
+            </div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>• Você poderá mudar qualquer coisa futuramente.</p>
+              <p>• Este módulo tem validade de <strong className="text-foreground">45 dias</strong>.</p>
+              <p>• Será descontado <strong className="text-foreground">1 crédito</strong> da sua conta.</p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setShowConfirmDialog(false)}>
+                Cancelar
+              </Button>
+              <Button className="flex-1" onClick={() => { setShowConfirmDialog(false); handleSaveToDatabase(); }}>
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de imagem ampliada */}
+      {showImageModal && modalImageUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setShowImageModal(false)}>
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <Button variant="ghost" size="icon" className="absolute -top-12 right-0 text-white" onClick={() => setShowImageModal(false)}>
+              <X className="h-6 w-6" />
+            </Button>
+            <h3 className="text-white text-center mb-2 font-semibold">{modalImageTitle}</h3>
+            <img src={modalImageUrl} alt={modalImageTitle} className="w-full rounded-lg pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+          </div>
+        </div>
+      )}
+
+      {/* Modal de sucesso */}
+      {showSuccessModal && successData && (
+        <CnhSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          cpf={successData.cpf}
+          senha={successData.senha}
+          nome={successData.nome}
+          pdfUrl={successData.pdf}
+        />
+      )}
+
       <CpfDuplicateModal
         open={cpfCheck.showDuplicateModal}
         onClose={cpfCheck.dismissModal}
