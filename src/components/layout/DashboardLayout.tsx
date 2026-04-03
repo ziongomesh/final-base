@@ -10,10 +10,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  // Apply security hooks
   useSessionSecurity();
-  
-  // Listen for credit notifications
   useCreditNotifications();
 
   return (
@@ -30,7 +27,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <SuggestionButton />
       
       {/* Main Content */}
-      <main className="lg:ml-56 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8">
+      <main className="lg:ml-[68px] p-5 sm:p-6 lg:p-8 pt-20 lg:pt-8">
         {children}
       </main>
     </div>
