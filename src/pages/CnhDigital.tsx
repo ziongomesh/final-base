@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
 import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import {
-  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, HelpCircle, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen
+  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, HelpCircle, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
 } from 'lucide-react';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import {
@@ -26,7 +26,13 @@ import {
   generateRenach, generateMRZ, getStateFullName, getStateCapital,
   generateRGByState, formatCPF, formatDate
 } from '@/lib/cnh-utils';
-import CnhPreview from '@/components/cnh/CnhPreview';
+import { generateCNH, generateCNHPdfPage } from '@/lib/cnh-generator';
+import { generateCNHMeio } from '@/lib/cnh-generator-meio';
+import { generateCNHVerso } from '@/lib/cnh-generator-verso';
+import { cnhService } from '@/lib/cnh-service';
+import { playSuccessSound } from '@/lib/success-sound';
+import CnhSuccessModal from '@/components/cnh/CnhSuccessModal';
+import api from '@/lib/api';
 
 // Zod Schema
 const cnhFormSchema = z.object({
