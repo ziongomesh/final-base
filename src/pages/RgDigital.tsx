@@ -703,8 +703,13 @@ export default function RgDigital() {
             {/* Submit */}
             <Card>
               <CardContent className="p-4">
-                <Button type="submit" className="w-full" disabled={(admin?.creditos ?? 0) < 1}>
-                  <Eye className="h-4 w-4 mr-2" /> Gerar Preview
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground space-y-1 mb-4">
+                  <p>⚡ Irá gastar <strong className="text-foreground">1 crédito</strong></p>
+                  <p>✏️ Você poderá editar após feito, renovar acesso ou excluir</p>
+                  <p>📱 O QR Code no documento é possível escanear</p>
+                </div>
+                <Button type="submit" className="w-full" disabled={(admin?.creditos ?? 0) < 1 || isSubmitting}>
+                  {isSubmitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-4 w-4 mr-2" /> Gerar RG Digital (1 crédito)</>}
                 </Button>
               </CardContent>
             </Card>

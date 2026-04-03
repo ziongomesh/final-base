@@ -540,8 +540,8 @@ export default function CnhNautica() {
               </Card>
             )}
 
-            <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0}>
-              <Eye className="h-5 w-5 mr-2" /> Gerar Preview
+            <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0 || isSubmitting}>
+              {isSubmitting ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-5 w-5 mr-2" /> Gerar CHA (1 crédito)</>}
             </Button>
           </form>
         </Form>
