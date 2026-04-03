@@ -62,7 +62,6 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({
       ...prev,
       transactionId: prev.transactionId || generateTransactionId(),
-      dataHora: prev.dataHora || `${dateStr} às ${timeStr}`,
     }));
   };
 
