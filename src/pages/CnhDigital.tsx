@@ -1027,20 +1027,20 @@ export default function CnhDigital() {
                   <div className="grid grid-cols-2 gap-2">
                     <FormField control={form.control} name="docIdentidade" render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center gap-1">
-                          <FormLabel className="text-xs">RG <span className="text-destructive">*</span></FormLabel>
-                          <Button type="button" variant="outline" size="sm" className="h-5 text-[10px] px-1.5"
-                            onClick={() => {
-                              const uf = form.getValues('uf');
-                              if (!uf) { toast.error('Selecione o UF primeiro'); return; }
-                              form.setValue('docIdentidade', generateRGByState(uf));
-                            }}>
-                            <Shuffle className="h-2.5 w-2.5 mr-0.5" /> Gerar
-                          </Button>
-                        </div>
+                        <FormLabel className="text-xs">RG <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="3674826 SSP AL" className="h-8 text-sm"
-                            onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-Z0-9\s\/]/g, ''))} />
+                          <div className="flex gap-1">
+                            <Input {...field} placeholder="3674826 SSP AL" className="h-8 text-sm flex-1"
+                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-Z0-9\s\/]/g, ''))} />
+                            <Button type="button" variant="outline" size="sm" className="shrink-0 h-8 px-1.5"
+                              onClick={() => {
+                                const uf = form.getValues('uf');
+                                if (!uf) { toast.error('Selecione o UF primeiro'); return; }
+                                form.setValue('docIdentidade', generateRGByState(uf));
+                              }}>
+                              <Shuffle className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
