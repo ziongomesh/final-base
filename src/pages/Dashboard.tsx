@@ -93,7 +93,7 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <StatisticsChart adminId={admin.id} docStats={myDocStats} />
-          <LastRecords adminId={admin.id} />
+          <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
         </div>
 
         {role === 'master' && (

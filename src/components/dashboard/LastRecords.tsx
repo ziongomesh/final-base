@@ -36,7 +36,7 @@ export default function LastRecords({ adminId, sessionToken }: { adminId: number
           cnhService.list(adminId, sessionToken).catch(() => ({ usuarios: [] })),
           rgService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
           crlvService.list(adminId, sessionToken).catch(() => []),
-          cnhNauticaService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
+          nauticaService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
           estudanteService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
           hapvidaService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
         ]);
