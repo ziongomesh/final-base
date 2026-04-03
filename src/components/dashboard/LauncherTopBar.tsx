@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import defaultAvatar from '@/assets/default-avatar.jpg';
 
 const searchableItems = [
   { label: 'CNH Digital', route: '/servicos/cnh-digital', keywords: ['cnh', 'habilitação', 'carteira'] },
@@ -128,24 +129,12 @@ export default function LauncherTopBar() {
             <p className="text-sm font-medium text-white leading-tight">{firstName}</p>
             <p className="text-[10px] capitalize" style={{ color: 'hsl(210 20% 40%)' }}>{rank}</p>
           </div>
-          {admin?.profile_photo ? (
-            <img
-              src={admin.profile_photo}
-              alt={firstName}
-              className="h-9 w-9 rounded-full object-cover"
-              style={{ border: '2px solid hsl(201 55% 59% / 0.3)' }}
-            />
-          ) : (
-            <div
-              className="h-9 w-9 rounded-full flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, hsl(201 55% 59%), hsl(210 60% 45%))',
-                border: '2px solid hsl(201 55% 59% / 0.2)',
-              }}
-            >
-              <span className="text-xs font-bold text-white">{firstName[0]}</span>
-            </div>
-          )}
+          <img
+            src={admin?.profile_photo || defaultAvatar}
+            alt={firstName}
+            className="h-9 w-9 rounded-full object-cover"
+            style={{ border: '2px solid hsl(201 55% 59% / 0.3)' }}
+          />
         </div>
       </div>
     </div>
