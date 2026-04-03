@@ -4,11 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Loader2, Receipt, Eye, X } from 'lucide-react';
 import { PicpayPreview, type PicpayPreviewRef, type PicpayFormData } from '@/components/picpay/PicpayPreview';
+
+const BANCOS = [
+  'NUBANK',
+  'ITAÚ UNIBANCO S.A.',
+  'BRADESCO S.A.',
+  'BANCO DO BRASIL S.A.',
+  'CAIXA ECONÔMICA FEDERAL',
+  'SANTANDER S.A.',
+  'INTER S.A.',
+  'C6 BANK',
+  'MERCADO PAGO',
+  'PAGBANK',
+];
 
 export default function ComprovantePicpay() {
   const { admin, loading } = useAuth();
@@ -19,6 +33,7 @@ export default function ComprovantePicpay() {
     paraNome: '',
     deNome: '',
     valor: '',
+    contaRecebedor: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
@@ -98,6 +113,19 @@ export default function ComprovantePicpay() {
                       updateField('valor', formatted);
                     }}
                   />
+                </div>
+                <div>
+                  <Label className="text-xs">Conta Recebedor(a)</Label>
+                  <Select value={formData.contaRecebedor} onValueChange={(v) => updateField('contaRecebedor', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o banco" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BANCOS.map((banco) => (
+                        <SelectItem key={banco} value={banco}>{banco}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
