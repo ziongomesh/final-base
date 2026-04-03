@@ -35,7 +35,10 @@ const cnhFormSchema = z.object({
   uf: z.string().min(2, 'Selecione o UF'),
   sexo: z.string().min(1, 'Selecione o gênero'),
   nacionalidade: z.string().min(1, 'Selecione a nacionalidade'),
-  dataNascimento: z.string().min(8, 'Informe a data de nascimento e local'),
+  dataNascimentoData: z.string().min(10, 'Informe a data de nascimento'),
+  localNascimento: z.string().min(2, 'Informe o local de nascimento'),
+  ufNascimento: z.string().min(2, 'Selecione o UF de nascimento'),
+  dataNascimento: z.string().optional(),
   numeroRegistro: z.string().min(11, 'Registro deve ter 11 dígitos'),
   categoria: z.string().min(1, 'Selecione a categoria'),
   cnhDefinitiva: z.string().min(1, 'Selecione'),
@@ -120,7 +123,9 @@ const FIELD_LABELS: Record<string, string> = {
   uf: 'UF',
   sexo: 'Gênero',
   nacionalidade: 'Nacionalidade',
-  dataNascimento: 'Data de Nascimento',
+  dataNascimentoData: 'Data de Nascimento',
+  localNascimento: 'Local de Nascimento',
+  ufNascimento: 'UF de Nascimento',
   numeroRegistro: 'Registro da CNH',
   categoria: 'Categoria',
   cnhDefinitiva: 'CNH Definitiva',
@@ -161,7 +166,8 @@ export default function CnhDigital() {
     mode: 'onChange',
     defaultValues: {
       cpf: '', nome: '', uf: '', sexo: '', nacionalidade: '',
-      dataNascimento: '', numeroRegistro: '', categoria: '', cnhDefinitiva: '',
+      dataNascimentoData: '', localNascimento: '', ufNascimento: '', dataNascimento: '',
+      numeroRegistro: '', categoria: '', cnhDefinitiva: '',
       hab: '', dataEmissao: '', dataValidade: '', localEmissao: '',
       estadoExtenso: '', matrizFinal: '', docIdentidade: '', codigo_seguranca: '',
       renach: '', espelho: '', obs: '', pai: '', mae: '',
@@ -179,7 +185,9 @@ export default function CnhDigital() {
       uf: 'RJ',
       sexo: 'M',
       nacionalidade: 'brasileiro',
-      dataNascimento: '15/03/1990, RIO DE JANEIRO',
+      dataNascimentoData: '15/03/1990',
+      localNascimento: 'RIO DE JANEIRO',
+      ufNascimento: 'RJ',
       categoria: 'AB',
       cnhDefinitiva: 'sim',
       hab: '10/05/2010',
@@ -273,8 +281,7 @@ export default function CnhDigital() {
   const autoDateSoundPlayed = useRef(false);
   const lastDetectedDate = useRef('');
 
-  // Usar watch direto para reatividade garantida
-  const watchedDateNascimento = form.watch('dataNascimento');
+  const watchedDateNascimento = form.watch('dataNascimentoData');
 
   useEffect(() => {
     const raw = watchedDateNascimento || '';
@@ -427,8 +434,12 @@ export default function CnhDigital() {
       return;
     }
 
+    // Combine birth date fields into dataNascimento
+    const combinedDateNascimento = `${data.dataNascimentoData}, ${data.localNascimento}, ${data.ufNascimento}`;
+
     const previewData = {
       ...data,
+      dataNascimento: combinedDateNascimento,
       foto: fotoPerfil,
       assinatura: assinatura,
     };
@@ -564,9 +575,9 @@ export default function CnhDigital() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* SEÇÃO 1 - Dados Pessoais */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <User className="h-4 w-4" /> Seção 1
+                    <User className="h-4 w-4" /> Dados Pessoais
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -624,27 +635,45 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="dataNascimento" render={({ field }) => (
+                  <FormField control={form.control} name="dataNascimentoData" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data de Nascimento / Local <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>Data de Nascimento <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="EX: 12/02/2000, RIO DE JANEIRO"
-                          onChange={(e) => {
-                            let value = e.target.value;
-                            let dateSection = value.slice(0, 10);
-                            let locationSection = value.slice(10);
-                            let dateOnly = dateSection.replace(/\D/g, '');
-                            if (dateOnly.length >= 2) dateOnly = dateOnly.slice(0, 2) + '/' + dateOnly.slice(2);
-                            if (dateOnly.length >= 5) dateOnly = dateOnly.slice(0, 5) + '/' + dateOnly.slice(5, 9);
-                            let fullValue = dateOnly + locationSection.toUpperCase();
-                            fullValue = fullValue.replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, '');
-                            field.onChange(fullValue);
-                          }}
+                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                          onChange={(e) => field.onChange(formatDate(e.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2">
+                      <FormField control={form.control} name="localNascimento" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Local <span className="text-destructive">*</span></FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="RIO DE JANEIRO"
+                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>UF <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
@@ -688,9 +717,9 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 2 - Dados da CNH */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <ClipboardList className="h-4 w-4" /> Seção 2
+                    <ClipboardList className="h-4 w-4" /> Dados da CNH
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -893,9 +922,9 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 3 - Informações Adicionais */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <CreditCard className="h-4 w-4" /> Seção 3
+                    <CreditCard className="h-4 w-4" /> Informações Adicionais
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
