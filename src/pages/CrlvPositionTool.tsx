@@ -496,10 +496,13 @@ export default function CrlvPositionTool() {
   });
 
   const { setFormDirty } = useFormGuard();
+  const { isDirty } = formState;
   useEffect(() => {
-    const sub = watch(() => setFormDirty(true));
+    const sub = watch(() => {
+      if (isDirty) setFormDirty(true);
+    });
     return () => { sub.unsubscribe(); setFormDirty(false); };
-  }, [watch, setFormDirty]);
+  }, [watch, isDirty, setFormDirty]);
 
   const values = watch();
   const cpfDigits = values.cpfCnpj?.replace(/\D/g, '').length ?? 0;
