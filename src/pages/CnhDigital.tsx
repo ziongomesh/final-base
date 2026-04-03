@@ -150,6 +150,7 @@ const FIELD_LABELS: Record<string, string> = {
 
 export default function CnhDigital() {
   const { admin, loading } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isDemo = searchParams.get('demo') === 'true';
   const [showDemoBanner, setShowDemoBanner] = useState(isDemo);
@@ -164,11 +165,26 @@ export default function CnhDigital() {
   const [triedSubmit, setTriedSubmit] = useState(false);
   const [selectedObs, setSelectedObs] = useState<string[]>([]);
   const [customObs, setCustomObs] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
-  const [cnhPreviewData, setCnhPreviewData] = useState<any>(null);
   const [demoStep, setDemoStep] = useState(0);
   const [demoFilling, setDemoFilling] = useState(false);
   const [galleryType, setGalleryType] = useState<'foto' | 'assinatura' | null>(null);
+
+  // Live preview state
+  const canvasFrenteRef = useRef<HTMLCanvasElement>(null);
+  const canvasMeioRef = useRef<HTMLCanvasElement>(null);
+  const canvasVersoRef = useRef<HTMLCanvasElement>(null);
+  const [previewFrenteUrl, setPreviewFrenteUrl] = useState<string | null>(null);
+  const [previewMeioUrl, setPreviewMeioUrl] = useState<string | null>(null);
+  const [previewVersoUrl, setPreviewVersoUrl] = useState<string | null>(null);
+  const [isCreatingCnh, setIsCreatingCnh] = useState(false);
+  const [creationStep, setCreationStep] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successData, setSuccessData] = useState<any>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+  const [modalImageTitle, setModalImageTitle] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<CnhFormData>({
     resolver: zodResolver(cnhFormSchema),
