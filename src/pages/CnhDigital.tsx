@@ -1047,9 +1047,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="renach" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">RENACH <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Código RENACH na lateral direita." />
+                      <FormLabel className="text-xs">RENACH <span className="text-destructive">*</span></FormLabel>
                       </div>
                       <FormControl>
                         <div className="flex gap-1.5">
