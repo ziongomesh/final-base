@@ -50,7 +50,7 @@ export default function Ferramentas() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">🛠️ Ferramentas</h1>
+          <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Ferramentas</h1>
           <p className="text-muted-foreground">Ferramentas úteis para o dia a dia</p>
         </div>
 
