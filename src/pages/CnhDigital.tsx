@@ -430,6 +430,7 @@ export default function CnhDigital() {
   };
 
   const handleGeneratePreview = async (data: CnhFormData) => {
+    setTriedSubmit(true);
     if (!fotoPerfil) {
       toast.error('Foto de perfil é obrigatória', { position: 'top-right' });
       return;
