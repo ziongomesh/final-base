@@ -127,7 +127,7 @@ export default function ComprovantePicpay() {
       setFormData({
         valor: '', paraNome: '', paraCpf: '', paraInstituicao: '',
         deNome: '', deCpf: '', deInstituicao: '',
-        transactionId: '', chavePix: '', dadosBancarios: '', dataHora: '',
+        transactionId: '', chavePix: '', dadosBancarios: '',
       });
     } catch (error: any) {
       toast.error('Erro ao criar comprovante', { description: error.message });
