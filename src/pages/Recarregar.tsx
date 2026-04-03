@@ -391,10 +391,9 @@ export default function Recarregar() {
             {/* Package Cards Grid */}
             {/* Section 1: Pacotes Populares */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Star className="h-4 w-4 text-primary fill-primary" />
-                <h3 className="font-semibold text-foreground">Pacotes Populares</h3>
-                <Badge variant="secondary" className="text-[10px]">Mais vendidos</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <Star className="h-3.5 w-3.5 text-primary fill-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Populares</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <TooltipProvider>
