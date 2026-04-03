@@ -294,7 +294,28 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isAtestados ? (
+          {isFoto ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                  <FileText className="h-3 w-3" /> Documentos
+                </h4>
+                {sortGroup(fotoDocumentos).map((service) => (
+                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                ))}
+              </div>
+              {fotoCartoes.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <CreditCard className="h-3 w-3" /> Cartões
+                  </h4>
+                  {sortGroup(fotoCartoes).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : isAtestados ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
