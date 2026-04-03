@@ -741,7 +741,7 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
           </CardHeader>
           <CardContent className="space-y-3 px-4 pb-4">
             <div>
-              <Label className="text-xs">Nº do Espelho</Label>
+              <Label className="text-xs">Nº do Espelho <span className="text-destructive">*</span></Label>
               <div className="flex gap-1.5">
                 <Input value={form.espelho} className="h-8 text-sm flex-1" onChange={(e) => updateField('espelho', e.target.value.replace(/\D/g, ''))} maxLength={10} />
                 <Button type="button" variant="outline" size="sm" onClick={() => updateField('espelho', generateEspelhoNumber())} className="shrink-0 h-8 text-xs px-2">
