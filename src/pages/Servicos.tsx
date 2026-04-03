@@ -253,7 +253,7 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
       {open && (
-        <div className="p-2 bg-card">
+        <div className="p-2 bg-transparent">
           {isPdfCategory && comprovantes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
