@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const { role, signOut } = useAuth();
+  const { guardedNavigate } = useFormGuard();
   const location = useLocation();
 
   const filteredItems = navItems.filter(item => 
