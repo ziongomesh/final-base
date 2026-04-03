@@ -252,10 +252,11 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const Icon = cat.icon;
   const activeCount = cat.services.filter(s => s.available).length;
   const isPdfCategory = cat.title === 'PDF';
+  const isComprovantes = cat.title === 'Comprovantes';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
-  const comprovantes = cat.services.filter(s => s.pdfGroup === 'comprovante');
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
+  const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -273,20 +274,27 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isPdfCategory && comprovantes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Comprovantes</h4>
-                {sortGroup(comprovantes).map((service) => (
-                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
-                ))}
-              </div>
+          {isPdfCategory && certidoes.length > 0 ? (
+            <div className="space-y-4">
+              {pdfOthers.length > 0 && (
+                <div className="space-y-2">
+                  {sortGroup(pdfOthers).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Certidões</h4>
                 {sortGroup(certidoes).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
               </div>
+            </div>
+          ) : isComprovantes ? (
+            <div className="max-h-[280px] overflow-y-auto space-y-2 pr-1 scrollbar-thin" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(210 20% 25%) transparent' }}>
+              {sorted.map((service) => (
+                <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+              ))}
             </div>
           ) : (
             <div className="space-y-2">
