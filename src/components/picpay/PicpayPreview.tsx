@@ -5,6 +5,7 @@ export interface PicpayFormData {
   paraNome: string;
   deNome: string;
   valor: string;
+  contaRecebedor: string;
 }
 
 export interface PicpayPreviewRef {
