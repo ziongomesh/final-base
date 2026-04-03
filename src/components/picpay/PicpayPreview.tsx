@@ -125,8 +125,10 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
 
         // Draw fields
         for (const f of FIELDS) {
-          const value = formData[f.key] || '';
+          let value = formData[f.key] || '';
           if (!value.trim()) continue;
+          // Prefix valor with "R$ "
+          if (f.key === 'valor') value = `R$ ${value}`;
 
           ctx.fillStyle = f.color || '#1a1a1a';
           ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
