@@ -48,7 +48,6 @@ export default function ComprovantePicpay() {
     transactionId: '',
     chavePix: '',
     dadosBancarios: '',
-    dataHora: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
