@@ -443,9 +443,6 @@ export default function CnhDigital() {
       foto: fotoPerfil,
       assinatura: assinatura,
     };
-      foto: fotoPerfil,
-      assinatura: assinatura,
-    };
 
     setCnhPreviewData(previewData);
     setShowPreview(true);
