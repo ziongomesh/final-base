@@ -511,8 +511,8 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
               }} />
             </div>
             <div>
-              <Label className="text-xs">CPF <span className="text-destructive">*</span></Label>
-              <Input value={form.cpf} className="h-8 text-sm" readOnly />
+              <Label className="text-xs">CPF</Label>
+              <Input value={form.cpf} className="h-8 text-sm bg-muted cursor-not-allowed" readOnly />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
