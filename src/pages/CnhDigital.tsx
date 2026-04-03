@@ -153,6 +153,7 @@ export default function CnhDigital() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
   const [assinatura, setAssinatura] = useState<File | null>(null);
+  const [triedSubmit, setTriedSubmit] = useState(false);
   const [selectedObs, setSelectedObs] = useState<string[]>([]);
   const [customObs, setCustomObs] = useState('');
   const [showPreview, setShowPreview] = useState(false);
