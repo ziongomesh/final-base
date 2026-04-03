@@ -41,7 +41,7 @@ export function LoadingScreen() {
         <img
           src={logoImage}
           alt="Data Sistemas"
-          className="h-14 w-14 relative z-10 dark:invert"
+          className="h-14 w-14 relative z-10 brightness-0 invert"
         />
       </div>
     </div>
