@@ -2,16 +2,8 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
-  valor: string;
   paraNome: string;
-  paraCpf: string;
-  paraInstituicao: string;
   deNome: string;
-  deCpf: string;
-  deInstituicao: string;
-  transactionId: string;
-  chavePix: string;
-  dadosBancarios: string;
 }
 
 export interface PicpayPreviewRef {
