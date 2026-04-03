@@ -789,6 +789,43 @@ export default function RgDigital() {
               </CardContent>
             </Card>
 
+            {/* Hidden canvases for live preview */}
+            <canvas ref={liveCanvasFrenteRef} className="hidden" />
+            <canvas ref={liveCanvasVersoRef} className="hidden" />
+
+            {/* Live Preview */}
+            {(livePreviewImages.frente || livePreviewImages.verso) && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {livePreviewImages.frente && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
+                        <div className="relative overflow-hidden rounded-lg border">
+                          <img src={livePreviewImages.frente} alt="RG Frente" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                          <WatermarkOverlay />
+                        </div>
+                      </div>
+                    )}
+                    {livePreviewImages.verso && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
+                        <div className="relative overflow-hidden rounded-lg border">
+                          <img src={livePreviewImages.verso} alt="RG Verso" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                          <WatermarkOverlay />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Submit */}
             <Card>
               <CardContent className="p-4">
