@@ -897,7 +897,7 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                  <FormField control={form.control} name="uf" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">UF de Emissão <span className="text-destructive">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || undefined}>
