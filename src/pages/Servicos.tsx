@@ -65,15 +65,34 @@ const categories: ServiceCategory[] = [
     ],
   },
   {
+    title: 'Veículos',
+    icon: Car,
+    services: [
+      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true },
+    ],
+  },
+  {
     title: 'PDF',
     icon: FileText,
     services: [
-      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true, pdfGroup: 'comprovante' },
       { id: 'comprovante-residencia', name: 'COMPROVANTE DE RESIDÊNCIA', description: 'Comprovante de endereço', credits: 1, available: false, route: '#', icon: Home, pdfGroup: 'comprovante' },
       { id: 'certidao-nascimento-qr-on', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento com QR Code', credits: 1, available: false, route: '#', icon: FileText, hasQr: true, pdfGroup: 'certidao' },
       { id: 'certidao-nascimento-qr-off', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento sem QR Code', credits: 1, available: false, route: '#', icon: FileText, hasQr: false, pdfGroup: 'certidao' },
       { id: 'certidao-obito', name: 'CERTIDÃO DE ÓBITO', description: 'Certidão de óbito digital', credits: 1, available: false, route: '#', icon: FileText, pdfGroup: 'certidao' },
       { id: 'certidao-casamento', name: 'CERTIDÃO DE CASAMENTO', description: 'Certidão de casamento digital', credits: 1, available: false, route: '#', icon: FileText, pdfGroup: 'certidao' },
+    ],
+  },
+  {
+    title: 'Comprovantes',
+    icon: Receipt,
+    services: [
+      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt },
     ],
   },
   {
