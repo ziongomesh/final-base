@@ -416,7 +416,7 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-xl font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
                             <div className="text-xs text-muted-foreground">créditos</div>
                             <div className="mt-1">
                               <Badge variant="secondary" className="text-[10px]">
