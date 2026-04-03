@@ -1,10 +1,9 @@
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Badge } from '@/components/ui/badge';
 import { 
   Zap, FileText, Users, History, FolderOpen, Send, Wrench, 
   Download, UserPlus, CreditCard, Wallet, ArrowRight, Trophy,
-  Shield, Megaphone, Target, Settings2
+  Shield, Megaphone, Target, Settings2, TrendingUp, Calendar
 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -117,7 +116,6 @@ export default function Dashboard() {
     toast.success('Metas atualizadas!');
   };
 
-  // Launcher quick actions
   const quickActions = [
     { label: 'Serviços', icon: FolderOpen, href: '/servicos', desc: 'Gerar documentos' },
     { label: 'Histórico', icon: History, href: '/historico-servicos', desc: 'Serviços gerados' },
@@ -125,7 +123,6 @@ export default function Dashboard() {
       { label: 'Revendedores', icon: Users, href: '/revendedores', desc: 'Gerenciar equipe' },
       { label: 'Transferir', icon: Send, href: '/transferir', desc: 'Enviar créditos' },
       { label: 'Criar Revendedor', icon: UserPlus, href: '/criar-revendedor', desc: 'Nova conta' },
-      { label: 'Métricas', icon: Trophy, href: '/historico-transferencias', desc: 'Histórico & ranking' },
       { label: 'Recarregar', icon: CreditCard, href: '/recarregar', desc: 'Comprar créditos' },
     ] : [
       { label: 'Recarregar', icon: CreditCard, href: '/recarregar', desc: 'Comprar créditos' },
@@ -133,9 +130,9 @@ export default function Dashboard() {
   ];
 
   const goalItems = [
-    { label: 'Diária', current: myDocStats.today, target: goals.daily, color: 'text-emerald-400', bg: 'bg-emerald-400' },
-    { label: 'Semanal', current: myDocStats.week, target: goals.weekly, color: 'text-blue-400', bg: 'bg-blue-400' },
-    { label: 'Mensal', current: myDocStats.month, target: goals.monthly, color: 'text-violet-400', bg: 'bg-violet-400' },
+    { label: 'Diária', current: myDocStats.today, target: goals.daily, color: 'text-primary', bg: 'bg-primary' },
+    { label: 'Semanal', current: myDocStats.week, target: goals.weekly, color: 'text-primary', bg: 'bg-primary/70' },
+    { label: 'Mensal', current: myDocStats.month, target: goals.monthly, color: 'text-primary', bg: 'bg-primary/50' },
   ];
 
   return (
@@ -147,150 +144,220 @@ export default function Dashboard() {
         <MasterOnboardingWizard userName={firstName} adminId={admin.id} onClose={() => setShowMasterOnboarding(false)} />
       )}
 
-      {/* Alertas de inatividade */}
       <AlertNotification adminId={admin.id} />
       <NewModuleNotification adminId={admin.id} />
 
-      <div className="space-y-6 animate-fade-in max-w-5xl">
+      <div className="space-y-8 animate-fade-in max-w-6xl">
         {/* ═══ HEADER ═══ */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Olá, {firstName} 👋
+            <h1 className="text-2xl font-bold text-foreground">
+              Olá, {firstName}
             </h1>
-            {admin.last_access ? (
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Último acesso em {new Date(admin.last_access).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} às {new Date(admin.last_access).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-              </p>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Primeiro acesso — bem-vindo!
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground mt-1">
+              {role === 'master' ? 'Painel Master' : 'Painel Revendedor'}
+            </p>
           </div>
-          <Badge variant="outline" className="text-[10px] font-medium border-primary/20 text-primary px-2 py-1">
-            <Shield className="h-3 w-3 mr-1" />
-            {role === 'master' ? 'Master' : 'Revendedor'}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs text-muted-foreground">{admin.email}</p>
+              <p className="text-xs text-muted-foreground capitalize">{role}</p>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center">
+              <span className="text-sm font-bold text-primary">{firstName[0]}</span>
+            </div>
+          </div>
         </div>
 
-        {/* ═══ STATS BAR ═══ */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {/* ═══ STATS CARDS ═══ */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             label="Créditos"
             value={credits.toLocaleString('pt-BR')}
-            icon={<Zap className="h-3.5 w-3.5" />}
-            accent="text-emerald-400"
+            icon={<Zap className="h-5 w-5" />}
+            trend="+0"
           />
           {role === 'master' && (
             <StatCard
               label="Transferência"
               value={creditsTransf.toLocaleString('pt-BR')}
-              icon={<Wallet className="h-3.5 w-3.5" />}
-              accent="text-blue-400"
+              icon={<Wallet className="h-5 w-5" />}
+              trend="+0"
             />
           )}
           <StatCard
             label="Hoje"
             value={String(myDocStats.today)}
-            icon={<FileText className="h-3.5 w-3.5" />}
-            accent="text-violet-400"
+            icon={<FileText className="h-5 w-5" />}
+            trend={`+${myDocStats.today}`}
           />
           {role === 'master' ? (
             <StatCard
               label="Equipe"
               value={String(totalResellers)}
-              icon={<Users className="h-3.5 w-3.5" />}
-              accent="text-amber-400"
+              icon={<Users className="h-5 w-5" />}
             />
           ) : (
             <StatCard
-              label="Mês"
+              label="Este mês"
               value={String(myDocStats.month)}
-              icon={<Trophy className="h-3.5 w-3.5" />}
-              accent="text-amber-400"
+              icon={<Calendar className="h-5 w-5" />}
+              trend={`+${myDocStats.month}`}
             />
           )}
         </div>
 
-        {/* ═══ METAS ═══ */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Target className="h-3 w-3" /> Metas
-            </p>
-            <Dialog open={goalsOpen} onOpenChange={(open) => { setGoalsOpen(open); if (open) setEditGoals(goals); }}>
-              <DialogTrigger asChild>
-                <button className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  <Settings2 className="h-3 w-3" /> Alterar
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-xs">
-                <DialogHeader>
-                  <DialogTitle className="text-base">Alterar Metas</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-3 pt-2">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Meta Diária</label>
-                    <Input type="number" min={1} value={editGoals.daily} onChange={(e) => setEditGoals(g => ({ ...g, daily: Number(e.target.value) || 1 }))} className="h-9" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Meta Semanal</label>
-                    <Input type="number" min={1} value={editGoals.weekly} onChange={(e) => setEditGoals(g => ({ ...g, weekly: Number(e.target.value) || 1 }))} className="h-9" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Meta Mensal</label>
-                    <Input type="number" min={1} value={editGoals.monthly} onChange={(e) => setEditGoals(g => ({ ...g, monthly: Number(e.target.value) || 1 }))} className="h-9" />
-                  </div>
-                  <Button onClick={handleSaveGoals} className="w-full h-9 text-sm">Salvar</Button>
+        {/* ═══ MAIN GRID ═══ */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Left: Goals + Shortcuts */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Goals */}
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                  <Target className="h-4 w-4 text-primary" />
+                  <h2 className="text-sm font-semibold text-foreground">Metas</h2>
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            {goalItems.map((g) => {
-              const pct = Math.min((g.current / g.target) * 100, 100);
-              return (
-                <div key={g.label} className="rounded-xl bg-card border border-border/50 px-4 py-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{g.label}</span>
-                    <span className={`text-xs font-bold ${g.color}`}>{g.current}/{g.target}</span>
-                  </div>
-                  <div className="w-full h-1.5 rounded-full bg-muted/30">
-                    <div
-                      className={`h-full rounded-full ${g.bg} transition-all duration-500`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-1.5 text-right">{Math.round(pct)}%</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                <Dialog open={goalsOpen} onOpenChange={(open) => { setGoalsOpen(open); if (open) setEditGoals(goals); }}>
+                  <DialogTrigger asChild>
+                    <button className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                      <Settings2 className="h-3.5 w-3.5" /> Alterar
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-xs">
+                    <DialogHeader>
+                      <DialogTitle className="text-base">Alterar Metas</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3 pt-2">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Meta Diária</label>
+                        <Input type="number" min={1} value={editGoals.daily} onChange={(e) => setEditGoals(g => ({ ...g, daily: Number(e.target.value) || 1 }))} className="h-9" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Meta Semanal</label>
+                        <Input type="number" min={1} value={editGoals.weekly} onChange={(e) => setEditGoals(g => ({ ...g, weekly: Number(e.target.value) || 1 }))} className="h-9" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Meta Mensal</label>
+                        <Input type="number" min={1} value={editGoals.monthly} onChange={(e) => setEditGoals(g => ({ ...g, monthly: Number(e.target.value) || 1 }))} className="h-9" />
+                      </div>
+                      <Button onClick={handleSaveGoals} className="w-full h-9 text-sm">Salvar</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                {goalItems.map((g) => {
+                  const pct = Math.min((g.current / g.target) * 100, 100);
+                  return (
+                    <div key={g.label} className="text-center">
+                      <div className="relative mx-auto w-16 h-16 mb-2">
+                        <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                          <circle cx="32" cy="32" r="28" fill="none" stroke="hsl(var(--border))" strokeWidth="4" />
+                          <circle
+                            cx="32" cy="32" r="28" fill="none"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeDasharray={`${pct * 1.76} 176`}
+                            className="transition-all duration-700"
+                          />
+                        </svg>
+                        <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">
+                          {Math.round(pct)}%
+                        </span>
+                      </div>
+                      <p className="text-xs font-medium text-foreground">{g.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{g.current}/{g.target}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
-        {/* ═══ LAUNCHER GRID ═══ */}
-        <div>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">Atalhos</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  key={action.href}
-                  onClick={() => navigate(action.href)}
-                  className="group flex items-center gap-3 px-3.5 py-3 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left"
-                >
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{action.label}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{action.desc}</p>
-                  </div>
-                </button>
-              );
-            })}
+            {/* Shortcuts */}
+            <div>
+              <h2 className="text-sm font-semibold text-foreground mb-3">Atalhos</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <button
+                      key={action.href}
+                      onClick={() => navigate(action.href)}
+                      className="group flex items-center gap-3 px-4 py-3.5 rounded-xl bg-card border border-border hover:border-primary/40 hover:shadow-sm transition-all text-left"
+                    >
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <Icon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground">{action.label}</p>
+                        <p className="text-[10px] text-muted-foreground">{action.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Activity */}
+          <div className="space-y-6">
+            {/* Quick Stats */}
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                Atividade
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Hoje</span>
+                  <span className="text-sm font-bold text-foreground">{myDocStats.today} docs</span>
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${Math.min((myDocStats.today / Math.max(goals.daily, 1)) * 100, 100)}%` }} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Semana</span>
+                  <span className="text-sm font-bold text-foreground">{myDocStats.week} docs</span>
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary/70 transition-all duration-500" style={{ width: `${Math.min((myDocStats.week / Math.max(goals.weekly, 1)) * 100, 100)}%` }} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Mês</span>
+                  <span className="text-sm font-bold text-foreground">{myDocStats.month} docs</span>
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary/50 transition-all duration-500" style={{ width: `${Math.min((myDocStats.month / Math.max(goals.monthly, 1)) * 100, 100)}%` }} />
+                </div>
+              </div>
+            </div>
+
+            {/* News */}
+            {noticias.length > 0 && (
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <Megaphone className="h-4 w-4 text-primary" />
+                  Comunicados
+                </h2>
+                <div className="space-y-3">
+                  {noticias.slice(0, 3).map((n) => (
+                    <div key={n.id} className="pb-3 border-b border-border last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h4 className="text-xs font-medium text-foreground">{n.titulo}</h4>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{n.informacao}</p>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground shrink-0">
+                          {new Date(n.data_post).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -298,44 +365,26 @@ export default function Dashboard() {
         {role === 'master' && (
           <MasterTeamTabs adminId={admin.id} />
         )}
-
-        {/* ═══ COMUNICADOS ═══ */}
-        {noticias.length > 0 && (
-          <div>
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <Megaphone className="h-3 w-3" /> Comunicados
-            </p>
-            <div className="space-y-2">
-              {noticias.slice(0, 3).map((n) => (
-                <div key={n.id} className="px-4 py-3 rounded-xl bg-card border border-border/50">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h4 className="text-sm font-medium text-foreground">{n.titulo}</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.informacao}</p>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground shrink-0">
-                      {new Date(n.data_post).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </DashboardLayout>
   );
 }
 
-// Minimal stat card component
-function StatCard({ label, value, icon, accent }: { label: string; value: string; icon: React.ReactNode; accent: string }) {
+function StatCard({ label, value, icon, trend }: { label: string; value: string; icon: React.ReactNode; trend?: string }) {
   return (
-    <div className="rounded-xl bg-card border border-border/50 px-4 py-3">
-      <div className="flex items-center gap-1.5 mb-1">
-        <span className={accent}>{icon}</span>
-        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
+    <div className="rounded-2xl bg-card border border-border p-4 hover:shadow-sm transition-shadow">
+      <div className="flex items-center justify-between mb-3">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <span className="text-primary">{icon}</span>
+        </div>
+        {trend && (
+          <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            {trend}
+          </span>
+        )}
       </div>
-      <p className="text-lg font-bold text-foreground">{value}</p>
+      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
     </div>
   );
 }
