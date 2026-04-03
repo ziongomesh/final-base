@@ -250,7 +250,7 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
         {activeCount > 0 && (
           <Badge variant="secondary" className="text-[10px] border-0">{activeCount} ativo{activeCount > 1 ? 's' : ''}</Badge>
         )}
-        {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        {open ? <ChevronUp className="h-4 w-4 text-white/40" /> : <ChevronDown className="h-4 w-4 text-white/40" />}
       </button>
       {open && (
         <div className="p-2 bg-transparent">
