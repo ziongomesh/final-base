@@ -12,15 +12,14 @@ export interface PicpayFormData {
   transactionId: string;
   chavePix: string;
   dadosBancarios: string;
-  dataHora: string;
 }
 
 export interface PicpayPreviewRef {
   getSnapshot: () => Promise<string | null>;
 }
 
-// Field positions mapped to the base image (natural pixel coords)
-// These are approximate and will need calibration
+// Field definitions with Photoshop coordinates (base image 1263x1920)
+// Word-wrap fields have maxWidth set
 interface FieldDef {
   key: keyof PicpayFormData;
   x: number;
@@ -29,35 +28,73 @@ interface FieldDef {
   color?: string;
   bold?: boolean;
   maxWidth?: number;
+  lineHeight?: number;
 }
 
+// All fields use Arial Bold ~16pt mapped to canvas pixels
+// The base image is 1263x1920, coordinates are raw pixel positions
 const FIELDS: FieldDef[] = [
-  // Valor
-  { key: 'valor', x: 60, y: 200, size: 28, bold: true },
-  // Para - nome
-  { key: 'paraNome', x: 60, y: 290, size: 16 },
-  // Para - CPF
-  { key: 'paraCpf', x: 60, y: 315, size: 14, color: '#666666' },
+  // Valor - below "Valor" label (~Y:370)
+  { key: 'valor', x: 75, y: 390, size: 22, bold: true, color: '#1a1a1a' },
+
+  // Para - nome (word-wrap) - confirmed: X:143, Y:900, box 493x167
+  { key: 'paraNome', x: 143, y: 560, size: 22, bold: true, color: '#1a1a1a', maxWidth: 493, lineHeight: 28 },
+  // Para - CPF (below name area)
+  { key: 'paraCpf', x: 143, y: 620, size: 18, color: '#666666' },
   // Para - Instituição
-  { key: 'paraInstituicao', x: 60, y: 340, size: 14, color: '#666666' },
-  // De - nome
-  { key: 'deNome', x: 60, y: 480, size: 16 },
+  { key: 'paraInstituicao', x: 143, y: 650, size: 18, color: '#666666' },
+
+  // De - nome (word-wrap) - confirmed: X:148, Y:1426, box 697x109
+  // But Y:1426 in PSD space. In the base image labels: "De" is around Y:860 in image
+  { key: 'deNome', x: 148, y: 880, size: 22, bold: true, color: '#1a1a1a', maxWidth: 697, lineHeight: 28 },
   // De - CPF
-  { key: 'deCpf', x: 60, y: 505, size: 14, color: '#666666' },
+  { key: 'deCpf', x: 148, y: 940, size: 18, color: '#666666' },
   // De - Instituição
-  { key: 'deInstituicao', x: 60, y: 530, size: 14, color: '#666666' },
-  // ID da transação
-  { key: 'transactionId', x: 60, y: 650, size: 14, color: '#666666' },
-  // Chave Pix do recebedor
-  { key: 'chavePix', x: 60, y: 740, size: 14, color: '#666666' },
-  // Dados bancários do recebedor
-  { key: 'dadosBancarios', x: 60, y: 830, size: 14, color: '#666666', maxWidth: 400 },
-  // Data/hora (small, at top or near ID)
-  { key: 'dataHora', x: 60, y: 870, size: 14, color: '#666666' },
+  { key: 'deInstituicao', x: 148, y: 970, size: 18, color: '#666666' },
+
+  // PICPAY label is static in the base, skip
+
+  // ID da transação - below "ID da transação" label (~Y:1060)
+  { key: 'transactionId', x: 75, y: 1090, size: 18, color: '#666666', maxWidth: 800 },
+
+  // Chave Pix do recebedor - below label (~Y:1200)
+  { key: 'chavePix', x: 75, y: 1240, size: 18, color: '#666666', maxWidth: 800 },
+
+  // Dados bancários do recebedor - below label (~Y:1350)
+  { key: 'dadosBancarios', x: 75, y: 1400, size: 18, color: '#666666', maxWidth: 500, lineHeight: 24 },
 ];
 
 interface PicpayPreviewProps {
   formData: PicpayFormData;
+}
+
+function drawWrappedText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+): number {
+  const words = text.split(' ');
+  let line = '';
+  let yOffset = 0;
+
+  for (const word of words) {
+    const testLine = line ? `${line} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      ctx.fillText(line, x, y + yOffset);
+      line = word;
+      yOffset += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line) {
+    ctx.fillText(line, x, y + yOffset);
+    yOffset += lineHeight;
+  }
+  return yOffset;
 }
 
 export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
@@ -119,25 +156,11 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           if (!value.trim()) continue;
 
           ctx.fillStyle = f.color || '#1a1a1a';
-          ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px -apple-system, "Segoe UI", Roboto, sans-serif`;
+          ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
           ctx.textBaseline = 'alphabetic';
 
           if (f.maxWidth) {
-            // Wrap text
-            const words = value.split(' ');
-            let line = '';
-            let yOffset = 0;
-            for (const word of words) {
-              const testLine = line ? `${line} ${word}` : word;
-              if (ctx.measureText(testLine).width > f.maxWidth && line) {
-                ctx.fillText(line, f.x, f.y + yOffset);
-                line = word;
-                yOffset += f.size + 4;
-              } else {
-                line = testLine;
-              }
-            }
-            if (line) ctx.fillText(line, f.x, f.y + yOffset);
+            drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
           } else {
             ctx.fillText(value, f.x, f.y);
           }
@@ -145,14 +168,14 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
 
         // Watermark
         ctx.save();
-        ctx.globalAlpha = 0.08;
+        ctx.globalAlpha = 0.06;
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 60px sans-serif';
+        ctx.font = 'bold 80px Arial, sans-serif';
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(-Math.PI / 4);
         ctx.textAlign = 'center';
-        ctx.fillText('DATA SISTEMAS', 0, -60);
-        ctx.fillText('DATA SISTEMAS', 0, 60);
+        ctx.fillText('DATA SISTEMAS', 0, -80);
+        ctx.fillText('DATA SISTEMAS', 0, 80);
         ctx.restore();
       });
 
