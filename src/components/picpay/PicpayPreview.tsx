@@ -2,16 +2,8 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
-  valor: string;
   paraNome: string;
-  paraCpf: string;
-  paraInstituicao: string;
   deNome: string;
-  deCpf: string;
-  deInstituicao: string;
-  transactionId: string;
-  chavePix: string;
-  dadosBancarios: string;
 }
 
 export interface PicpayPreviewRef {
@@ -34,34 +26,11 @@ interface FieldDef {
 // All fields use Arial Bold ~16pt mapped to canvas pixels
 // The base image is 1263x1920, coordinates are raw pixel positions
 const FIELDS: FieldDef[] = [
-  // Valor - below "Valor" label (~Y:370)
-  { key: 'valor', x: 75, y: 390, size: 22, bold: true, color: '#1a1a1a' },
-
-  // Para - nome (word-wrap) - confirmed: X:143, Y:900, box 493x167
+  // Para - nome (word-wrap) - X:143, Y:900, box 493x167, Arial Bold 16.07pt
   { key: 'paraNome', x: 143, y: 560, size: 22, bold: true, color: '#1a1a1a', maxWidth: 493, lineHeight: 28 },
-  // Para - CPF (below name area)
-  { key: 'paraCpf', x: 143, y: 620, size: 18, color: '#666666' },
-  // Para - Instituição
-  { key: 'paraInstituicao', x: 143, y: 650, size: 18, color: '#666666' },
 
-  // De - nome (word-wrap) - confirmed: X:148, Y:1426, box 697x109
-  // But Y:1426 in PSD space. In the base image labels: "De" is around Y:860 in image
+  // De - nome (word-wrap) - X:148, Y:1426, box 697x109, Arial Bold 16.07pt
   { key: 'deNome', x: 148, y: 880, size: 22, bold: true, color: '#1a1a1a', maxWidth: 697, lineHeight: 28 },
-  // De - CPF
-  { key: 'deCpf', x: 148, y: 940, size: 18, color: '#666666' },
-  // De - Instituição
-  { key: 'deInstituicao', x: 148, y: 970, size: 18, color: '#666666' },
-
-  // PICPAY label is static in the base, skip
-
-  // ID da transação - below "ID da transação" label (~Y:1060)
-  { key: 'transactionId', x: 75, y: 1090, size: 18, color: '#666666', maxWidth: 800 },
-
-  // Chave Pix do recebedor - below label (~Y:1200)
-  { key: 'chavePix', x: 75, y: 1240, size: 18, color: '#666666', maxWidth: 800 },
-
-  // Dados bancários do recebedor - below label (~Y:1350)
-  { key: 'dadosBancarios', x: 75, y: 1400, size: 18, color: '#666666', maxWidth: 500, lineHeight: 24 },
 ];
 
 interface PicpayPreviewProps {
