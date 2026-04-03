@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { TrendingUp } from 'lucide-react';
 
 interface Props {
   adminId: number;
@@ -41,21 +42,33 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
   const weekProgress = Math.min((docStats.week / weekGoal) * 100, 100);
   const monthProgress = Math.min((docStats.month / monthGoal) * 100, 100);
 
+  const cardStyle = {
+    background: 'hsl(215 30% 10%)',
+    border: '1px solid hsl(210 40% 16%)',
+    borderRadius: '16px',
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-white">Estatísticas</h2>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
+          <h2 className="text-base font-bold text-white">Estatísticas</h2>
+        </div>
+        <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'hsl(215 30% 10%)', border: '1px solid hsl(210 40% 16%)' }}>
           {(['days', 'weeks', 'months'] as Period[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`text-xs px-3 py-1.5 rounded-full transition-all ${
-                period === p
-                  ? 'bg-[#5ba8d4]/15 text-[#5ba8d4] font-semibold border border-[#5ba8d4]/30'
-                  : 'text-white/30 hover:text-white/50'
-              }`}
+              className="text-xs px-3 py-1.5 rounded-lg transition-all"
+              style={period === p ? {
+                background: 'hsl(201 55% 59% / 0.12)',
+                color: 'hsl(201 55% 59%)',
+                fontWeight: 600,
+              } : {
+                color: 'hsl(210 20% 40%)',
+              }}
             >
               {p === 'days' ? 'Dias' : p === 'weeks' ? 'Semanas' : 'Meses'}
             </button>
@@ -64,34 +77,34 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
       </div>
 
       {/* Chart */}
-      <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-5">
-        <div className="h-[220px]">
+      <div className="p-5" style={cardStyle}>
+        <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="gradFeito" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5ba8d4" stopOpacity={0.4} />
-                  <stop offset="50%" stopColor="#5ba8d4" stopOpacity={0.15} />
-                  <stop offset="100%" stopColor="#5ba8d4" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="hsl(201 55% 59%)" stopOpacity={0.35} />
+                  <stop offset="50%" stopColor="hsl(201 55% 59%)" stopOpacity={0.1} />
+                  <stop offset="100%" stopColor="hsl(201 55% 59%)" stopOpacity={0.01} />
                 </linearGradient>
               </defs>
               <XAxis
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10 }}
+                tick={{ fill: 'hsl(210 20% 35%)', fontSize: 10 }}
                 interval="preserveStartEnd"
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'rgba(255,255,255,0.15)', fontSize: 10 }}
+                tick={{ fill: 'hsl(210 20% 30%)', fontSize: 10 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#0c1420',
-                  border: '1px solid rgba(91,168,212,0.2)',
-                  borderRadius: '12px',
+                  backgroundColor: 'hsl(215 30% 12%)',
+                  border: '1px solid hsl(210 40% 18%)',
+                  borderRadius: '10px',
                   color: '#fff',
                   fontSize: 12,
                 }}
@@ -99,8 +112,8 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
               <Area
                 type="monotone"
                 dataKey="meta"
-                stroke="#e8a838"
-                strokeWidth={2}
+                stroke="hsl(40 75% 55%)"
+                strokeWidth={1.5}
                 strokeDasharray="6 4"
                 fill="transparent"
                 dot={false}
@@ -108,7 +121,7 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
               <Area
                 type="monotone"
                 dataKey="feito"
-                stroke="#5ba8d4"
+                stroke="hsl(201 55% 59%)"
                 strokeWidth={2}
                 fill="url(#gradFeito)"
                 dot={false}
@@ -118,75 +131,71 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-6 mt-4 pt-3 border-t border-white/[0.04]">
+        <div className="flex items-center gap-6 mt-4 pt-3" style={{ borderTop: '1px solid hsl(210 40% 14%)' }}>
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[#5ba8d4]" />
-            <span className="text-[11px] text-white/40">Produção</span>
+            <div className="h-2 w-2 rounded-full" style={{ background: 'hsl(201 55% 59%)' }} />
+            <span className="text-[11px]" style={{ color: 'hsl(210 20% 40%)' }}>Produção</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-0.5 w-4 border-t-2 border-dashed border-[#e8a838]" />
-            <span className="text-[11px] text-white/40">Meta</span>
+            <div className="h-0.5 w-4" style={{ borderTop: '2px dashed hsl(40 75% 55%)' }} />
+            <span className="text-[11px]" style={{ color: 'hsl(210 20% 40%)' }}>Meta</span>
           </div>
         </div>
       </div>
 
       {/* Progress bars */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Weekly */}
-        <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-5">
+        <div className="p-5" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-white">Meta Semanal</span>
-            <span className="text-xs text-[#5ba8d4]">{docStats.week}/{weekGoal}</span>
+            <span className="text-xs" style={{ color: 'hsl(201 55% 59%)' }}>{docStats.week}/{weekGoal}</span>
           </div>
-          <div className="h-2.5 bg-white/[0.05] rounded-full overflow-hidden">
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'hsl(210 30% 14%)' }}>
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
                 width: `${weekProgress}%`,
-                background: 'linear-gradient(90deg, #5ba8d4, #7bc4f0)',
+                background: 'linear-gradient(90deg, hsl(201 55% 59%), hsl(201 65% 70%))',
               }}
             />
           </div>
-          <p className="text-[10px] text-white/25 mt-2">
+          <p className="text-[10px] mt-2" style={{ color: 'hsl(210 20% 30%)' }}>
             {weekProgress >= 100 ? '✅ Meta atingida!' : `Faltam ${weekGoal - docStats.week} para completar`}
           </p>
         </div>
 
-        {/* Monthly */}
-        <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-5">
+        <div className="p-5" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-white">Meta Mensal</span>
-            <span className="text-xs text-[#e8a838]">{docStats.month}/{monthGoal}</span>
+            <span className="text-xs" style={{ color: 'hsl(40 75% 55%)' }}>{docStats.month}/{monthGoal}</span>
           </div>
-          <div className="h-2.5 bg-white/[0.05] rounded-full overflow-hidden">
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'hsl(210 30% 14%)' }}>
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
                 width: `${monthProgress}%`,
-                background: 'linear-gradient(90deg, #e8a838, #f0d078)',
+                background: 'linear-gradient(90deg, hsl(40 75% 55%), hsl(45 80% 65%))',
               }}
             />
           </div>
-          <p className="text-[10px] text-white/25 mt-2">
+          <p className="text-[10px] mt-2" style={{ color: 'hsl(210 20% 30%)' }}>
             {monthProgress >= 100 ? '✅ Meta atingida!' : `Faltam ${monthGoal - docStats.month} para completar`}
           </p>
         </div>
       </div>
 
-      {/* Daily stats row */}
+      {/* Daily stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-4 text-center">
-          <p className="text-2xl font-bold text-[#5ba8d4]">{docStats.today}</p>
-          <p className="text-[10px] text-white/30 mt-1">Hoje</p>
-        </div>
-        <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-4 text-center">
-          <p className="text-2xl font-bold text-white">{docStats.week}</p>
-          <p className="text-[10px] text-white/30 mt-1">Esta semana</p>
-        </div>
-        <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-4 text-center">
-          <p className="text-2xl font-bold text-[#e8a838]">{docStats.month}</p>
-          <p className="text-[10px] text-white/30 mt-1">Este mês</p>
-        </div>
+        {[
+          { value: docStats.today, label: 'Hoje', color: 'hsl(201 55% 59%)' },
+          { value: docStats.week, label: 'Esta semana', color: 'hsl(210 20% 80%)' },
+          { value: docStats.month, label: 'Este mês', color: 'hsl(40 75% 55%)' },
+        ].map((stat) => (
+          <div key={stat.label} className="p-4 text-center" style={cardStyle}>
+            <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-[10px] mt-1" style={{ color: 'hsl(210 20% 35%)' }}>{stat.label}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

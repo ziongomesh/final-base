@@ -41,30 +41,43 @@ export default function LastRecords({ adminId }: { adminId: number }) {
     fetchRecords();
   }, [adminId]);
 
+  const cardStyle = {
+    background: 'hsl(215 30% 10%)',
+    border: '1px solid hsl(210 40% 16%)',
+    borderRadius: '16px',
+  };
+
   return (
-    <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-5">
+    <div className="p-5" style={cardStyle}>
       <div className="flex items-center gap-2 mb-4">
-        <Clock className="h-4 w-4 text-[#5ba8d4]" />
+        <Clock className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
         <h3 className="text-sm font-semibold text-white">Últimos Registros</h3>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-xs text-white/25 text-center py-6">Nenhum registro encontrado</p>
+        <p className="text-xs text-center py-6" style={{ color: 'hsl(210 20% 30%)' }}>Nenhum registro encontrado</p>
       ) : (
         <div className="space-y-2">
           {items.map((r) => (
             <div
               key={`${r.tipo}-${r.id}`}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-[#5ba8d4]/15 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors"
+              style={{
+                background: 'hsl(215 25% 12%)',
+                border: '1px solid hsl(210 40% 15%)',
+              }}
             >
-              <div className="h-8 w-8 rounded-lg bg-[#5ba8d4]/10 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-3.5 w-3.5 text-[#5ba8d4]" />
+              <div
+                className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: 'hsl(201 55% 59% / 0.08)' }}
+              >
+                <FileText className="h-3.5 w-3.5" style={{ color: 'hsl(201 55% 59%)' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-white truncate">{r.nome}</p>
-                <p className="text-[10px] text-white/30">{r.tipo} • {r.cpf}</p>
+                <p className="text-[10px]" style={{ color: 'hsl(210 20% 35%)' }}>{r.tipo} • {r.cpf}</p>
               </div>
-              <span className="text-[10px] text-white/25 flex-shrink-0">{timeAgo(r.created_at)}</span>
+              <span className="text-[10px] flex-shrink-0" style={{ color: 'hsl(210 20% 30%)' }}>{timeAgo(r.created_at)}</span>
             </div>
           ))}
         </div>
