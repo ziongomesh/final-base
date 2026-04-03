@@ -381,16 +381,13 @@ export default function Recarregar() {
 
         {/* Credit Packages */}
         <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <Tag className="h-5 w-5 text-primary" />
+          <CardHeader className="p-3 sm:p-4">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Tag className="h-4 w-4 text-primary" />
               Pacotes de Créditos
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Selecione um pacote para recarregar
-            </CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-6">
+          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-4">
             {/* Package Cards Grid */}
             {/* Section 1: Pacotes Populares */}
             <div>
