@@ -633,7 +633,7 @@ export default function Recarregar() {
                 </div>
               </div>
               <Button 
-                className="w-full h-10 text-sm bg-white/20 hover:bg-white/30 text-white" 
+                className="w-full h-8 text-xs bg-white/20 hover:bg-white/30 text-white" 
                 onClick={handleRecharge} 
                 disabled={isProcessing}
               >
