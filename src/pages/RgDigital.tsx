@@ -739,14 +739,13 @@ export default function RgDigital() {
                   </Button>
                 )}
                 <Button variant="outline" className="w-full" onClick={() => {
-                  const expirationDate = (() => { const d = new Date(); d.setDate(d.getDate() + 45); return d.toLocaleDateString('pt-BR'); })();
-                  let text = `RG Digital ✅\nCPF: ${formatCPF(rgInfo.cpf)}\nSenha: ${rgInfo.senha}\nValidade: 45 dias`;
-                  if (downloadLinks.govbr_iphone) text += `\nApp iPhone: ${downloadLinks.govbr_iphone}`;
-                  if (downloadLinks.govbr_apk) text += `\nApp Android: ${downloadLinks.govbr_apk}`;
+                  let text = `RG Digital ✅\n\n👤 CPF: ${formatCPF(rgInfo.cpf)}\n🔑 Senha: ${rgInfo.senha}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+                  if (downloadLinks.govbr_apk) text += `\n\nAPP ANDROID (APK)\n${downloadLinks.govbr_apk}`;
+                  if (downloadLinks.govbr_iphone) text += `\n\nLINK WEB PARA IPHONE\n${downloadLinks.govbr_iphone}`;
                   navigator.clipboard.writeText(text);
                   toast.success('Dados copiados!');
                 }}>
-                  <Copy className="h-4 w-4 mr-2" /> Copiar Dados
+                  <Copy className="h-4 w-4 mr-2" /> Copiar Dados do Usuário
                 </Button>
                 <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
                 <Button className="w-full" onClick={() => { setShowSuccess(false); form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); }}>
