@@ -113,6 +113,7 @@ function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
           onChange={(e) => onChange(e.target.files?.[0] || null)}
         />
       </label>
+      {error && <p className="text-xs text-destructive">Campo obrigatório</p>}
     </div>
   );
 }
