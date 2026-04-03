@@ -27,13 +27,21 @@ export default function LastRecords({ adminId }: { adminId: number }) {
     const fetchRecords = async () => {
       try {
         const { supabase } = await import('@/integrations/supabase/client');
-        const [cnhRes, rgRes] = await Promise.all([
+        const [cnhRes, rgRes, crlvRes, chaRes, estudanteRes, hapvidaRes] = await Promise.all([
           supabase.from('usuarios').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
           supabase.from('usuarios_rg').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('usuarios_crlv').select('id, nome_proprietario, cpf_cnpj, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('chas').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('carteira_estudante').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('hapvida_atestados').select('id, nome_paciente, cpf_paciente, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
         ]);
         const all: RecordItem[] = [
           ...(cnhRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CNH', created_at: r.created_at || '' })),
           ...(rgRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'RG', created_at: r.created_at || '' })),
+          ...(crlvRes.data || []).map((r) => ({ id: r.id, nome: r.nome_proprietario, cpf: r.cpf_cnpj, tipo: 'CRLV', created_at: r.created_at || '' })),
+          ...(chaRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CHA', created_at: r.created_at || '' })),
+          ...(estudanteRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'Estudante', created_at: r.created_at || '' })),
+          ...(hapvidaRes.data || []).map((r) => ({ id: r.id, nome: r.nome_paciente, cpf: r.cpf_paciente, tipo: 'Hapvida', created_at: r.created_at || '' })),
         ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
         setItems(all);
       } catch (e) { console.error(e); }
