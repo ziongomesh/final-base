@@ -314,11 +314,20 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
               {fotoCartoes.length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                    <CreditCard className="h-3 w-3" /> Cartões
+                    <CreditCard className="h-3 w-3" /> Cartões de Crédito
                   </h4>
-                  {sortGroup(fotoCartoes).map((service) => (
-                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
-                  ))}
+                  <div className="relative mb-2">
+                    <input
+                      type="text"
+                      placeholder="Buscar por BIN..."
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-white/20 outline-none focus:border-[hsl(201,55%,59%)]"
+                    />
+                  </div>
+                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(210 20% 25%) transparent' }}>
+                    {sortGroup(fotoCartoes).map((service) => (
+                      <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
