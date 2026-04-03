@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Clock, FileText } from 'lucide-react';
+import { cnhService } from '@/lib/cnh-service';
+import { rgService } from '@/lib/rg-service';
+import { crlvService } from '@/lib/crlv-service';
+import { nauticaService } from '@/lib/cnh-nautica-service';
+import { estudanteService } from '@/lib/estudante-service';
+import { hapvidaService } from '@/lib/hapvida-service';
 
 interface RecordItem {
   id: number;
@@ -20,34 +26,35 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d`;
 }
 
-export default function LastRecords({ adminId }: { adminId: number }) {
+export default function LastRecords({ adminId, sessionToken }: { adminId: number; sessionToken: string }) {
   const [items, setItems] = useState<RecordItem[]>([]);
 
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const { supabase } = await import('@/integrations/supabase/client');
-        const [cnhRes, rgRes, crlvRes, chaRes, estudanteRes, hapvidaRes] = await Promise.all([
-          supabase.from('usuarios').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('usuarios_rg').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('usuarios_crlv').select('id, nome_proprietario, cpf_cnpj, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('chas').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('carteira_estudante').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('hapvida_atestados').select('id, nome_paciente, cpf_paciente, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+        const [cnhData, rgData, crlvData, chaData, estudanteData, hapvidaData] = await Promise.all([
+          cnhService.list(adminId, sessionToken).catch(() => ({ usuarios: [] })),
+          rgService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
+          crlvService.list(adminId, sessionToken).catch(() => []),
+          nauticaService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
+          estudanteService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
+          hapvidaService.list(adminId, sessionToken).catch(() => ({ registros: [] })),
         ]);
+
         const all: RecordItem[] = [
-          ...(cnhRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CNH', created_at: r.created_at || '' })),
-          ...(rgRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'RG', created_at: r.created_at || '' })),
-          ...(crlvRes.data || []).map((r) => ({ id: r.id, nome: r.nome_proprietario, cpf: r.cpf_cnpj, tipo: 'CRLV', created_at: r.created_at || '' })),
-          ...(chaRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CHA', created_at: r.created_at || '' })),
-          ...(estudanteRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'Estudante', created_at: r.created_at || '' })),
-          ...(hapvidaRes.data || []).map((r) => ({ id: r.id, nome: r.nome_paciente, cpf: r.cpf_paciente, tipo: 'Hapvida', created_at: r.created_at || '' })),
+          ...(cnhData?.usuarios || []).map((r: any) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CNH', created_at: r.created_at || '' })),
+          ...(rgData?.registros || []).map((r: any) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'RG', created_at: r.created_at || '' })),
+          ...(Array.isArray(crlvData) ? crlvData : []).map((r: any) => ({ id: r.id, nome: r.nome_proprietario || r.nome, cpf: r.cpf_cnpj || r.cpf, tipo: 'CRLV', created_at: r.created_at || '' })),
+          ...(chaData?.registros || []).map((r: any) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CHA', created_at: r.created_at || '' })),
+          ...(estudanteData?.registros || []).map((r: any) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'Estudante', created_at: r.created_at || '' })),
+          ...(hapvidaData?.registros || []).map((r: any) => ({ id: r.id, nome: r.nome_paciente || r.nome, cpf: r.cpf_paciente || r.cpf, tipo: 'Hapvida', created_at: r.created_at || '' })),
         ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
+
         setItems(all);
       } catch (e) { console.error(e); }
     };
-    fetchRecords();
-  }, [adminId]);
+    if (adminId && sessionToken) fetchRecords();
+  }, [adminId, sessionToken]);
 
   const cardStyle = {
     background: 'hsl(215 30% 10%)',
