@@ -709,18 +709,6 @@ export default function CnhDigital() {
           </div>
         </div>
 
-        {/* Progress indicator */}
-        <div className="flex items-center gap-2 sm:gap-4 bg-card rounded-full px-4 sm:px-6 py-2 sm:py-3 border w-fit mx-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-primary">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm">1</div>
-            <span className="text-xs sm:text-sm font-medium">Preencher</span>
-          </div>
-          <div className="w-6 sm:w-8 h-0.5 bg-border" />
-          <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-muted text-sm">2</div>
-            <span className="text-xs sm:text-sm font-medium">Visualizar</span>
-          </div>
-        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleCreateAccess, handleFormInvalid)} className="space-y-6">
