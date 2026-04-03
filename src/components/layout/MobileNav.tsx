@@ -1,11 +1,12 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { cn } from '@/lib/utils';
 import { 
   Home, LogOut, Menu, FolderOpen, Wrench, Download, Settings, Construction,
   History, Users, Send, CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Logo } from '@/components/Logo';
