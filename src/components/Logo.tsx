@@ -10,7 +10,7 @@ export function Logo({ className }: LogoProps) {
     <img
       src={logoImage}
       alt="Data Sistemas"
-      className={cn("dark:invert", className)}
+      className={cn("brightness-0 invert", className)}
     />
   );
 }
