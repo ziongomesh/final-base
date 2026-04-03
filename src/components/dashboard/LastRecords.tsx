@@ -3,7 +3,7 @@ import { Clock, FileText } from 'lucide-react';
 import { cnhService } from '@/lib/cnh-service';
 import { rgService } from '@/lib/rg-service';
 import { crlvService } from '@/lib/crlv-service';
-import { cnhNauticaService } from '@/lib/cnh-nautica-service';
+import { nauticaService } from '@/lib/cnh-nautica-service';
 import { estudanteService } from '@/lib/estudante-service';
 import { hapvidaService } from '@/lib/hapvida-service';
 
