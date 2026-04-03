@@ -549,17 +549,17 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className={`text-lg font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
-                              {isPremium && <Gem className="h-3.5 w-3.5 inline mr-1 text-amber-500" />}
+                            <div className={`text-base font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
+                              {isPremium && <Gem className="h-3 w-3 inline mr-0.5 text-amber-500" />}
                               {pkg.credits}
                             </div>
-                            <div className="text-xs text-muted-foreground">créditos</div>
-                            <div className="mt-1">
-                              <Badge variant={isPremium ? "default" : "secondary"} className={`text-[10px] ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0' : ''}`}>
+                            <div className="text-[10px] text-muted-foreground">créditos</div>
+                            <div className="mt-0.5">
+                              <Badge variant={isPremium ? "default" : "secondary"} className={`text-[9px] ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0' : ''}`}>
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
                             </div>
-                            <div className={`mt-1 text-sm font-semibold ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                            <div className={`mt-0.5 text-xs font-semibold ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
                               R$ {pkg.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </div>
                           </button>
