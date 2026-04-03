@@ -2,32 +2,28 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { 
   Home, LogOut, FolderOpen, Wrench, Download, Settings,
-  History, Users, Send, CreditCard, Phone, Radio, Box, PhoneOff
+  History, Users, Send, CreditCard, Bell
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Logo } from '@/components/Logo';
 
 interface NavItem {
   label: string;
   icon: React.ElementType;
   href: string;
   roles: Array<'dono' | 'sub' | 'master' | 'revendedor'>;
-  color?: string;
-  badge?: number;
+  badge?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { label: 'Início', icon: Home, href: '/dashboard', roles: ['dono', 'sub', 'master', 'revendedor'] },
-  { label: 'Serviços', icon: FolderOpen, href: '/servicos', roles: ['dono', 'sub', 'master', 'revendedor'], color: 'text-purple-400' },
+  { label: 'Início', icon: Home, href: '/dashboard', roles: ['dono', 'sub', 'master', 'revendedor'], badge: true },
+  { label: 'Serviços', icon: FolderOpen, href: '/servicos', roles: ['dono', 'sub', 'master', 'revendedor'] },
   { label: 'Histórico', icon: History, href: '/historico-servicos', roles: ['dono', 'sub', 'master', 'revendedor'] },
-  { label: 'Revendedores', icon: Users, href: '/revendedores', roles: ['master', 'sub'], badge: 2 },
+  { label: 'Revendedores', icon: Users, href: '/revendedores', roles: ['master', 'sub'] },
   { label: 'Transferir', icon: Send, href: '/transferir', roles: ['master', 'sub'] },
   { label: 'Recarregar', icon: CreditCard, href: '/recarregar', roles: ['master', 'sub', 'revendedor'] },
   { label: 'Ferramentas', icon: Wrench, href: '/ferramentas', roles: ['dono', 'sub', 'master', 'revendedor'] },
   { label: 'Downloads', icon: Download, href: '/downloads', roles: ['dono', 'sub', 'master', 'revendedor'] },
-];
-
-const bottomItems: NavItem[] = [
   { label: 'Configurações', icon: Settings, href: '/configuracoes', roles: ['dono', 'sub', 'master'] },
 ];
 
@@ -39,89 +35,63 @@ export function Sidebar() {
     role && item.roles.includes(role)
   );
 
-  const filteredBottom = bottomItems.filter(item =>
-    role && item.roles.includes(role)
-  );
-
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[60px] flex flex-col items-center py-4 z-50"
+    <aside
+      className="fixed left-0 top-0 h-screen w-[220px] flex flex-col z-50"
       style={{
-        background: 'linear-gradient(180deg, #0d0d1a 0%, #1a1028 60%, #1a1028 100%)',
-        borderRight: '1px solid rgba(255,255,255,0.04)',
+        background: '#0c1420',
+        borderRight: '1px solid rgba(91,168,212,0.08)',
       }}
     >
-      {/* Nav icons */}
-      <nav className="flex-1 flex flex-col items-center gap-0.5 mt-4">
+      {/* Logo */}
+      <div className="px-6 pt-6 pb-4">
+        <Logo className="h-8 w-auto" />
+      </div>
+
+      {/* Section label */}
+      <div className="px-6 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="h-px flex-1 bg-[#5ba8d4]/20" />
+          <span className="text-[10px] font-semibold tracking-[0.15em] text-[#5ba8d4] uppercase">
+            Área do Cliente
+          </span>
+        </div>
+      </div>
+
+      {/* Nav items */}
+      <nav className="flex-1 flex flex-col gap-0.5 px-3 overflow-y-auto">
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.href;
           return (
-            <Tooltip key={item.href} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link to={item.href} className="relative">
-                  <div
-                    className={cn(
-                      'w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150 relative',
-                      isActive
-                        ? 'bg-[#5ba8d4]/15 text-[#5ba8d4]'
-                        : 'text-white/25 hover:text-white/50 hover:bg-white/[0.04]'
-                    )}
-                  >
-                    <item.icon className={cn("h-[17px] w-[17px]", item.color && !isActive ? item.color : '')} />
-                    {item.badge && (
-                      <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] rounded-full bg-pink-500 text-[9px] font-bold text-white flex items-center justify-center px-1">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs bg-[#1a1a2e] border-white/10 text-white">
-                {item.label}
-              </TooltipContent>
-            </Tooltip>
+            <Link key={item.href} to={item.href}>
+              <div
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
+                  isActive
+                    ? 'bg-[#5ba8d4]/10 text-[#5ba8d4] font-medium'
+                    : 'text-white/50 hover:text-white/80 hover:bg-white/[0.03]'
+                )}
+              >
+                <item.icon className="h-4 w-4 flex-shrink-0" />
+                <span className="flex-1">{item.label}</span>
+                {isActive && item.badge && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-[#5ba8d4]" />
+                )}
+              </div>
+            </Link>
           );
         })}
       </nav>
 
-      {/* Bottom: Settings + Logout */}
-      <div className="flex flex-col items-center gap-1 mb-2">
-        {filteredBottom.map((item) => {
-          const isActive = location.pathname === item.href;
-          return (
-            <Tooltip key={item.href} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link to={item.href}>
-                  <div
-                    className={cn(
-                      'w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150',
-                      isActive
-                        ? 'bg-[#5ba8d4]/15 text-[#5ba8d4]'
-                        : 'text-white/25 hover:text-white/50 hover:bg-white/[0.04]'
-                    )}
-                  >
-                    <item.icon className="h-[17px] w-[17px]" />
-                  </div>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs bg-[#1a1a2e] border-white/10 text-white">
-                {item.label}
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <button
-              onClick={signOut}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-            >
-              <LogOut className="h-[17px] w-[17px]" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="text-xs bg-[#1a1a2e] border-white/10 text-white">
-            Sair
-          </TooltipContent>
-        </Tooltip>
+      {/* Bottom: Logout */}
+      <div className="px-3 pb-4 pt-2">
+        <button
+          onClick={signOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/30 hover:text-red-400 hover:bg-red-500/5 transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Sair</span>
+        </button>
       </div>
     </aside>
   );

@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
+import { Clock, FileText } from 'lucide-react';
 
 interface RecordItem {
   id: number;
   nome: string;
+  cpf: string;
   tipo: string;
   created_at: string;
 }
 
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
+function timeAgo(dateStr: string) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'agora';
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
 }
 
 export default function LastRecords({ adminId }: { adminId: number }) {
@@ -19,58 +28,47 @@ export default function LastRecords({ adminId }: { adminId: number }) {
       try {
         const { supabase } = await import('@/integrations/supabase/client');
         const [cnhRes, rgRes] = await Promise.all([
-          supabase.from('usuarios').select('id, nome, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
-          supabase.from('usuarios_rg').select('id, nome, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('usuarios').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
+          supabase.from('usuarios_rg').select('id, nome, cpf, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(3),
         ]);
         const all: RecordItem[] = [
-          ...(cnhRes.data || []).map((r) => ({ id: r.id, nome: r.nome, tipo: 'CNH Digital', created_at: r.created_at || '' })),
-          ...(rgRes.data || []).map((r) => ({ id: r.id, nome: r.nome, tipo: 'CIN Digital', created_at: r.created_at || '' })),
-        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 4);
+          ...(cnhRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'CNH', created_at: r.created_at || '' })),
+          ...(rgRes.data || []).map((r) => ({ id: r.id, nome: r.nome, cpf: r.cpf, tipo: 'RG', created_at: r.created_at || '' })),
+        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
         setItems(all);
       } catch (e) { console.error(e); }
     };
     fetchRecords();
   }, [adminId]);
 
-  const getTimeAgo = (date: string) => {
-    if (!date) return '';
-    const diff = Date.now() - new Date(date).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins}m`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h`;
-    return `${Math.floor(hours / 24)}d`;
-  };
-
-  const colors = ['bg-orange-500', 'bg-purple-500', 'bg-[#5ba8d4]', 'bg-amber-500'];
-  const badgeColors = ['bg-purple-500/80', 'bg-green-500/80', 'bg-[#5ba8d4]/80', 'bg-amber-500/80'];
-
   return (
-    <div>
-      <h3 className="text-base font-bold text-white mb-4">Último Registro</h3>
-      <div className="space-y-2">
-        {items.length === 0 ? (
-          <p className="text-xs text-white/25 py-6 text-center">Nenhum registro</p>
-        ) : (
-          items.map((item, i) => (
+    <div className="rounded-2xl border border-[#5ba8d4]/10 bg-[#0c1420] p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Clock className="h-4 w-4 text-[#5ba8d4]" />
+        <h3 className="text-sm font-semibold text-white">Últimos Registros</h3>
+      </div>
+
+      {items.length === 0 ? (
+        <p className="text-xs text-white/25 text-center py-6">Nenhum registro encontrado</p>
+      ) : (
+        <div className="space-y-2">
+          {items.map((r) => (
             <div
-              key={`${item.tipo}-${item.id}`}
-              className="flex items-center gap-3 bg-[#141420]/60 rounded-xl px-3 py-2.5 border border-white/[0.04] hover:border-white/[0.08] transition-colors"
+              key={`${r.tipo}-${r.id}`}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-[#5ba8d4]/15 transition-colors"
             >
-              <div className={cn("h-9 w-9 rounded-full flex items-center justify-center shrink-0", colors[i % colors.length])}>
-                <span className="text-xs font-bold text-white">{item.nome?.[0] || '?'}</span>
+              <div className="h-8 w-8 rounded-lg bg-[#5ba8d4]/10 flex items-center justify-center flex-shrink-0">
+                <FileText className="h-3.5 w-3.5 text-[#5ba8d4]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{item.nome}</p>
-                <p className="text-[10px] text-white/30">{item.tipo}</p>
+                <p className="text-xs font-medium text-white truncate">{r.nome}</p>
+                <p className="text-[10px] text-white/30">{r.tipo} • {r.cpf}</p>
               </div>
-              <span className={cn("text-[10px] font-semibold text-white px-2 py-0.5 rounded-full", badgeColors[i % badgeColors.length])}>
-                {getTimeAgo(item.created_at)}
-              </span>
+              <span className="text-[10px] text-white/25 flex-shrink-0">{timeAgo(r.created_at)}</span>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

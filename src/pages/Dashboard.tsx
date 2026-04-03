@@ -11,7 +11,6 @@ import AlertNotification from '@/components/dashboard/AlertNotification';
 import NewModuleNotification from '@/components/dashboard/NewModuleNotification';
 import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
 import StatisticsChart from '@/components/dashboard/StatisticsChart';
-import TopServices from '@/components/dashboard/TopServices';
 import LastRecords from '@/components/dashboard/LastRecords';
 
 export default function Dashboard() {
@@ -58,7 +57,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0f16]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5ba8d4]" />
       </div>
     );
@@ -81,27 +80,22 @@ export default function Dashboard() {
       <AlertNotification adminId={admin.id} />
       <NewModuleNotification adminId={admin.id} />
 
-      <div className="animate-fade-in max-w-[1400px]">
+      <div className="animate-fade-in max-w-[1100px] mx-auto">
         {/* Top Bar */}
         <LauncherTopBar />
 
-        {/* Main Grid: Left (Statistics) | Right (Services + Records) */}
-        <div className="grid lg:grid-cols-[1fr_280px] gap-5 mt-5">
-          {/* Left Column */}
-          <div className="space-y-5">
-            <StatisticsChart adminId={admin.id} docStats={myDocStats} />
-          </div>
+        {/* Main content */}
+        <div className="mt-6 space-y-6">
+          {/* Statistics with chart + progress bars */}
+          <StatisticsChart adminId={admin.id} docStats={myDocStats} />
 
-          {/* Right Column - like the reference sidebar panel */}
-          <div className="space-y-6">
-            <TopServices adminId={admin.id} />
-            <LastRecords adminId={admin.id} />
-          </div>
+          {/* Last Records */}
+          <LastRecords adminId={admin.id} />
         </div>
 
         {/* Team (Master) */}
         {role === 'master' && (
-          <div className="mt-5">
+          <div className="mt-6">
             <MasterTeamTabs adminId={admin.id} />
           </div>
         )}
