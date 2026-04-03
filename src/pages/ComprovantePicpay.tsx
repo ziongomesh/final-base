@@ -18,6 +18,7 @@ export default function ComprovantePicpay() {
   const [formData, setFormData] = useState<PicpayFormData>({
     paraNome: '',
     deNome: '',
+    valor: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
@@ -80,6 +81,17 @@ export default function ComprovantePicpay() {
                     value={formData.deNome}
                     onChange={(e) => updateField('deNome', e.target.value.toUpperCase())}
                     className="uppercase"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Valor (R$)</Label>
+                  <Input
+                    placeholder="2.405,00"
+                    value={formData.valor}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^0-9.,]/g, '');
+                      updateField('valor', raw);
+                    }}
                   />
                 </div>
               </CardContent>
