@@ -219,7 +219,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
         </div>
       </div>
       {showExample && service.exampleImage && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-white/10 bg-[#0d1520] shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <img src={service.exampleImage} alt={`Exemplo ${service.name}`} className="w-full object-contain max-h-[300px]" draggable={false} onContextMenu={(e) => e.preventDefault()} />
         </div>
       )}
