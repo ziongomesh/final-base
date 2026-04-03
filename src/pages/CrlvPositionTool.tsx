@@ -449,7 +449,7 @@ export default function CrlvPositionTool() {
     }
   };
 
-  const { register, watch, setValue } = useForm<Record<string, string>>({
+  const { register, watch, setValue, formState } = useForm<Record<string, string>>({
     defaultValues: {
       ...Object.fromEntries(FIELDS.map(f => [f.key, ''])),
       uf: 'SP',
