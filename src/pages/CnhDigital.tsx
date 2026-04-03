@@ -712,14 +712,6 @@ export default function CnhDigital() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleCreateAccess, handleFormInvalid)} className="space-y-6">
-            {/* CPF Header Card */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <IdCard className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
             {/* 3 Sections */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* SEÇÃO 1 - Dados Pessoais */}
