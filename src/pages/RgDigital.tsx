@@ -304,53 +304,10 @@ export default function RgDigital() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
-  const handleGeneratePreview = async (data: RgFormData) => {
+  const handleDirectSave = async (data: RgFormData) => {
     if (!fotoPerfil) { toast.error('Foto de perfil é obrigatória', { position: 'top-right' }); return; }
     if (!assinatura) { toast.error('Assinatura é obrigatória', { position: 'top-right' }); return; }
-    setPreviewData(data);
-    setPreviewLoading(true);
-    setPreviewImages({ frente: '', verso: '' });
-    setShowPreview(true);
-
-    // Generate canvases
-    setTimeout(async () => {
-      const rgData: RgData = {
-        nomeCompleto: data.nomeCompleto,
-        nomeSocial: data.nomeSocial,
-        cpf: data.cpf,
-        dataNascimento: data.dataNascimento,
-        naturalidade: data.naturalidade,
-        genero: data.genero,
-        nacionalidade: data.nacionalidade,
-        validade: data.validade,
-        uf: data.uf,
-        dataEmissao: data.dataEmissao,
-        local: data.local,
-        orgaoExpedidor: data.orgaoExpedidor,
-        pai: data.pai,
-        mae: data.mae,
-        foto: fotoPerfil!,
-        assinatura: assinatura!,
-      };
-      if (frenteCanvasRef.current) {
-        await generateRGFrente(frenteCanvasRef.current, rgData);
-        setPreviewImages(prev => ({ ...prev, frente: frenteCanvasRef.current!.toDataURL('image/png') }));
-      }
-      // Gerar QR code para o verso
-      const cleanCpf = data.cpf.replace(/\D/g, '');
-      const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-      const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
-      const qrPreviewUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
-      if (versoCanvasRef.current) {
-        await generateRGVerso(versoCanvasRef.current, rgData, qrPreviewUrl);
-        setPreviewImages(prev => ({ ...prev, verso: versoCanvasRef.current!.toDataURL('image/png') }));
-      }
-      setPreviewLoading(false);
-    }, 100);
-  };
-
-  const handleSave = async () => {
-    if (!previewData || !frenteCanvasRef.current || !versoCanvasRef.current) return;
+    if (!frenteCanvasRef.current || !versoCanvasRef.current) return;
     setIsSubmitting(true);
     try {
       const frenteBase64 = frenteCanvasRef.current.toDataURL('image/png');

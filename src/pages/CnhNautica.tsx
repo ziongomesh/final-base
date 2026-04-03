@@ -148,14 +148,12 @@ export default function CnhNautica() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
-  const handleGeneratePreview = (data: NauticaFormData) => {
+  const handleDirectSave = async (data: NauticaFormData) => {
     if (!fotoPerfil) {
       toast.error('Foto é obrigatória');
       return;
     }
     setPreviewData(data);
-    setShowPreview(true);
-  };
 
   const handleSave = async () => {
     if (!previewData || !fotoPerfil) return;
