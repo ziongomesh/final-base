@@ -145,7 +145,11 @@ export default function RgDigital() {
 
   const frenteCanvasRef = useRef<HTMLCanvasElement>(null);
   const versoCanvasRef = useRef<HTMLCanvasElement>(null);
+  const liveCanvasFrenteRef = useRef<HTMLCanvasElement>(null);
+  const liveCanvasVersoRef = useRef<HTMLCanvasElement>(null);
   const [previewImages, setPreviewImages] = useState<{ frente: string; verso: string }>({ frente: '', verso: '' });
+  const [livePreviewImages, setLivePreviewImages] = useState<{ frente: string; verso: string }>({ frente: '', verso: '' });
+  const liveDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<RgFormData>({
     resolver: zodResolver(rgSchema),
