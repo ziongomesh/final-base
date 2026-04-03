@@ -1150,15 +1150,15 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   // ===== REVENDEDOR DO ADMIN 3: RECARGA VIA PIX =====
   return (
     <DashboardLayout>
-      <div className="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="space-y-4 animate-fade-in max-w-4xl mx-auto">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Recarregar Créditos</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Escolha um pacote ou compre créditos avulsos via PIX</p>
+            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+            <p className="text-xs text-muted-foreground">Escolha um pacote ou compre créditos avulsos via PIX</p>
           </div>
-          <div className="text-left sm:text-right">
-            <p className="text-xs sm:text-sm text-muted-foreground">Saldo atual</p>
-            <p className="text-xl sm:text-2xl font-bold text-primary">{credits} créditos</p>
+          <div className="text-right">
+            <p className="text-[10px] text-muted-foreground">Saldo atual</p>
+            <p className="text-lg font-bold text-primary">{credits} créditos</p>
           </div>
         </div>
 
