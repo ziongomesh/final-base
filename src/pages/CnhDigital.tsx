@@ -1103,9 +1103,7 @@ export default function CnhDigital() {
                   )} />
 
                   <div className="space-y-1.5">
-                    <div className="flex items-center">
-                      <FormLabel className="text-xs">Observações</FormLabel>
-                      <WhereIsTooltip description="Restrições da CNH. Ex: EAR, A (Óculos), etc." />
+                    <FormLabel className="text-xs">Observações</FormLabel>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5">
                       {CNH_OBSERVACOES.map(obs => (
