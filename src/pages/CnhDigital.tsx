@@ -1189,19 +1189,122 @@ export default function CnhDigital() {
               </Card>
             </div>
 
-            {/* Submit - Gerar Preview */}
+            {/* Live Preview */}
+            {(previewFrenteUrl || previewMeioUrl || previewVersoUrl) && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {previewFrenteUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewFrenteUrl, 'CNH Frente')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
+                        <img src={previewFrenteUrl} alt="CNH Frente" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                    {previewMeioUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewMeioUrl, 'CNH Meio')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Meio</p>
+                        <img src={previewMeioUrl} alt="CNH Meio" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                    {previewVersoUrl && (
+                      <div className="cursor-pointer" onClick={() => openImageModal(previewVersoUrl, 'CNH Verso')}>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
+                        <img src={previewVersoUrl} alt="CNH Verso" className="w-full rounded-lg border pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Submit - Criar Acesso */}
             <div className="flex justify-end">
-              <Button type="submit" size="lg" disabled={isSubmitting} className="min-w-[200px]">
-                {isSubmitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Eye className="mr-2 h-4 w-4" />
-                )}
-                Gerar Preview da CNH
-              </Button>
+              {isDemo ? (
+                <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                  <Sparkles className="h-4 w-4" />
+                  <span className="text-sm font-medium">Modo demonstração — criação desabilitada</span>
+                </div>
+              ) : (
+                <Button type="submit" size="lg" disabled={isCreatingCnh} className="min-w-[250px]">
+                  {isCreatingCnh ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {creationStep}
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      Criar Acesso (1 crédito)
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </form>
         </Form>
+
+      {/* Hidden canvases */}
+      <canvas ref={canvasFrenteRef} className="hidden" />
+      <canvas ref={canvasMeioRef} className="hidden" />
+      <canvas ref={canvasVersoRef} className="hidden" />
+
+      {/* Dialog de confirmação */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowConfirmDialog(false)}>
+          <div className="bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-primary/10">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Deseja mesmo gerar o acesso?</h3>
+            </div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>• Você poderá mudar qualquer coisa futuramente.</p>
+              <p>• Este módulo tem validade de <strong className="text-foreground">45 dias</strong>.</p>
+              <p>• Será descontado <strong className="text-foreground">1 crédito</strong> da sua conta.</p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setShowConfirmDialog(false)}>
+                Cancelar
+              </Button>
+              <Button className="flex-1" onClick={() => { setShowConfirmDialog(false); handleSaveToDatabase(); }}>
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de imagem ampliada */}
+      {showImageModal && modalImageUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setShowImageModal(false)}>
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <Button variant="ghost" size="icon" className="absolute -top-12 right-0 text-white" onClick={() => setShowImageModal(false)}>
+              <X className="h-6 w-6" />
+            </Button>
+            <h3 className="text-white text-center mb-2 font-semibold">{modalImageTitle}</h3>
+            <img src={modalImageUrl} alt={modalImageTitle} className="w-full rounded-lg pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+          </div>
+        </div>
+      )}
+
+      {/* Modal de sucesso */}
+      {showSuccessModal && successData && (
+        <CnhSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          cpf={successData.cpf}
+          senha={successData.senha}
+          nome={successData.nome}
+          pdfUrl={successData.pdf}
+        />
+      )}
+
       <CpfDuplicateModal
         open={cpfCheck.showDuplicateModal}
         onClose={cpfCheck.dismissModal}
