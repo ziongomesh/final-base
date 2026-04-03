@@ -720,28 +720,6 @@ export default function CnhDigital() {
                     <IdCard className="h-5 w-5 text-primary" />
                   </div>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="cpf"
-                  render={({ field }) => (
-                    <FormItem className="max-w-sm">
-                      <FormLabel>CPF <span className="text-destructive">*</span></FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="000.000.000-00"
-                          maxLength={14}
-                          onChange={(e) => {
-                            const formatted = formatCPF(e.target.value);
-                            field.onChange(formatted);
-                            cpfCheck.checkCpf(formatted);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </CardContent>
             </Card>
 
@@ -761,6 +739,22 @@ export default function CnhDigital() {
                       <FormControl>
                         <Input {...field} placeholder="Ex: PEDRO DA SILVA GOMES"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  <FormField control={form.control} name="cpf" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CPF <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="000.000.000-00" maxLength={14}
+                          onChange={(e) => {
+                            const formatted = formatCPF(e.target.value);
+                            field.onChange(formatted);
+                            cpfCheck.checkCpf(formatted);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
