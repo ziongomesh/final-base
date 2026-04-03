@@ -463,7 +463,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
                               selectedPackage.credits === pkg.credits
                                 ? 'border-primary bg-primary/10'
                                 : 'border-muted hover:border-primary/50'
