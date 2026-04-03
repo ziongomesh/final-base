@@ -281,10 +281,10 @@ export default function CnhDigital() {
   // Auto estado extenso + cidade when UF changes
   useEffect(() => {
     const sub = form.watch((value, { name }) => {
-      if (name === 'ufNascimento' && value.ufNascimento) {
+      if (name === 'uf' && value.uf) {
         try {
-          form.setValue('estadoExtenso', getStateFullName(value.ufNascimento));
-          form.setValue('localEmissao', getStateCapital(value.ufNascimento));
+          form.setValue('estadoExtenso', getStateFullName(value.uf));
+          form.setValue('localEmissao', getStateCapital(value.uf));
         } catch (e) {
           console.error('Erro ao atualizar estado/cidade:', e);
         }
@@ -771,7 +771,7 @@ export default function CnhDigital() {
                         <FormMessage />
                       </FormItem>
                     )} />
-                    <FormField control={form.control} name="uf" render={({ field }) => (
+                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs">UF Nasc. <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
@@ -897,7 +897,7 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                  <FormField control={form.control} name="uf" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">UF de Emissão <span className="text-destructive">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || undefined}>
