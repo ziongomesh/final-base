@@ -395,7 +395,7 @@ export default function Recarregar() {
                 <Star className="h-3.5 w-3.5 text-primary fill-primary" />
                 <h3 className="font-semibold text-sm text-foreground">Populares</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <TooltipProvider>
                   {POPULAR_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
