@@ -76,11 +76,12 @@ function WhereIsTooltip({ description }: { description: string }) {
 }
 
 // File Upload component with gallery support
-function FileUploadField({ label, value, onChange, onOpenGallery }: {
+function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
   label: string;
   value: File | null;
   onChange: (file: File | null) => void;
   onOpenGallery?: () => void;
+  error?: boolean;
 }) {
   return (
     <div className="space-y-2">
@@ -92,7 +93,7 @@ function FileUploadField({ label, value, onChange, onOpenGallery }: {
           </Button>
         )}
       </div>
-      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
+      <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors ${error ? 'border-destructive bg-destructive/5' : 'border-border'}`}>
         {value ? (
           <div className="text-center px-2">
             <p className="text-sm text-primary font-medium truncate max-w-full">{value.name}</p>
