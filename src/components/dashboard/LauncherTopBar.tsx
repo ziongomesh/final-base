@@ -129,21 +129,12 @@ export default function LauncherTopBar() {
             <p className="text-sm font-medium text-white leading-tight">{firstName}</p>
             <p className="text-[10px] capitalize" style={{ color: 'hsl(210 20% 40%)' }}>{rank}</p>
           </div>
-          {admin?.profile_photo ? (
-            <img
-              src={admin.profile_photo}
-              alt={firstName}
-              className="h-9 w-9 rounded-full object-cover"
-              style={{ border: '2px solid hsl(201 55% 59% / 0.3)' }}
-            />
-          ) : (
-            <div
-              className="h-9 w-9 rounded-full flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, hsl(201 55% 59%), hsl(210 60% 45%))',
-                border: '2px solid hsl(201 55% 59% / 0.2)',
-              }}
-            >
+          <img
+            src={admin?.profile_photo || defaultAvatar}
+            alt={firstName}
+            className="h-9 w-9 rounded-full object-cover"
+            style={{ border: '2px solid hsl(201 55% 59% / 0.3)' }}
+          />
               <span className="text-xs font-bold text-white">{firstName[0]}</span>
             </div>
           )}
