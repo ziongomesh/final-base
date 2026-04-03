@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Clock, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Clock, FileText, ChevronRight } from 'lucide-react';
 import { cnhService } from '@/lib/cnh-service';
 import { rgService } from '@/lib/rg-service';
 import { crlvService } from '@/lib/crlv-service';
@@ -15,6 +16,14 @@ interface RecordItem {
   created_at: string;
 }
 
+function formatDate(dateStr: string) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  } catch { return ''; }
+}
+
 function timeAgo(dateStr: string) {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -28,6 +37,7 @@ function timeAgo(dateStr: string) {
 
 export default function LastRecords({ adminId, sessionToken }: { adminId: number; sessionToken: string }) {
   const [items, setItems] = useState<RecordItem[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -64,9 +74,18 @@ export default function LastRecords({ adminId, sessionToken }: { adminId: number
 
   return (
     <div className="p-5" style={cardStyle}>
-      <div className="flex items-center gap-2 mb-4">
-        <Clock className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
-        <h3 className="text-sm font-semibold text-white">Últimos Registros</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
+          <h3 className="text-sm font-semibold text-white">Últimos Registros</h3>
+        </div>
+        <button
+          onClick={() => navigate('/historico-servicos')}
+          className="text-[10px] flex items-center gap-1 hover:opacity-80 transition-opacity"
+          style={{ color: 'hsl(201 55% 59%)' }}
+        >
+          Ver todos <ChevronRight className="h-3 w-3" />
+        </button>
       </div>
 
       {items.length === 0 ? (
@@ -76,7 +95,8 @@ export default function LastRecords({ adminId, sessionToken }: { adminId: number
           {items.map((r) => (
             <div
               key={`${r.tipo}-${r.id}`}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors"
+              onClick={() => navigate('/historico-servicos')}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer hover:brightness-110"
               style={{
                 background: 'hsl(215 25% 12%)',
                 border: '1px solid hsl(210 40% 15%)',
@@ -90,7 +110,9 @@ export default function LastRecords({ adminId, sessionToken }: { adminId: number
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-white truncate">{r.nome}</p>
-                <p className="text-[10px]" style={{ color: 'hsl(210 20% 35%)' }}>{r.tipo} • {r.cpf}</p>
+                <p className="text-[10px]" style={{ color: 'hsl(210 20% 35%)' }}>
+                  {r.tipo} • {r.cpf} • {formatDate(r.created_at)}
+                </p>
               </div>
               <span className="text-[10px] flex-shrink-0" style={{ color: 'hsl(210 20% 30%)' }}>{timeAgo(r.created_at)}</span>
             </div>
