@@ -451,7 +451,7 @@ export default function RgDigital() {
 
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview, handleFormInvalid)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleDirectSave, handleFormInvalid)} className="space-y-6">
             {/* Dados Pessoais */}
             <Card>
               <CardHeader>
