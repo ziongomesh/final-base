@@ -27,11 +27,14 @@ interface FieldDef {
 // All fields use Arial Bold ~16pt mapped to canvas pixels
 // The base image is 1263x1920, coordinates are raw pixel positions
 const FIELDS: FieldDef[] = [
-  // Para - nome (word-wrap) - X:143, Y:900, Arial Bold 16.07pt
+  // Para - nome (word-wrap) - Arial Bold 16.07pt
   { key: 'paraNome', x: 143, y: 560, size: 33, bold: true, color: '#1a1a1a', maxWidth: 360, lineHeight: 40 },
 
-  // De - nome (word-wrap) - X:148, Y:1426, Arial Bold 16.07pt
+  // De - nome (word-wrap) - Arial Bold 16.07pt
   { key: 'deNome', x: 148, y: 880, size: 33, bold: true, color: '#1a1a1a', maxWidth: 480, lineHeight: 40 },
+
+  // Valor - X:148, Y:664 - Arial Bold 16.07pt
+  { key: 'valor', x: 148, y: 664, size: 33, bold: true, color: '#1a1a1a' },
 ];
 
 interface PicpayPreviewProps {
