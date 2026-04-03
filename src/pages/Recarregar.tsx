@@ -620,8 +620,8 @@ export default function Recarregar() {
                   <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)}/un</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs opacity-90">Total</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-[10px] opacity-90">Total</p>
+                  <p className="text-sm font-bold">
                     R$ {selectedPackage.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   {calculateSavings(selectedPackage, BASE_PRICE).savings > 0 && (
