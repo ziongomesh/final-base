@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import defaultAvatar from '@/assets/default-avatar.jpg';
 
 const searchableItems = [
   { label: 'CNH Digital', route: '/servicos/cnh-digital', keywords: ['cnh', 'habilitação', 'carteira'] },
