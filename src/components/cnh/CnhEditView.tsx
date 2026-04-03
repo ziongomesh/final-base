@@ -618,13 +618,26 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
           </CardHeader>
           <CardContent className="space-y-3 px-4 pb-4">
             <div>
-              <Label className="text-xs">Nº Registro (11 dígitos)</Label>
+              <Label className="text-xs">Nº Registro (11 dígitos) <span className="text-destructive">*</span></Label>
               <div className="flex gap-1.5">
                 <Input value={form.numeroRegistro} className="h-8 text-sm flex-1" onChange={(e) => updateField('numeroRegistro', e.target.value.replace(/\D/g, ''))} maxLength={11} />
                 <Button type="button" variant="outline" size="sm" onClick={() => updateField('numeroRegistro', generateRegistroCNH())} className="shrink-0 h-8 text-xs px-2">
                   <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
                 </Button>
               </div>
+            </div>
+            <div>
+              <Label className="text-xs">UF de Emissão <span className="text-destructive">*</span></Label>
+              <Select value={form.uf || undefined} onValueChange={(v) => {
+                updateField('uf', v);
+                updateField('estadoExtenso', getStateFullName(v));
+                updateField('localEmissao', getStateCapital(v));
+              }}>
+                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger>
+                <SelectContent>
+                  {BRAZILIAN_STATES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
