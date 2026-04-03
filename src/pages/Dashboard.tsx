@@ -13,8 +13,6 @@ import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
 import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import TopServices from '@/components/dashboard/TopServices';
 import LastRecords from '@/components/dashboard/LastRecords';
-import RecentActivity from '@/components/dashboard/RecentActivity';
-import GradientStatsCard from '@/components/dashboard/GradientStatsCard';
 
 export default function Dashboard() {
   const { admin, role: rawRole, credits, creditsTransf, loading } = useAuth();
@@ -87,28 +85,23 @@ export default function Dashboard() {
         {/* Top Bar */}
         <LauncherTopBar />
 
-        {/* Main Grid: Left (Statistics + Top Services) | Right (Activity + Records + Gradient) */}
-        <div className="grid lg:grid-cols-[1fr_320px] gap-6 mt-6">
+        {/* Main Grid: Left (Statistics) | Right (Services + Records) */}
+        <div className="grid lg:grid-cols-[1fr_280px] gap-5 mt-5">
           {/* Left Column */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             <StatisticsChart adminId={admin.id} docStats={myDocStats} />
-            <TopServices adminId={admin.id} />
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - like the reference sidebar panel */}
           <div className="space-y-6">
-            <RecentActivity adminId={admin.id} />
+            <TopServices adminId={admin.id} />
             <LastRecords adminId={admin.id} />
-            <GradientStatsCard
-              value={`+${myDocStats.month}`}
-              label="Documentos este mês"
-            />
           </div>
         </div>
 
         {/* Team (Master) */}
         {role === 'master' && (
-          <div className="mt-6">
+          <div className="mt-5">
             <MasterTeamTabs adminId={admin.id} />
           </div>
         )}
