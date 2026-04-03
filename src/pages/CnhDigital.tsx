@@ -891,7 +891,6 @@ export default function CnhDigital() {
                           <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('numeroRegistro', generateRegistroCNH())} className="shrink-0 h-8 text-xs px-2">
                             <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
                           </Button>
-                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
