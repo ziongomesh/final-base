@@ -274,6 +274,13 @@ export default function CnhDigital() {
     }
   };
 
+  // Mark form as dirty when any field changes
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
+
   // Auto MRZ when nome changes
   useEffect(() => {
     const sub = form.watch((value, { name }) => {
