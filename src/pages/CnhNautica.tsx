@@ -215,6 +215,44 @@ export default function CnhNautica() {
       setIsSubmitting(false);
     }
   };
+
+  const resetForm = () => {
+    form.reset();
+    setFotoPerfil(null);
+    setFotoPreview(null);
+    setPdfBytes(null);
+    setPreviewData(null);
+    resetCheck();
+  };
+
+  const copyToClipboard = (text: string, msg = 'Copiado!') => {
+    navigator.clipboard.writeText(text).then(() => toast.success(msg)).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast.success(msg);
+    });
+  };
+
+  const formatCpfDisplay = (cpf: string) => {
+    const clean = cpf.replace(/\D/g, '');
+    return clean.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  const getDataText = () => {
+    if (!resultInfo) return '';
+    return `CHA Náutica ✅\n👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}\n🔑 Senha: ${resultInfo.senha}\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+  };
+
+  const expirationDate = (() => {
+    const now = new Date();
+    now.setDate(now.getDate() + 45);
+    return now.toLocaleDateString('pt-BR');
+  })();
+
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-4xl">
