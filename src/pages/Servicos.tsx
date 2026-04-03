@@ -202,7 +202,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
               <Eye className="h-2.5 w-2.5" /> Exemplo
             </button>
           )}
-          <span className="text-xs text-muted-foreground hidden sm:inline">{service.credits} cred.</span>
+          <span className="text-xs text-white/30 hidden sm:inline">{service.credits} cred.</span>
           {isMaintenance ? (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-0.5">
               <Wrench className="h-2.5 w-2.5" /> Manutenção
