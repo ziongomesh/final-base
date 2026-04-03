@@ -1241,7 +1241,10 @@ export default function CnhDigital() {
               <X className="h-6 w-6" />
             </Button>
             <h3 className="text-white text-center mb-2 font-semibold">{modalImageTitle}</h3>
-            <img src={modalImageUrl} alt={modalImageTitle} className="w-full rounded-lg pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+            <div className="relative overflow-hidden rounded-lg">
+              <img src={modalImageUrl} alt={modalImageTitle} className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+              <WatermarkOverlay />
+            </div>
           </div>
         </div>
       )}
