@@ -48,7 +48,6 @@ export default function ComprovantePicpay() {
     transactionId: '',
     chavePix: '',
     dadosBancarios: '',
-    dataHora: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
@@ -63,7 +62,6 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({
       ...prev,
       transactionId: prev.transactionId || generateTransactionId(),
-      dataHora: prev.dataHora || `${dateStr} às ${timeStr}`,
     }));
   };
 
@@ -129,7 +127,7 @@ export default function ComprovantePicpay() {
       setFormData({
         valor: '', paraNome: '', paraCpf: '', paraInstituicao: '',
         deNome: '', deCpf: '', deInstituicao: '',
-        transactionId: '', chavePix: '', dadosBancarios: '', dataHora: '',
+        transactionId: '', chavePix: '', dadosBancarios: '',
       });
     } catch (error: any) {
       toast.error('Erro ao criar comprovante', { description: error.message });
@@ -299,30 +297,6 @@ export default function ComprovantePicpay() {
                     value={formData.dadosBancarios}
                     onChange={(e) => updateField('dadosBancarios', e.target.value)}
                   />
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Label className="text-xs">Data e Hora</Label>
-                    <Input
-                      placeholder="Auto-gerado"
-                      value={formData.dataHora}
-                      onChange={(e) => updateField('dataHora', e.target.value)}
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="default"
-                    className="mt-5 h-9 px-3 text-xs font-semibold"
-                    onClick={() => {
-                      const now = new Date();
-                      const dateStr = now.toLocaleDateString('pt-BR');
-                      const timeStr = now.toLocaleTimeString('pt-BR');
-                      updateField('dataHora', `${dateStr} às ${timeStr}`);
-                    }}
-                  >
-                    AUTO
-                  </Button>
                 </div>
               </CardContent>
             </Card>
