@@ -1082,7 +1082,6 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="espelho" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
-                      </div>
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="32131277" maxLength={10} className="h-8 text-sm flex-1"
