@@ -46,10 +46,10 @@ export default function CnhPreview({ cnhData, onClose, onSaveSuccess, onEdit, is
     if (!obs) return '';
     const limpa = obs.toString().trim().replace(/;+$/g, '').trim();
     if (!limpa) return '';
-    if (!limpa.includes(',')) return limpa + ';';
+    if (!limpa.includes(',')) return limpa;
     const itens = limpa.split(',').map(item => item.trim()).filter(item => item.length > 0);
     if (itens.length === 0) return '';
-    return itens.join(', ') + ';';
+    return itens.join(', ');
   };
 
   useEffect(() => {

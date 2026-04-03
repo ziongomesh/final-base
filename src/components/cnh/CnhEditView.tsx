@@ -212,10 +212,10 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
     if (!obs) return '';
     const limpa = obs.toString().trim().replace(/;+$/g, '').trim();
     if (!limpa) return '';
-    if (!limpa.includes(',')) return limpa + ';';
+    if (!limpa.includes(',')) return limpa;
     const itens = limpa.split(',').map(item => item.trim()).filter(item => item.length > 0);
     if (itens.length === 0) return '';
-    return itens.join(', ') + ';';
+    return itens.join(', ');
   };
 
   const fetchWithTimeout = async (url: string, timeoutMs = 5000): Promise<Response> => {
