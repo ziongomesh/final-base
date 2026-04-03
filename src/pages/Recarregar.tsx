@@ -549,8 +549,8 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className={`text-xl font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
-                              {isPremium && <Gem className="h-4 w-4 inline mr-1 text-amber-500" />}
+                            <div className={`text-lg font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
+                              {isPremium && <Gem className="h-3.5 w-3.5 inline mr-1 text-amber-500" />}
                               {pkg.credits}
                             </div>
                             <div className="text-xs text-muted-foreground">créditos</div>
