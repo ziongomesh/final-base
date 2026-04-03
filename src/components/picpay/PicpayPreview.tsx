@@ -36,6 +36,9 @@ const FIELDS: FieldDef[] = [
 
   // Valor - X:148, Y:664 - Arial Bold 16.07pt
   { key: 'valor', x: 148, y: 664, size: 33, bold: true, color: '#1a1a1a' },
+
+  // Conta recebedor(a) - X:148, Y:1194 - Arial Regular 13.27pt
+  { key: 'contaRecebedor', x: 148, y: 1194, size: 27, bold: false, color: '#1a1a1a' },
 ];
 
 interface PicpayPreviewProps {
