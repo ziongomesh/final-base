@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuth } from '@/hooks/useAuth';
 import { useFormGuard } from '@/hooks/useFormGuard';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
 import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import {
-  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, HelpCircle, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
+  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
 } from 'lucide-react';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import {
@@ -66,21 +66,6 @@ const cnhFormSchema = z.object({
 
 type CnhFormData = z.infer<typeof cnhFormSchema>;
 
-// Tooltip helper
-function WhereIsTooltip({ description }: { description: string }) {
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="text-primary cursor-help font-semibold text-xs ml-1">Onde fica?</span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
-          <p className="text-sm">{description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-}
 
 // File Upload component with gallery support
 function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
@@ -897,10 +882,7 @@ export default function CnhDigital() {
                 <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="numeroRegistro" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Nº Registro (11 dígitos) <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Campo '5 Nº REGISTRO' da CNH." />
-                      </div>
+                      <FormLabel className="text-xs">Nº Registro (11 dígitos) <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="00397731618" maxLength={11} className="h-8 text-sm flex-1"
@@ -992,10 +974,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="localEmissao" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Cidade e estado onde a CNH foi emitida." />
-                      </div>
+                      <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="RIO DE JANEIRO, RJ" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, ''))} />
@@ -1006,10 +985,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="estadoExtenso" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Estado por Extenso <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Nome completo do estado." />
-                      </div>
+                      <FormLabel className="text-xs">Estado por Extenso <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="MINAS GERAIS" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
@@ -1020,10 +996,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="matrizFinal" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
-                        <WhereIsTooltip description="Código na parte inferior da CNH." />
-                      </div>
+                      <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<" className="h-8 text-sm font-mono"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s<]/g, ''))} />
@@ -1056,10 +1029,7 @@ export default function CnhDigital() {
 
                     <FormField control={form.control} name="codigo_seguranca" render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center">
-                          <FormLabel className="text-xs">Cód. Segurança <span className="text-destructive">*</span></FormLabel>
-                          <WhereIsTooltip description="Código na lateral direita da CNH." />
-                        </div>
+                        <FormLabel className="text-xs">Cód. Segurança <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
                           <div className="flex gap-1">
                             <Input {...field} placeholder="96972197651" maxLength={11} className="h-8 text-sm flex-1"
@@ -1076,10 +1046,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="renach" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">RENACH <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Código RENACH na lateral direita." />
-                      </div>
+                      <FormLabel className="text-xs">RENACH <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="SC975697214" maxLength={11} className="h-8 text-sm flex-1"
@@ -1118,10 +1085,7 @@ export default function CnhDigital() {
                 <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="espelho" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Número na parte superior da CNH." />
-                      </div>
+                      <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="32131277" maxLength={10} className="h-8 text-sm flex-1"
@@ -1136,10 +1100,7 @@ export default function CnhDigital() {
                   )} />
 
                   <div className="space-y-1.5">
-                    <div className="flex items-center">
-                      <FormLabel className="text-xs">Observações</FormLabel>
-                      <WhereIsTooltip description="Restrições da CNH. Ex: EAR, A (Óculos), etc." />
-                    </div>
+                    <FormLabel className="text-xs">Observações</FormLabel>
                     <div className="grid grid-cols-2 gap-1.5">
                       {CNH_OBSERVACOES.map(obs => (
                         <div key={obs} className="flex items-center space-x-1.5">
