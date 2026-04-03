@@ -635,27 +635,45 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="dataNascimento" render={({ field }) => (
+                  <FormField control={form.control} name="dataNascimentoData" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data de Nascimento / Local <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>Data de Nascimento <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="EX: 12/02/2000, RIO DE JANEIRO"
-                          onChange={(e) => {
-                            let value = e.target.value;
-                            let dateSection = value.slice(0, 10);
-                            let locationSection = value.slice(10);
-                            let dateOnly = dateSection.replace(/\D/g, '');
-                            if (dateOnly.length >= 2) dateOnly = dateOnly.slice(0, 2) + '/' + dateOnly.slice(2);
-                            if (dateOnly.length >= 5) dateOnly = dateOnly.slice(0, 5) + '/' + dateOnly.slice(5, 9);
-                            let fullValue = dateOnly + locationSection.toUpperCase();
-                            fullValue = fullValue.replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, '');
-                            field.onChange(fullValue);
-                          }}
+                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                          onChange={(e) => field.onChange(formatDate(e.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2">
+                      <FormField control={form.control} name="localNascimento" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Local <span className="text-destructive">*</span></FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="RIO DE JANEIRO"
+                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>UF <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
