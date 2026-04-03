@@ -281,8 +281,7 @@ export default function CnhDigital() {
   const autoDateSoundPlayed = useRef(false);
   const lastDetectedDate = useRef('');
 
-  // Usar watch direto para reatividade garantida
-  const watchedDateNascimento = form.watch('dataNascimento');
+  const watchedDateNascimento = form.watch('dataNascimentoData');
 
   useEffect(() => {
     const raw = watchedDateNascimento || '';
