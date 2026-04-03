@@ -32,6 +32,7 @@ const navItems: NavItem[] = [
 
 export function MobileNav() {
   const { role, signOut, admin } = useAuth();
+  const { guardedNavigate } = useFormGuard();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
