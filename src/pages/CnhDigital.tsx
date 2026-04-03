@@ -979,7 +979,6 @@ export default function CnhDigital() {
                       <FormControl>
                         <Input {...field} placeholder="RIO DE JANEIRO, RJ" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, ''))} />
-                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
