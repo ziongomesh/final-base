@@ -621,6 +621,37 @@ export default function CnhNautica() {
               </CardContent>
             </Card>
 
+            {/* Live Preview */}
+            {fotoPreview && form.getValues('nome') && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="relative">
+                    <ChaPreview
+                      ref={liveChaPreviewRef}
+                      nome={form.watch('nome')}
+                      cpf={form.watch('cpf')}
+                      dataNascimento={form.watch('dataNascimento')}
+                      categoria={form.watch('categoria')}
+                      categoria2={form.watch('categoria2') || ''}
+                      validade={form.watch('validade')}
+                      emissao={form.watch('emissao')}
+                      numeroInscricao={form.watch('numeroInscricao')}
+                      limiteNavegacao={form.watch('limiteNavegacao')}
+                      requisitos={form.watch('requisitos') || ''}
+                      orgaoEmissao={form.watch('orgaoEmissao')}
+                      fotoPreview={fotoPreview}
+                    />
+                    <WatermarkOverlay />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0}>
               <Eye className="h-5 w-5 mr-2" /> Gerar Preview
             </Button>
