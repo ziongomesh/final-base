@@ -86,11 +86,16 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">Valor (R$)</Label>
                   <Input
-                    placeholder="2.405,00"
+                    placeholder="1.000,00"
                     value={formData.valor}
                     onChange={(e) => {
-                      const raw = e.target.value.replace(/[^0-9.,]/g, '');
-                      updateField('valor', raw);
+                      // Strip non-digits
+                      const digits = e.target.value.replace(/\D/g, '');
+                      if (!digits) { updateField('valor', ''); return; }
+                      // Format as BRL: 20 -> 0,20 | 2000 -> 20,00 | 100000 -> 1.000,00
+                      const num = parseInt(digits, 10);
+                      const formatted = (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                      updateField('valor', formatted);
                     }}
                   />
                 </div>
