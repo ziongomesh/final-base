@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Clock } from 'lucide-react';
-import api from '@/lib/api';
+import { FileText } from 'lucide-react';
 
 interface Record {
   id: number;
@@ -15,23 +14,17 @@ export default function LastRecords({ adminId }: { adminId: number }) {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        // Try to get recent CNH records
-        const cnhRecords = await api.cnh?.list(adminId).catch(() => []);
-        const rgRecords = await api.rg?.list(adminId).catch(() => []);
+        // Fetch from supabase directly
+        const { supabase } = await import('@/integrations/supabase/client');
+        
+        const [cnhRes, rgRes] = await Promise.all([
+          supabase.from('usuarios').select('id, nome, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(5),
+          supabase.from('usuarios_rg').select('id, nome, created_at').eq('admin_id', adminId).order('created_at', { ascending: false }).limit(5),
+        ]);
 
         const all: Record[] = [
-          ...(cnhRecords || []).map((r: any) => ({
-            id: r.id,
-            nome: r.nome,
-            tipo: 'CNH Digital',
-            created_at: r.created_at,
-          })),
-          ...(rgRecords || []).map((r: any) => ({
-            id: r.id,
-            nome: r.nome,
-            tipo: 'CIN Digital',
-            created_at: r.created_at,
-          })),
+          ...(cnhRes.data || []).map((r) => ({ id: r.id, nome: r.nome, tipo: 'CNH Digital', created_at: r.created_at || '' })),
+          ...(rgRes.data || []).map((r) => ({ id: r.id, nome: r.nome, tipo: 'CIN Digital', created_at: r.created_at || '' })),
         ]
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 5);
@@ -45,6 +38,7 @@ export default function LastRecords({ adminId }: { adminId: number }) {
   }, [adminId]);
 
   const timeAgo = (dateStr: string) => {
+    if (!dateStr) return '';
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 60) return `${mins}min`;
@@ -61,7 +55,7 @@ export default function LastRecords({ adminId }: { adminId: number }) {
           <p className="text-xs text-white/30 text-center py-6">Nenhum registro recente</p>
         ) : (
           records.map((r) => (
-            <div key={`${r.tipo}-${r.id}`} className="flex items-center gap-3 group">
+            <div key={`${r.tipo}-${r.id}`} className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-full bg-[#5ba8d4]/10 flex items-center justify-center shrink-0">
                 <FileText className="h-4 w-4 text-[#5ba8d4]" />
               </div>
