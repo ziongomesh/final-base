@@ -297,7 +297,7 @@ function CountryCard({ country }: { country: VipCountry }) {
         {open ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
       </button>
       {open && (
-        <div className="p-2 space-y-1 bg-card">
+        <div className="p-2 space-y-1 bg-transparent">
           {documentTypes.map((doc) => (
             <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-border/40 bg-muted/30 opacity-60 cursor-default">
               <span className="flex-1 text-xs text-foreground">{doc}</span>
