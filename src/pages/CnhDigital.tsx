@@ -974,9 +974,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="localEmissao" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Cidade e estado onde a CNH foi emitida." />
+                      <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
                       </div>
                       <FormControl>
                         <Input {...field} placeholder="RIO DE JANEIRO, RJ" className="h-8 text-sm"
