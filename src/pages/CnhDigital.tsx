@@ -712,32 +712,21 @@ export default function CnhDigital() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleCreateAccess, handleFormInvalid)} className="space-y-6">
-            {/* CPF Header Card */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <IdCard className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* 3 Sections */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* SEÇÃO 1 - Dados Pessoais */}
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
+                <CardHeader className="pb-2 pt-4 px-4">
+                  <CardTitle className="flex items-center gap-2 text-sm">
                     <User className="h-4 w-4" /> Dados Pessoais
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="nome" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome Completo <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel className="text-xs">Nome Completo <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Ex: PEDRO DA SILVA GOMES"
+                        <Input {...field} placeholder="PEDRO DA SILVA GOMES" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
                         />
                       </FormControl>
@@ -747,9 +736,9 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="cpf" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>CPF <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel className="text-xs">CPF <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="000.000.000-00" maxLength={14}
+                        <Input {...field} placeholder="000.000.000-00" maxLength={14} className="h-8 text-sm"
                           onChange={(e) => {
                             const formatted = formatCPF(e.target.value);
                             field.onChange(formatted);
@@ -761,12 +750,38 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
+                    <FormField control={form.control} name="sexo" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Sexo <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sexo" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="M">M</SelectItem>
+                            <SelectItem value="F">F</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="nacionalidade" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Nacional. <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="brasileiro">Brasileiro</SelectItem>
+                            <SelectItem value="estrangeiro">Estrangeiro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                     <FormField control={form.control} name="uf" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>UF <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">UF <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
                           <SelectContent>
                             {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
                           </SelectContent>
@@ -774,40 +789,13 @@ export default function CnhDigital() {
                         <FormMessage />
                       </FormItem>
                     )} />
-                    <FormField control={form.control} name="sexo" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Gênero <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger></FormControl>
-                          <SelectContent>
-                            <SelectItem value="M">Masculino</SelectItem>
-                            <SelectItem value="F">Feminino</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
                   </div>
-
-                  <FormField control={form.control} name="nacionalidade" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nacionalidade <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || undefined}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          <SelectItem value="brasileiro">Brasileiro</SelectItem>
-                          <SelectItem value="estrangeiro">Estrangeiro</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
 
                   <FormField control={form.control} name="dataNascimentoData" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data de Nascimento <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel className="text-xs">Data de Nascimento <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
                           onChange={(e) => field.onChange(formatDate(e.target.value))}
                         />
                       </FormControl>
@@ -815,59 +803,59 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="pai" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome Pai</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Ex: PEDRO DA SILVA GOMES"
-                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
-                  <FormField control={form.control} name="mae" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome Mãe</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Ex: MARIA DA SILVA GOMES"
-                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField control={form.control} name="pai" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Nome do Pai</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="PEDRO DA SILVA" className="h-8 text-sm"
+                            onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="mae" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Nome da Mãe</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="MARIA DA SILVA" className="h-8 text-sm"
+                            onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
-                    <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 space-y-2 animate-in fade-in slide-in-from-top-2">
-                      <div className="flex items-center gap-2">
-                        <CalendarCheck className="h-4 w-4 text-primary" />
-                        <p className="text-sm font-semibold text-foreground">Validade detectada automaticamente</p>
+                    <div className="bg-primary/10 border border-primary/30 rounded-md p-2 space-y-1.5 animate-in fade-in slide-in-from-top-2">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarCheck className="h-3.5 w-3.5 text-primary" />
+                        <p className="text-xs font-semibold text-foreground">Datas detectadas</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground">
                         Idade: <strong>{autoDatesSuggestion.idade} anos</strong> → Validade: <strong>{autoDatesSuggestion.validadeAnos} anos</strong>
                       </p>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div className="bg-background rounded p-1.5 text-center">
+                      <div className="grid grid-cols-3 gap-1.5 text-[11px]">
+                        <div className="bg-background rounded p-1 text-center">
                           <span className="text-muted-foreground block">1ª Hab</span>
                           <strong>{autoDatesSuggestion.hab}</strong>
                         </div>
-                        <div className="bg-background rounded p-1.5 text-center">
+                        <div className="bg-background rounded p-1 text-center">
                           <span className="text-muted-foreground block">Emissão</span>
                           <strong>{autoDatesSuggestion.dataEmissao}</strong>
                         </div>
-                        <div className="bg-background rounded p-1.5 text-center">
+                        <div className="bg-background rounded p-1 text-center">
                           <span className="text-muted-foreground block">Validade</span>
                           <strong>{autoDatesSuggestion.dataValidade}</strong>
                         </div>
                       </div>
-                      <div className="flex gap-2 pt-1">
-                        <Button type="button" size="sm" variant="ghost" onClick={() => setAutoDatesSuggestion(null)} className="flex-1 text-xs h-7">
+                      <div className="flex gap-2 pt-0.5">
+                        <Button type="button" size="sm" variant="ghost" onClick={() => setAutoDatesSuggestion(null)} className="flex-1 text-[11px] h-6">
                           Ignorar
                         </Button>
-                        <Button type="button" size="sm" onClick={applyAutoDatesSuggestion} className="flex-1 text-xs h-7 gap-1">
-                          <CalendarCheck className="h-3 w-3" /> Aplicar datas
+                        <Button type="button" size="sm" onClick={applyAutoDatesSuggestion} className="flex-1 text-[11px] h-6 gap-1">
+                          <CalendarCheck className="h-3 w-3" /> Aplicar
                         </Button>
                       </div>
                     </div>
@@ -880,24 +868,24 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 2 - Dados da CNH */}
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
+                <CardHeader className="pb-2 pt-4 px-4">
+                  <CardTitle className="flex items-center gap-2 text-sm">
                     <ClipboardList className="h-4 w-4" /> Dados da CNH
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="numeroRegistro" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>Registro da CNH (11 dígitos) <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Número que aparece no campo '5 Nº REGISTRO' da CNH." />
+                        <FormLabel className="text-xs">Nº Registro (11 dígitos) <span className="text-destructive">*</span></FormLabel>
+                        <WhereIsTooltip description="Campo '5 Nº REGISTRO' da CNH." />
                       </div>
                       <FormControl>
-                        <div className="flex gap-2">
-                          <Input {...field} placeholder="00397731618" maxLength={11}
-                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} className="flex-1" />
-                          <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('numeroRegistro', generateRegistroCNH())} className="shrink-0">
-                            <Shuffle className="h-4 w-4 mr-1" /> Gerar
+                        <div className="flex gap-1.5">
+                          <Input {...field} placeholder="00397731618" maxLength={11} className="h-8 text-sm flex-1"
+                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
+                          <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('numeroRegistro', generateRegistroCNH())} className="shrink-0 h-8 text-xs px-2">
+                            <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
                           </Button>
                         </div>
                       </FormControl>
@@ -909,9 +897,9 @@ export default function CnhDigital() {
                     <div className="col-span-2">
                       <FormField control={form.control} name="localNascimento" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Local de Nascimento <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel className="text-xs">Local de Nascimento <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="RIO DE JANEIRO"
+                            <Input {...field} placeholder="RIO DE JANEIRO" className="h-8 text-sm"
                               onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
                             />
                           </FormControl>
@@ -921,9 +909,9 @@ export default function CnhDigital() {
                     </div>
                     <FormField control={form.control} name="ufNascimento" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>UF de Emissão <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">UF Emissão <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
                           <SelectContent>
                             {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
                           </SelectContent>
@@ -933,12 +921,12 @@ export default function CnhDigital() {
                     )} />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <FormField control={form.control} name="categoria" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Categoria <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">Categoria <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger></FormControl>
                           <SelectContent>
                             {CNH_CATEGORIES.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
                           </SelectContent>
@@ -948,9 +936,9 @@ export default function CnhDigital() {
                     )} />
                     <FormField control={form.control} name="cnhDefinitiva" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CNH Definitiva? <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">Definitiva? <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger></FormControl>
                           <SelectContent>
                             <SelectItem value="sim">Sim</SelectItem>
                             <SelectItem value="nao">Não</SelectItem>
@@ -963,21 +951,21 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="hab" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data de 1ª Habilitação <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel className="text-xs">1ª Habilitação <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                        <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
                           onChange={(e) => field.onChange(formatDate(e.target.value))} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <FormField control={form.control} name="dataEmissao" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data de Emissão <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">Emissão <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                          <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
                             onChange={(e) => field.onChange(formatDate(e.target.value))} />
                         </FormControl>
                         <FormMessage />
@@ -985,9 +973,9 @@ export default function CnhDigital() {
                     )} />
                     <FormField control={form.control} name="dataValidade" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data de Validade <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">Validade <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="DD/MM/AAAA" maxLength={10}
+                          <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
                             onChange={(e) => field.onChange(formatDate(e.target.value))} />
                         </FormControl>
                         <FormMessage />
@@ -998,11 +986,11 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="localEmissao" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>Cidade / Estado <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
                         <WhereIsTooltip description="Cidade e estado onde a CNH foi emitida." />
                       </div>
                       <FormControl>
-                        <Input {...field} placeholder="RIO DE JANEIRO, RJ"
+                        <Input {...field} placeholder="RIO DE JANEIRO, RJ" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, ''))} />
                       </FormControl>
                       <FormMessage />
@@ -1012,11 +1000,11 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="estadoExtenso" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>Estado por Extenso <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Nome completo do estado na parte inferior da CNH." />
+                        <FormLabel className="text-xs">Estado por Extenso <span className="text-destructive">*</span></FormLabel>
+                        <WhereIsTooltip description="Nome completo do estado." />
                       </div>
                       <FormControl>
-                        <Input {...field} placeholder="Ex: MINAS GERAIS"
+                        <Input {...field} placeholder="MINAS GERAIS" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
                       </FormControl>
                       <FormMessage />
@@ -1026,66 +1014,68 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="matrizFinal" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>Zona de Leitura Óptica (MRZ)</FormLabel>
-                        <WhereIsTooltip description="Código na parte inferior da CNH. Gerado automaticamente." />
+                        <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
+                        <WhereIsTooltip description="Código na parte inferior da CNH." />
                       </div>
                       <FormControl>
-                        <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<"
+                        <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<" className="h-8 text-sm font-mono"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s<]/g, ''))} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="docIdentidade" render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormLabel>RG <span className="text-destructive">*</span></FormLabel>
-                        <Button type="button" variant="outline" size="sm" className="h-6 text-xs"
-                          onClick={() => {
-                            const uf = form.getValues('uf');
-                            if (!uf) { toast.error('Selecione o UF primeiro'); return; }
-                            form.setValue('docIdentidade', generateRGByState(uf));
-                          }}>
-                          <Shuffle className="h-3 w-3 mr-1" /> Gerar
-                        </Button>
-                      </div>
-                      <FormControl>
-                        <Input {...field} placeholder="Ex: 3674826 SSP AL"
-                          onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-Z0-9\s\/]/g, ''))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
-                  <FormField control={form.control} name="codigo_seguranca" render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel>Código de Segurança <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Código numérico na lateral direita da CNH." />
-                      </div>
-                      <FormControl>
-                        <div className="flex gap-2">
-                          <Input {...field} placeholder="Ex: 96972197651" maxLength={11}
-                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} className="flex-1" />
-                          <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('codigo_seguranca', generateCodigoSeguranca())} className="shrink-0">
-                            <Shuffle className="h-4 w-4 mr-1" /> Gerar
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField control={form.control} name="docIdentidade" render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-1">
+                          <FormLabel className="text-xs">RG <span className="text-destructive">*</span></FormLabel>
+                          <Button type="button" variant="outline" size="sm" className="h-5 text-[10px] px-1.5"
+                            onClick={() => {
+                              const uf = form.getValues('uf');
+                              if (!uf) { toast.error('Selecione o UF primeiro'); return; }
+                              form.setValue('docIdentidade', generateRGByState(uf));
+                            }}>
+                            <Shuffle className="h-2.5 w-2.5 mr-0.5" /> Gerar
                           </Button>
                         </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                        <FormControl>
+                          <Input {...field} placeholder="3674826 SSP AL" className="h-8 text-sm"
+                            onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-Z0-9\s\/]/g, ''))} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+
+                    <FormField control={form.control} name="codigo_seguranca" render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel className="text-xs">Cód. Segurança <span className="text-destructive">*</span></FormLabel>
+                          <WhereIsTooltip description="Código na lateral direita da CNH." />
+                        </div>
+                        <FormControl>
+                          <div className="flex gap-1">
+                            <Input {...field} placeholder="96972197651" maxLength={11} className="h-8 text-sm flex-1"
+                              onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
+                            <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('codigo_seguranca', generateCodigoSeguranca())} className="shrink-0 h-8 px-1.5">
+                              <Shuffle className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
 
                   <FormField control={form.control} name="renach" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>RENACH <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Código RENACH na lateral direita da CNH." />
+                        <FormLabel className="text-xs">RENACH <span className="text-destructive">*</span></FormLabel>
+                        <WhereIsTooltip description="Código RENACH na lateral direita." />
                       </div>
                       <FormControl>
-                        <div className="flex gap-2">
-                          <Input {...field} placeholder="Ex: SC975697214" maxLength={11}
+                        <div className="flex gap-1.5">
+                          <Input {...field} placeholder="SC975697214" maxLength={11} className="h-8 text-sm flex-1"
                             onChange={(e) => {
                               let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                               if (v.length > 2) {
@@ -1094,14 +1084,14 @@ export default function CnhDigital() {
                                 v = letters + numbers;
                               }
                               field.onChange(v);
-                            }} className="flex-1" />
-                          <Button type="button" variant="outline" size="sm" className="shrink-0"
+                            }} />
+                          <Button type="button" variant="outline" size="sm" className="shrink-0 h-8 text-xs px-2"
                             onClick={() => {
                               const uf = form.getValues('uf');
                               if (!uf) { toast.error('Selecione o UF primeiro'); return; }
                               form.setValue('renach', generateRenach(uf));
                             }}>
-                            <Shuffle className="h-4 w-4 mr-1" /> Gerar
+                            <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
                           </Button>
                         </div>
                       </FormControl>
@@ -1113,24 +1103,24 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 3 - Informações Adicionais */}
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <CreditCard className="h-4 w-4" /> Informações Adicionais
+                <CardHeader className="pb-2 pt-4 px-4">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <CreditCard className="h-4 w-4" /> Extras
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 px-4 pb-4">
                   <FormField control={form.control} name="espelho" render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center">
-                        <FormLabel>Nº do espelho <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Número do espelho na parte superior da CNH." />
+                        <FormLabel className="text-xs">Nº do Espelho <span className="text-destructive">*</span></FormLabel>
+                        <WhereIsTooltip description="Número na parte superior da CNH." />
                       </div>
                       <FormControl>
-                        <div className="flex gap-2">
-                          <Input {...field} placeholder="32131277" maxLength={10}
-                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} className="flex-1" />
-                          <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('espelho', generateEspelhoNumber())} className="shrink-0">
-                            <Shuffle className="h-4 w-4 mr-1" /> Gerar
+                        <div className="flex gap-1.5">
+                          <Input {...field} placeholder="32131277" maxLength={10} className="h-8 text-sm flex-1"
+                            onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
+                          <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('espelho', generateEspelhoNumber())} className="shrink-0 h-8 text-xs px-2">
+                            <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
                           </Button>
                         </div>
                       </FormControl>
@@ -1138,34 +1128,35 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex items-center">
-                      <FormLabel>Observações</FormLabel>
+                      <FormLabel className="text-xs">Observações</FormLabel>
                       <WhereIsTooltip description="Restrições da CNH. Ex: EAR, A (Óculos), etc." />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-1.5">
                       {CNH_OBSERVACOES.map(obs => (
-                        <div key={obs} className="flex items-center space-x-2">
+                        <div key={obs} className="flex items-center space-x-1.5">
                           <Checkbox
                             id={`obs-${obs}`}
                             checked={selectedObs.includes(obs)}
                             onCheckedChange={() => handleObsToggle(obs)}
+                            className="h-3.5 w-3.5"
                           />
-                          <label htmlFor={`obs-${obs}`} className="text-sm cursor-pointer">{obs}</label>
+                          <label htmlFor={`obs-${obs}`} className="text-xs cursor-pointer">{obs}</label>
                         </div>
                       ))}
                     </div>
                     <Input
-                      placeholder="Digite observações extras..."
+                      placeholder="Observações extras..."
                       value={customObs}
                       onChange={(e) => handleCustomObsChange(e.target.value.toUpperCase())}
-                      className="mt-2"
+                      className="h-8 text-sm"
                     />
                     <Input
                       placeholder="Resultado final"
                       value={[...selectedObs, ...(customObs.trim() ? [customObs.trim()] : [])].join(', ')}
                       readOnly
-                      className="mt-1 bg-muted text-xs"
+                      className="h-7 bg-muted text-[11px]"
                     />
                   </div>
 
