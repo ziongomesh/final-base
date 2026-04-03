@@ -183,7 +183,9 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
     mae: usuario.mae || '',
   });
 
-  const computedDataNascimento = form.dataNascimento;
+  const computedDataNascimento = form.dataNascimentoData
+    ? `${form.dataNascimentoData}${form.localNascimento ? ', ' + form.localNascimento : ''}${form.ufNascimento ? ', ' + form.ufNascimento : ''}`
+    : '';
 
   // Track original values to detect changes
   const [originalForm] = useState({ ...form });
