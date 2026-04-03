@@ -584,8 +584,8 @@ export default function Recarregar() {
             </div>
 
             {/* Slider Section */}
-            <div className="bg-muted/30 rounded-lg p-4">
-              <p className="text-xs text-muted-foreground mb-3">Ou arraste para selecionar:</p>
+            <div className="bg-muted/30 rounded-lg p-3">
+              <p className="text-[10px] text-muted-foreground mb-2">Ou arraste para selecionar:</p>
               <div className="px-2">
                 <Slider
                   value={[sliderValue]}
