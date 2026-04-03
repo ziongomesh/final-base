@@ -1,6 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Zap, Wallet, FileText, Users, Calendar } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
@@ -14,6 +13,8 @@ import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
 import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import TopServices from '@/components/dashboard/TopServices';
 import LastRecords from '@/components/dashboard/LastRecords';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import GradientStatsCard from '@/components/dashboard/GradientStatsCard';
 
 export default function Dashboard() {
   const { admin, role: rawRole, credits, creditsTransf, loading } = useAuth();
@@ -59,7 +60,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0c1420]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5ba8d4]" />
       </div>
     );
@@ -82,84 +83,36 @@ export default function Dashboard() {
       <AlertNotification adminId={admin.id} />
       <NewModuleNotification adminId={admin.id} />
 
-      <div className="space-y-6 animate-fade-in max-w-[1400px]">
+      <div className="animate-fade-in max-w-[1400px]">
         {/* Top Bar */}
         <LauncherTopBar />
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            label="Créditos"
-            value={credits.toLocaleString('pt-BR')}
-            icon={<Zap className="h-5 w-5" />}
-            color="#5ba8d4"
-          />
-          {role === 'master' && (
-            <StatCard
-              label="Transferência"
-              value={creditsTransf.toLocaleString('pt-BR')}
-              icon={<Wallet className="h-5 w-5" />}
-              color="#e8a838"
-            />
-          )}
-          <StatCard
-            label="Hoje"
-            value={String(myDocStats.today)}
-            icon={<FileText className="h-5 w-5" />}
-            color="#6bc9a0"
-          />
-          {role === 'master' ? (
-            <StatCard
-              label="Equipe"
-              value={String(totalResellers)}
-              icon={<Users className="h-5 w-5" />}
-              color="#a078d4"
-            />
-          ) : (
-            <StatCard
-              label="Este mês"
-              value={String(myDocStats.month)}
-              icon={<Calendar className="h-5 w-5" />}
-              color="#e06080"
-            />
-          )}
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left: Statistics Chart */}
-          <div className="lg:col-span-2">
+        {/* Main Grid: Left (Statistics + Top Services) | Right (Activity + Records + Gradient) */}
+        <div className="grid lg:grid-cols-[1fr_320px] gap-6 mt-6">
+          {/* Left Column */}
+          <div className="space-y-6">
             <StatisticsChart adminId={admin.id} docStats={myDocStats} />
+            <TopServices adminId={admin.id} />
           </div>
 
-          {/* Right: Last Records */}
-          <div>
+          {/* Right Column */}
+          <div className="space-y-6">
+            <RecentActivity adminId={admin.id} />
             <LastRecords adminId={admin.id} />
+            <GradientStatsCard
+              value={`+${myDocStats.month}`}
+              label="Documentos este mês"
+            />
           </div>
         </div>
-
-        {/* Services */}
-        <TopServices adminId={admin.id} />
 
         {/* Team (Master) */}
         {role === 'master' && (
-          <MasterTeamTabs adminId={admin.id} />
+          <div className="mt-6">
+            <MasterTeamTabs adminId={admin.id} />
+          </div>
         )}
       </div>
     </DashboardLayout>
-  );
-}
-
-function StatCard({ label, value, icon, color }: { label: string; value: string; icon: React.ReactNode; color: string }) {
-  return (
-    <div className="rounded-2xl bg-[#111a27] border border-white/5 p-4 hover:border-white/10 transition-all">
-      <div className="flex items-center justify-between mb-3">
-        <div className="p-2 rounded-xl" style={{ backgroundColor: `${color}15` }}>
-          <span style={{ color }}>{icon}</span>
-        </div>
-      </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-xs text-white/40 mt-0.5">{label}</p>
-    </div>
   );
 }
