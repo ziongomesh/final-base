@@ -76,11 +76,12 @@ function WhereIsTooltip({ description }: { description: string }) {
 }
 
 // File Upload component with gallery support
-function FileUploadField({ label, value, onChange, onOpenGallery }: {
+function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
   label: string;
   value: File | null;
   onChange: (file: File | null) => void;
   onOpenGallery?: () => void;
+  error?: boolean;
 }) {
   return (
     <div className="space-y-2">
@@ -92,7 +93,7 @@ function FileUploadField({ label, value, onChange, onOpenGallery }: {
           </Button>
         )}
       </div>
-      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
+      <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors ${error ? 'border-destructive bg-destructive/5' : 'border-border'}`}>
         {value ? (
           <div className="text-center px-2">
             <p className="text-sm text-primary font-medium truncate max-w-full">{value.name}</p>
@@ -112,6 +113,7 @@ function FileUploadField({ label, value, onChange, onOpenGallery }: {
           onChange={(e) => onChange(e.target.files?.[0] || null)}
         />
       </label>
+      {error && <p className="text-xs text-destructive">Campo obrigatório</p>}
     </div>
   );
 }
@@ -153,6 +155,7 @@ export default function CnhDigital() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
   const [assinatura, setAssinatura] = useState<File | null>(null);
+  const [triedSubmit, setTriedSubmit] = useState(false);
   const [selectedObs, setSelectedObs] = useState<string[]>([]);
   const [customObs, setCustomObs] = useState('');
   const [showPreview, setShowPreview] = useState(false);
@@ -412,12 +415,16 @@ export default function CnhDigital() {
   if (!admin) return <Navigate to="/login" replace />;
 
   const handleFormInvalid = (errors: FieldErrors<CnhFormData>) => {
+    setTriedSubmit(true);
     const missingFields = Object.keys(errors)
       .map(key => FIELD_LABELS[key] || key)
       .slice(0, 5);
     
-    if (missingFields.length > 0) {
-      toast.error(`Campos obrigatórios não preenchidos: ${missingFields.join(', ')}${Object.keys(errors).length > 5 ? ` e mais ${Object.keys(errors).length - 5}` : ''}`, {
+    const extraMissing: string[] = [];
+    if (!fotoPerfil) extraMissing.push('Foto de Perfil');
+    const allMissing = [...missingFields, ...extraMissing];
+    if (allMissing.length > 0) {
+      toast.error(`Campos obrigatórios não preenchidos: ${allMissing.join(', ')}`, {
         position: 'top-right',
         duration: 5000,
       });
@@ -425,6 +432,7 @@ export default function CnhDigital() {
   };
 
   const handleGeneratePreview = async (data: CnhFormData) => {
+    setTriedSubmit(true);
     if (!fotoPerfil) {
       toast.error('Foto de perfil é obrigatória', { position: 'top-right' });
       return;
@@ -710,8 +718,8 @@ export default function CnhDigital() {
                     </div>
                   )}
 
-                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} />
-                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} />
+                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} error={triedSubmit && !fotoPerfil} />
+                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} error={triedSubmit && !assinatura} />
                 </CardContent>
               </Card>
 
