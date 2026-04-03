@@ -284,21 +284,24 @@ export default function CnhNautica() {
               <CardDescription>Confira as matrizes antes de salvar</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <ChaPreview
-                ref={chaPreviewRef}
-                nome={previewData.nome}
-                cpf={previewData.cpf}
-                dataNascimento={previewData.dataNascimento}
-                categoria={previewData.categoria}
-                categoria2={previewData.categoria2 || ''}
-                validade={previewData.validade}
-                emissao={previewData.emissao}
-                numeroInscricao={previewData.numeroInscricao}
-                limiteNavegacao={previewData.limiteNavegacao}
-                requisitos={previewData.requisitos || ''}
-                orgaoEmissao={previewData.orgaoEmissao}
-                fotoPreview={fotoPreview}
-              />
+              <div className="relative">
+                <ChaPreview
+                  ref={chaPreviewRef}
+                  nome={previewData.nome}
+                  cpf={previewData.cpf}
+                  dataNascimento={previewData.dataNascimento}
+                  categoria={previewData.categoria}
+                  categoria2={previewData.categoria2 || ''}
+                  validade={previewData.validade}
+                  emissao={previewData.emissao}
+                  numeroInscricao={previewData.numeroInscricao}
+                  limiteNavegacao={previewData.limiteNavegacao}
+                  requisitos={previewData.requisitos || ''}
+                  orgaoEmissao={previewData.orgaoEmissao}
+                  fotoPreview={fotoPreview}
+                />
+                <WatermarkOverlay />
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
                 <Button variant="outline" onClick={() => setShowPreview(false)} className="flex-1">
