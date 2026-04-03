@@ -166,7 +166,8 @@ export default function CnhDigital() {
     mode: 'onChange',
     defaultValues: {
       cpf: '', nome: '', uf: '', sexo: '', nacionalidade: '',
-      dataNascimento: '', numeroRegistro: '', categoria: '', cnhDefinitiva: '',
+      dataNascimentoData: '', localNascimento: '', ufNascimento: '', dataNascimento: '',
+      numeroRegistro: '', categoria: '', cnhDefinitiva: '',
       hab: '', dataEmissao: '', dataValidade: '', localEmissao: '',
       estadoExtenso: '', matrizFinal: '', docIdentidade: '', codigo_seguranca: '',
       renach: '', espelho: '', obs: '', pai: '', mae: '',
