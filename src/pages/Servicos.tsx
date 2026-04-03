@@ -406,7 +406,7 @@ export default function Servicos() {
         )}
 
         <Tabs defaultValue="nacional" className="w-full">
-          <TabsList className="w-full mb-4 h-11">
+          <TabsList className="w-full mb-4 h-11 bg-white/5 border border-white/10">
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
