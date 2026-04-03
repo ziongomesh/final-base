@@ -231,17 +231,6 @@ export default function CnhNautica() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-          <div className="flex items-center gap-2 text-primary">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm">1</div>
-            <span className="text-sm font-medium">Preencher</span>
-          </div>
-          <div className="w-8 h-0.5 bg-border" />
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted text-sm">2</div>
-            <span className="text-sm font-medium">Visualizar</span>
-          </div>
-        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleGeneratePreview)} className="space-y-6">
