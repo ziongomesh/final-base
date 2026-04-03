@@ -66,21 +66,6 @@ const cnhFormSchema = z.object({
 
 type CnhFormData = z.infer<typeof cnhFormSchema>;
 
-// Tooltip helper
-function WhereIsTooltip({ description }: { description: string }) {
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="text-primary cursor-help font-semibold text-xs ml-1">Onde fica?</span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
-          <p className="text-sm">{description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-}
 
 // File Upload component with gallery support
 function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
