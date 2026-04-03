@@ -294,7 +294,7 @@ function CountryCard({ country }: { country: VipCountry }) {
       >
         <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={country.name} className="h-5 w-7 rounded-sm object-cover" loading="lazy" />
         <span className="flex-1 text-left font-medium text-sm text-white">{country.name}</span>
-        {open ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+        {open ? <ChevronUp className="h-3.5 w-3.5 text-white/30" /> : <ChevronDown className="h-3.5 w-3.5 text-white/30" />}
       </button>
       {open && (
         <div className="p-2 space-y-1 bg-transparent">
