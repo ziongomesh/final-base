@@ -105,9 +105,6 @@ export default function RgDigital() {
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [assinatura, setAssinatura] = useState<File | null>(null);
   const [assPreview, setAssPreview] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewData, setPreviewData] = useState<RgFormData | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [rgInfo, setRgInfo] = useState<{ cpf: string; senha: string; pdf: string | null } | null>(null);
   const [downloadLinks, setDownloadLinks] = useState<{ govbr_iphone: string; govbr_apk: string }>({ govbr_iphone: '', govbr_apk: '' });
