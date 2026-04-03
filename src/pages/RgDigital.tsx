@@ -665,14 +665,14 @@ export default function RgDigital() {
             <canvas ref={liveCanvasVersoRef} className="hidden" />
 
             {/* Live Preview */}
-            {(livePreviewImages.frente || livePreviewImages.verso) && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Eye className="h-4 w-4" /> Preview ao Vivo
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Eye className="h-4 w-4" /> Preview ao Vivo
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(livePreviewImages.frente || livePreviewImages.verso) ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {livePreviewImages.frente && (
                       <div>
@@ -693,9 +693,14 @@ export default function RgDigital() {
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3 border-2 border-dashed rounded-lg">
+                    <Eye className="h-10 w-10 opacity-30" />
+                    <p className="text-sm">Preencha o nome, envie a foto e assinatura para visualizar o preview</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Submit */}
             <Card>
