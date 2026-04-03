@@ -105,9 +105,6 @@ export default function RgDigital() {
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [assinatura, setAssinatura] = useState<File | null>(null);
   const [assPreview, setAssPreview] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewData, setPreviewData] = useState<RgFormData | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [rgInfo, setRgInfo] = useState<{ cpf: string; senha: string; pdf: string | null } | null>(null);
   const [downloadLinks, setDownloadLinks] = useState<{ govbr_iphone: string; govbr_apk: string }>({ govbr_iphone: '', govbr_apk: '' });
@@ -304,16 +301,21 @@ export default function RgDigital() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
-  const handleGeneratePreview = async (data: RgFormData) => {
+  const handleDirectSave = async (data: RgFormData) => {
     if (!fotoPerfil) { toast.error('Foto de perfil é obrigatória', { position: 'top-right' }); return; }
     if (!assinatura) { toast.error('Assinatura é obrigatória', { position: 'top-right' }); return; }
-    setPreviewData(data);
-    setPreviewLoading(true);
-    setPreviewImages({ frente: '', verso: '' });
-    setShowPreview(true);
 
-    // Generate canvases
-    setTimeout(async () => {
+    // Generate final canvases from live canvases
+    const fCanvas = liveCanvasFrenteRef.current;
+    const vCanvas = liveCanvasVersoRef.current;
+    if (!fCanvas || !vCanvas) {
+      toast.error('Aguarde o preview carregar antes de gerar.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Regenerate canvases with final data
       const rgData: RgData = {
         nomeCompleto: data.nomeCompleto,
         nomeSocial: data.nomeSocial,
@@ -332,54 +334,18 @@ export default function RgDigital() {
         foto: fotoPerfil!,
         assinatura: assinatura!,
       };
-      if (frenteCanvasRef.current) {
-        await generateRGFrente(frenteCanvasRef.current, rgData);
-        setPreviewImages(prev => ({ ...prev, frente: frenteCanvasRef.current!.toDataURL('image/png') }));
-      }
-      // Gerar QR code para o verso
+
+      await generateRGFrente(fCanvas, rgData);
       const cleanCpf = data.cpf.replace(/\D/g, '');
       const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
       const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
-      const qrPreviewUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
-      if (versoCanvasRef.current) {
-        await generateRGVerso(versoCanvasRef.current, rgData, qrPreviewUrl);
-        setPreviewImages(prev => ({ ...prev, verso: versoCanvasRef.current!.toDataURL('image/png') }));
-      }
-      setPreviewLoading(false);
-    }, 100);
-  };
-
-  const handleSave = async () => {
-    if (!previewData || !frenteCanvasRef.current || !versoCanvasRef.current) return;
-    setIsSubmitting(true);
-    try {
-      const frenteBase64 = frenteCanvasRef.current.toDataURL('image/png');
-      const versoBase64 = versoCanvasRef.current.toDataURL('image/png');
-
-      // Generate full-page PDF image (single PNG with everything)
-      const cleanCpf = previewData.cpf.replace(/\D/g, '');
-      const densePadPdf = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-      const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePadPdf}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
-      const rgDataForPdf: RgData = {
-        nomeCompleto: previewData.nomeCompleto,
-        nomeSocial: previewData.nomeSocial,
-        cpf: previewData.cpf,
-        dataNascimento: previewData.dataNascimento,
-        naturalidade: previewData.naturalidade,
-        genero: previewData.genero,
-        nacionalidade: previewData.nacionalidade,
-        validade: previewData.validade,
-        uf: previewData.uf,
-        dataEmissao: previewData.dataEmissao,
-        local: previewData.local,
-        orgaoExpedidor: previewData.orgaoExpedidor,
-        pai: previewData.pai,
-        mae: previewData.mae,
-        foto: fotoPerfil!,
-        assinatura: assinatura!,
-      };
-      const pdfPageBase64 = await generateRGPdfPage(rgDataForPdf, qrUrl);
+      await generateRGVerso(vCanvas, rgData, qrUrl);
+
+      const frenteBase64 = fCanvas.toDataURL('image/png');
+      const versoBase64 = vCanvas.toDataURL('image/png');
+
+      const pdfPageBase64 = await generateRGPdfPage(rgData, qrUrl);
 
       let fotoBase64 = '';
       if (fotoPerfil) {
@@ -402,20 +368,20 @@ export default function RgDigital() {
       const result = await rgService.save({
         admin_id: admin.id,
         session_token: admin.session_token,
-        cpf: previewData.cpf.replace(/\D/g, ''),
-        nomeCompleto: toUpper(previewData.nomeCompleto),
-        nomeSocial: previewData.nomeSocial ? toUpper(previewData.nomeSocial) : undefined,
-        dataNascimento: convertDate(previewData.dataNascimento),
-        naturalidade: toUpper(previewData.naturalidade),
-        genero: previewData.genero,
-        nacionalidade: previewData.nacionalidade,
-        validade: convertDate(previewData.validade),
-        uf: previewData.uf,
-        dataEmissao: convertDate(previewData.dataEmissao),
-        local: toUpper(previewData.local),
-        orgaoExpedidor: toUpper(previewData.orgaoExpedidor),
-        pai: previewData.pai ? toUpper(previewData.pai) : undefined,
-        mae: previewData.mae ? toUpper(previewData.mae) : undefined,
+        cpf: data.cpf.replace(/\D/g, ''),
+        nomeCompleto: toUpper(data.nomeCompleto),
+        nomeSocial: data.nomeSocial ? toUpper(data.nomeSocial) : undefined,
+        dataNascimento: convertDate(data.dataNascimento),
+        naturalidade: toUpper(data.naturalidade),
+        genero: data.genero,
+        nacionalidade: data.nacionalidade,
+        validade: convertDate(data.validade),
+        uf: data.uf,
+        dataEmissao: convertDate(data.dataEmissao),
+        local: toUpper(data.local),
+        orgaoExpedidor: toUpper(data.orgaoExpedidor),
+        pai: data.pai ? toUpper(data.pai) : undefined,
+        mae: data.mae ? toUpper(data.mae) : undefined,
         rgFrenteBase64: frenteBase64,
         rgVersoBase64: versoBase64,
         fotoBase64,
@@ -424,9 +390,8 @@ export default function RgDigital() {
       });
 
       playSuccessSound();
-      setRgInfo({ cpf: result.id ? previewData.cpf.replace(/\D/g, '') : '', senha: result.senha, pdf: result.pdf });
+      setRgInfo({ cpf: result.id ? data.cpf.replace(/\D/g, '') : '', senha: result.senha, pdf: result.pdf });
       setShowSuccess(true);
-      setShowPreview(false);
     } catch (err: any) {
       console.error('Erro ao salvar RG:', err);
       if (err.status === 409 && err.details) {
@@ -452,92 +417,7 @@ export default function RgDigital() {
     }
   };
 
-  // PREVIEW VIEW
-  if (showPreview && previewData) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6 max-w-6xl">
-          <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">1</div>
-              <span className="text-sm font-medium">Preencher</span>
-            </div>
-            <div className="w-8 h-0.5 bg-border" />
-            <div className="flex items-center gap-2 text-primary">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">2</div>
-              <span className="text-sm font-medium">Visualizar</span>
-            </div>
-          </div>
 
-          {/* Hidden canvases for generation */}
-          <canvas ref={frenteCanvasRef} className="hidden" />
-          <canvas ref={versoCanvasRef} className="hidden" />
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Eye className="h-5 w-5" /> Preview do RG Digital</CardTitle>
-              <CardDescription>Confira as matrizes antes de salvar</CardDescription>
-            </CardHeader>
-            <div className="mx-6 mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground space-y-1">
-              <p>⚡ Irá gastar <strong className="text-foreground">1 crédito</strong></p>
-              <p>✏️ Você poderá editar após feito, renovar acesso ou excluir</p>
-              <p>📱 O QR Code no documento é possível escanear</p>
-            </div>
-            <CardContent className="space-y-6">
-              {previewLoading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                  <p className="text-muted-foreground text-sm font-medium">Gerando matrizes...</p>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Frente</h4>
-                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
-                        {previewImages.frente ? (
-                          <img src={previewImages.frente} alt="Frente" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                        ) : (
-                          <div className="aspect-[1.6/1] flex items-center justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                          </div>
-                        )}
-                        <WatermarkOverlay />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Verso</h4>
-                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
-                        {previewImages.verso ? (
-                          <img src={previewImages.verso} alt="Verso" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                        ) : (
-                          <div className="aspect-[1.6/1] flex items-center justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                          </div>
-                        )}
-                        <WatermarkOverlay />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
-                    <Button variant="outline" onClick={() => setShowPreview(false)} className="flex-1">
-                      <ArrowLeft className="h-4 w-4 mr-2" /> Voltar para Editar
-                    </Button>
-                    <Button onClick={handleSave} disabled={isSubmitting} className="flex-1">
-                      {isSubmitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-4 w-4 mr-2" /> Gerar RG Digital</>}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  // FORM VIEW
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-6xl">
@@ -566,20 +446,9 @@ export default function RgDigital() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-          <div className="flex items-center gap-2 text-primary">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm">1</div>
-            <span className="text-sm font-medium">Preencher</span>
-          </div>
-          <div className="w-8 h-0.5 bg-border" />
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted text-sm">2</div>
-            <span className="text-sm font-medium">Visualizar</span>
-          </div>
-        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview, handleFormInvalid)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleDirectSave, handleFormInvalid)} className="space-y-6">
             {/* Dados Pessoais */}
             <Card>
               <CardHeader>
@@ -831,8 +700,13 @@ export default function RgDigital() {
             {/* Submit */}
             <Card>
               <CardContent className="p-4">
-                <Button type="submit" className="w-full" disabled={(admin?.creditos ?? 0) < 1}>
-                  <Eye className="h-4 w-4 mr-2" /> Gerar Preview
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground space-y-1 mb-4">
+                  <p>⚡ Irá gastar <strong className="text-foreground">1 crédito</strong></p>
+                  <p>✏️ Você poderá editar após feito, renovar acesso ou excluir</p>
+                  <p>📱 O QR Code no documento é possível escanear</p>
+                </div>
+                <Button type="submit" className="w-full" disabled={(admin?.creditos ?? 0) < 1 || isSubmitting}>
+                  {isSubmitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-4 w-4 mr-2" /> Gerar RG Digital (1 crédito)</>}
                 </Button>
               </CardContent>
             </Card>
@@ -840,7 +714,7 @@ export default function RgDigital() {
         </Form>
 
         {/* Success Dialog */}
-        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); setPreviewData(null); cpfCheck.resetCheck(); } }}>
+        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); } }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2"><IdCard className="h-5 w-5 text-green-600" /> RG Digital Criado!</DialogTitle>

@@ -148,17 +148,11 @@ export default function CnhNautica() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
-  const handleGeneratePreview = (data: NauticaFormData) => {
+  const handleDirectSave = async (data: NauticaFormData) => {
     if (!fotoPerfil) {
       toast.error('Foto é obrigatória');
       return;
     }
-    setPreviewData(data);
-    setShowPreview(true);
-  };
-
-  const handleSave = async () => {
-    if (!previewData || !fotoPerfil) return;
 
     setIsSubmitting(true);
     try {
@@ -171,37 +165,35 @@ export default function CnhNautica() {
       const result = await nauticaService.save({
         admin_id: admin.id,
         session_token: admin.session_token,
-        nome: previewData.nome.toUpperCase(),
-        cpf: previewData.cpf.replace(/\D/g, ''),
-        data_nascimento: previewData.dataNascimento,
-        categoria: previewData.categoria.toUpperCase(),
-        validade: previewData.validade,
-        emissao: previewData.emissao,
-        numero_inscricao: previewData.numeroInscricao.toUpperCase(),
-        limite_navegacao: previewData.limiteNavegacao.toUpperCase(),
-        requisitos: (previewData.requisitos || '').toUpperCase(),
-        orgao_emissao: previewData.orgaoEmissao.toUpperCase(),
+        nome: data.nome.toUpperCase(),
+        cpf: data.cpf.replace(/\D/g, ''),
+        data_nascimento: data.dataNascimento,
+        categoria: data.categoria.toUpperCase(),
+        validade: data.validade,
+        emissao: data.emissao,
+        numero_inscricao: data.numeroInscricao.toUpperCase(),
+        limite_navegacao: data.limiteNavegacao.toUpperCase(),
+        requisitos: (data.requisitos || '').toUpperCase(),
+        orgao_emissao: data.orgaoEmissao.toUpperCase(),
         fotoBase64,
-        matrizFrenteBase64: chaPreviewRef.current?.getFrenteBase64() || '',
-        matrizVersoBase64: chaPreviewRef.current?.getVersoBase64() || '',
+        matrizFrenteBase64: liveChaPreviewRef.current?.getFrenteBase64() || '',
+        matrizVersoBase64: liveChaPreviewRef.current?.getVersoBase64() || '',
       });
 
       playSuccessSound();
       setResultInfo({
-        cpf: previewData.cpf.replace(/\D/g, ''),
+        cpf: data.cpf.replace(/\D/g, ''),
         senha: result.senha,
       });
       setShowSuccess(true);
-      setShowPreview(false);
       form.reset();
       setFotoPerfil(null);
       setFotoPreview(null);
-      setPreviewData(null);
 
       // Generate PDF in background
       try {
-        const frenteB64 = chaPreviewRef.current?.getFrenteBase64() || '';
-        const versoB64 = chaPreviewRef.current?.getVersoBase64() || '';
+        const frenteB64 = liveChaPreviewRef.current?.getFrenteBase64() || '';
+        const versoB64 = liveChaPreviewRef.current?.getVersoBase64() || '';
         const qrB64 = result.qrcode || '';
         const pdf = await generateChaPdf(
           '/images/cha-pdf-base.png',
@@ -261,64 +253,6 @@ export default function CnhNautica() {
     return now.toLocaleDateString('pt-BR');
   })();
 
-  // PREVIEW VIEW
-  if (showPreview && previewData) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6 max-w-6xl">
-          <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">1</div>
-              <span className="text-sm font-medium">Preencher</span>
-            </div>
-            <div className="w-8 h-0.5 bg-border" />
-            <div className="flex items-center gap-2 text-primary">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">2</div>
-              <span className="text-sm font-medium">Visualizar</span>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Eye className="h-5 w-5" /> Preview da CHA Náutica</CardTitle>
-              <CardDescription>Confira as matrizes antes de salvar</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="relative">
-                <ChaPreview
-                  ref={chaPreviewRef}
-                  nome={previewData.nome}
-                  cpf={previewData.cpf}
-                  dataNascimento={previewData.dataNascimento}
-                  categoria={previewData.categoria}
-                  categoria2={previewData.categoria2 || ''}
-                  validade={previewData.validade}
-                  emissao={previewData.emissao}
-                  numeroInscricao={previewData.numeroInscricao}
-                  limiteNavegacao={previewData.limiteNavegacao}
-                  requisitos={previewData.requisitos || ''}
-                  orgaoEmissao={previewData.orgaoEmissao}
-                  fotoPreview={fotoPreview}
-                />
-                <WatermarkOverlay />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
-                <Button variant="outline" onClick={() => setShowPreview(false)} className="flex-1">
-                  <ArrowLeft className="h-4 w-4 mr-2" /> Voltar para Editar
-                </Button>
-                <Button onClick={handleSave} disabled={isSubmitting} className="flex-1">
-                  {isSubmitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-4 w-4 mr-2" /> Gerar CHA (1 crédito)</>}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  // FORM VIEW
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-4xl">
@@ -335,20 +269,9 @@ export default function CnhNautica() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-          <div className="flex items-center gap-2 text-primary">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-sm">1</div>
-            <span className="text-sm font-medium">Preencher</span>
-          </div>
-          <div className="w-8 h-0.5 bg-border" />
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted text-sm">2</div>
-            <span className="text-sm font-medium">Visualizar</span>
-          </div>
-        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleDirectSave)} className="space-y-6">
             {/* Dados Pessoais */}
             <Card>
               <CardHeader>
@@ -655,8 +578,8 @@ export default function CnhNautica() {
               </Card>
             )}
 
-            <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0}>
-              <Eye className="h-5 w-5 mr-2" /> Gerar Preview
+            <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0 || isSubmitting}>
+              {isSubmitting ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-5 w-5 mr-2" /> Gerar CHA (1 crédito)</>}
             </Button>
           </form>
         </Form>
