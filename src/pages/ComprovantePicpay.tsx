@@ -4,11 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Loader2, Receipt, Eye, X } from 'lucide-react';
 import { PicpayPreview, type PicpayPreviewRef, type PicpayFormData } from '@/components/picpay/PicpayPreview';
+
+const BANCOS = [
+  'NUBANK',
+  'ITAÚ UNIBANCO S.A.',
+  'BRADESCO S.A.',
+  'BANCO DO BRASIL S.A.',
+  'CAIXA ECONÔMICA FEDERAL',
+  'SANTANDER S.A.',
+  'INTER S.A.',
+  'C6 BANK',
+  'MERCADO PAGO',
+  'PAGBANK',
+];
 
 export default function ComprovantePicpay() {
   const { admin, loading } = useAuth();
