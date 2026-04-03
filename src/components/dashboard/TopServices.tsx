@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Star, FileText, Anchor, IdCard, Car, Stethoscope, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const allServices: ServiceItem[] = [
 function loadFavorites(adminId: number): string[] {
   const stored = localStorage.getItem(`fav_services_${adminId}`);
   if (stored) return JSON.parse(stored);
-  return ['cnh-digital']; // default
+  return ['cnh-digital'];
 }
 
 function saveFavorites(adminId: number, favs: string[]) {
@@ -48,38 +48,61 @@ export default function TopServices({ adminId }: { adminId: number }) {
   });
 
   return (
-    <div className="bg-[#111a27] rounded-2xl border border-white/5 p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Serviços Rápidos</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div>
+      <h2 className="text-xl font-bold text-white mb-4">Serviços Rápidos</h2>
+      <div className="grid grid-cols-3 gap-4">
         {sorted.map((svc) => {
           const Icon = svc.icon;
           const isFav = favorites.includes(svc.id);
           return (
             <div
               key={svc.id}
-              className="group relative bg-[#1a2332] rounded-xl p-4 hover:bg-[#1e2a3a] transition-all cursor-pointer border border-white/5"
+              className="group relative bg-[#12121e] rounded-2xl p-5 hover:bg-[#1a1a2e] transition-all cursor-pointer border border-white/5"
               onClick={() => navigate(svc.route)}
             >
+              {/* Fav star */}
               <button
                 onClick={(e) => { e.stopPropagation(); toggleFav(svc.id); }}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <Star
-                  className={`h-3.5 w-3.5 transition-colors ${
-                    isFav ? 'fill-[#f5c542] text-[#f5c542]' : 'text-white/20 hover:text-white/40'
+                  className={`h-4 w-4 transition-colors ${
+                    isFav ? 'fill-[#e8a838] text-[#e8a838]' : 'text-white/20 hover:text-white/40'
                   }`}
                 />
               </button>
-              <div
-                className="h-10 w-10 rounded-xl flex items-center justify-center mb-3"
-                style={{ backgroundColor: `${svc.color}15` }}
-              >
-                <Icon className="h-5 w-5" style={{ color: svc.color }} />
-              </div>
-              <p className="text-xs font-medium text-white/80">{svc.label}</p>
               {isFav && (
-                <Star className="absolute top-2 right-2 h-3 w-3 fill-[#f5c542] text-[#f5c542] group-hover:opacity-0 transition-opacity" />
+                <Star className="absolute top-3 right-3 h-3.5 w-3.5 fill-[#e8a838] text-[#e8a838] group-hover:opacity-0 transition-opacity" />
               )}
+
+              {/* Avatar circle */}
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="h-10 w-10 rounded-full flex items-center justify-center border-2"
+                  style={{ borderColor: `${svc.color}50`, backgroundColor: `${svc.color}15` }}
+                >
+                  <Icon className="h-4 w-4" style={{ color: svc.color }} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{svc.label}</p>
+                </div>
+              </div>
+
+              {/* Fake activity dots like the reference */}
+              <div className="flex flex-wrap gap-1 mt-2">
+                {Array.from({ length: 14 }, (_, i) => {
+                  const colors = [svc.color, '#e8a838', '#a078d4', svc.color];
+                  return (
+                    <div
+                      key={i}
+                      className="h-2 w-2 rounded-full"
+                      style={{
+                        backgroundColor: Math.random() > 0.3 ? colors[i % colors.length] : 'rgba(255,255,255,0.08)',
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
           );
         })}

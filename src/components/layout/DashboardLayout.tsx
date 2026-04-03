@@ -14,7 +14,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   useCreditNotifications();
 
   return (
-    <div className="min-h-screen bg-[#0c1420]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />
