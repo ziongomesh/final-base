@@ -142,20 +142,29 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
     const formatted = isoToBR(raw);
     // Try to split "DD/MM/YYYY, CIDADE, UF" or "DD/MM/YYYY, CIDADE"
     const parts = formatted.split(',').map(p => p.trim());
-    return {
-      date: parts[0] || '',
-      local: parts.length > 1 ? parts.slice(1).join(', ') : '',
-    };
+    const date = parts[0] || '';
+    // local can be e.g. "SALVADOR" and uf "BA"
+    let local = '';
+    let ufNasc = '';
+    if (parts.length >= 3) {
+      local = parts[1] || '';
+      ufNasc = parts[2] || '';
+    } else if (parts.length === 2) {
+      local = parts[1] || '';
+    }
+    return { date, local, ufNasc };
   })();
 
-  // Editable fields
+  // Editable fields — separated like the create form
   const [form, setForm] = useState({
     nome: usuario.nome || '',
     cpf: usuario.cpf || '',
-    uf: usuario.uf || '',
+    uf: usuario.uf || '', // UF de Emissão (Dados da CNH)
     sexo: usuario.sexo || '',
     nacionalidade: usuario.nacionalidade || '',
-    dataNascimento: parsedDataNasc.date + (((usuario as any).local_nascimento || parsedDataNasc.local) ? `, ${(usuario as any).local_nascimento || parsedDataNasc.local}` : ''),
+    dataNascimentoData: parsedDataNasc.date,
+    localNascimento: (usuario as any).local_nascimento || parsedDataNasc.local,
+    ufNascimento: parsedDataNasc.ufNasc, // UF Nasc. (Dados Pessoais)
     numeroRegistro: usuario.numero_registro || '',
     categoria: usuario.categoria || '',
     cnhDefinitiva: usuario.cnh_definitiva || 'sim',
