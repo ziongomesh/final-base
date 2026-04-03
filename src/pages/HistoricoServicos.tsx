@@ -1376,7 +1376,7 @@ function CrlvHistoryCard({
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 self-end sm:self-center flex-wrap">
-          <CopyDataButton text={`CRLV Digital ✅\n\n🚗 Placa: ${registro.placa}\n📋 Proprietário: ${registro.nome_proprietario}\n📄 Renavam: ${registro.renavam}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`} />
+          <CopyDataButton text={`CRLV Digital ✅\n\n👤 Proprietário: ${registro.nome_proprietario}\n🚗 Placa: ${registro.placa}\n📄 Renavam: ${registro.renavam}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`} />
           {registro.pdf_url && (
             <Button variant="outline" size="sm" asChild>
               <a href={resolveUploadUrl(registro.pdf_url)} target="_blank" rel="noopener noreferrer">

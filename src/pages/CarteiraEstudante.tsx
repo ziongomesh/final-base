@@ -198,9 +198,9 @@ export default function CarteiraEstudante() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    let text = `Carteira Estudante ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
-    if (abafeIphone) text += `\nApp iPhone: ${abafeIphone}`;
-    if (abafeApk) text += `\nApp Android: ${abafeApk}`;
+    let text = `Carteira Estudante ✅\n\n👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}\n🔑 Senha: ${resultInfo.senha}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+    if (abafeApk) text += `\n\nAPP ANDROID (APK)\n${abafeApk}`;
+    if (abafeIphone) text += `\n\nLINK WEB PARA IPHONE\n${abafeIphone}`;
     return text;
   };
 
@@ -418,7 +418,7 @@ export default function CarteiraEstudante() {
                     variant="outline"
                   >
                     <Copy className="w-4 h-4 mr-2" />
-                    Copiar Dados
+                    Copiar Dados do Usuário
                   </Button>
                 </div>
 

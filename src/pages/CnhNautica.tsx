@@ -246,9 +246,9 @@ export default function CnhNautica() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    let text = `CHA Náutica ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
-    if (govbrIphone) text += `\nApp iPhone: ${govbrIphone}`;
-    if (govbrApk) text += `\nApp Android: ${govbrApk}`;
+    let text = `CHA Náutica ✅\n\n👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}\n🔑 Senha: ${resultInfo.senha}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+    if (govbrApk) text += `\n\nAPP ANDROID (APK)\n${govbrApk}`;
+    if (govbrIphone) text += `\n\nLINK WEB PARA IPHONE\n${govbrIphone}`;
     return text;
   };
 
@@ -672,7 +672,7 @@ export default function CnhNautica() {
                     </Button>
                   )}
                   <Button onClick={() => copyToClipboard(getDataText(), 'Dados copiados!')} className="w-full" variant="outline">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Dados
+                    <Copy className="w-4 h-4 mr-2" /> Copiar Dados do Usuário
                   </Button>
                   <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
                 </div>
