@@ -1029,9 +1029,7 @@ export default function CnhDigital() {
 
                     <FormField control={form.control} name="codigo_seguranca" render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center">
-                          <FormLabel className="text-xs">Cód. Segurança <span className="text-destructive">*</span></FormLabel>
-                          <WhereIsTooltip description="Código na lateral direita da CNH." />
+                        <FormLabel className="text-xs">Cód. Segurança <span className="text-destructive">*</span></FormLabel>
                         </div>
                         <FormControl>
                           <div className="flex gap-1">
