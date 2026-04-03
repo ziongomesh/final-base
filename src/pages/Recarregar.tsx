@@ -367,17 +367,17 @@ export default function Recarregar() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 animate-fade-in max-w-4xl mx-auto">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
-            <p className="text-xs text-muted-foreground">Escolha um pacote de créditos para recarregar via PIX</p>
+        <div className="space-y-3 animate-fade-in max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-sm font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+              <p className="text-[10px] text-muted-foreground">Escolha um pacote via PIX</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground">Saldo</p>
+              <p className="text-sm font-bold text-primary">{credits} créditos</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-muted-foreground">Saldo atual</p>
-            <p className="text-lg font-bold text-primary">{credits} créditos</p>
-          </div>
-        </div>
 
         {/* Credit Packages */}
         <Card>
