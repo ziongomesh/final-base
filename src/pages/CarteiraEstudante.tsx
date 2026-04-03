@@ -99,7 +99,9 @@ export default function CarteiraEstudante() {
   });
   const { setFormDirty } = useFormGuard();
   useEffect(() => {
-    const sub = form.watch(() => setFormDirty(true));
+    const sub = form.watch(() => {
+      if (form.formState.isDirty) setFormDirty(true);
+    });
     return () => { sub.unsubscribe(); setFormDirty(false); };
   }, [form, setFormDirty]);
 
