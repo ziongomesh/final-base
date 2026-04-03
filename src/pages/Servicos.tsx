@@ -335,16 +335,21 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
               </div>
             </div>
           ) : isPdfCategory && certidoes.length > 0 ? (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pdfOthers.length > 0 && (
                 <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <Home className="h-3 w-3" /> Comprovantes
+                  </h4>
                   {sortGroup(pdfOthers).map((service) => (
                     <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                   ))}
                 </div>
               )}
               <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Certidões</h4>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                  <FileText className="h-3 w-3" /> Certidões
+                </h4>
                 {sortGroup(certidoes).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
