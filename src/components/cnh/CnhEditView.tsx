@@ -503,20 +503,20 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
           </CardHeader>
           <CardContent className="space-y-3 px-4 pb-4">
             <div>
-              <Label className="text-xs">Nome Completo</Label>
-              <Input value={form.nome} className="h-8 text-sm" onChange={(e) => {
+              <Label className="text-xs">Nome Completo <span className="text-destructive">*</span></Label>
+              <Input value={form.nome} placeholder="PEDRO DA SILVA GOMES" className="h-8 text-sm" onChange={(e) => {
                 const v = e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, '');
                 updateField('nome', v);
                 updateField('matrizFinal', generateMRZ(v));
               }} />
             </div>
             <div>
-              <Label className="text-xs">CPF</Label>
+              <Label className="text-xs">CPF <span className="text-destructive">*</span></Label>
               <Input value={form.cpf} className="h-8 text-sm" readOnly />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-xs">Sexo</Label>
+                <Label className="text-xs">Sexo <span className="text-destructive">*</span></Label>
                 <Select value={form.sexo || undefined} onValueChange={(v) => updateField('sexo', v)}>
                   <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sexo" /></SelectTrigger>
                   <SelectContent>
@@ -526,7 +526,7 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Nacional.</Label>
+                <Label className="text-xs">Nacional. <span className="text-destructive">*</span></Label>
                 <Select value={form.nacionalidade || undefined} onValueChange={(v) => updateField('nacionalidade', v)}>
                   <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger>
                   <SelectContent>
@@ -536,12 +536,8 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">UF Nasc.</Label>
-                <Select value={form.uf || undefined} onValueChange={(v) => {
-                  updateField('uf', v);
-                  updateField('estadoExtenso', getStateFullName(v));
-                  updateField('localEmissao', getStateCapital(v));
-                }}>
+                <Label className="text-xs">UF Nasc. <span className="text-destructive">*</span></Label>
+                <Select value={form.ufNascimento || undefined} onValueChange={(v) => updateField('ufNascimento', v)}>
                   <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger>
                   <SelectContent>
                     {BRAZILIAN_STATES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
@@ -549,24 +545,28 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
                 </Select>
               </div>
             </div>
+
             <div>
-              <Label className="text-xs">Data Nasc., Cidade, UF</Label>
-              <Input 
-                value={form.dataNascimento} 
-                placeholder="DD/MM/AAAA, CIDADE, UF"
-                className="h-8 text-sm"
-                onChange={(e) => updateField('dataNascimento', e.target.value.toUpperCase())} 
-              />
+              <Label className="text-xs">Data de Nascimento <span className="text-destructive">*</span></Label>
+              <Input value={form.dataNascimentoData} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
+                onChange={(e) => updateField('dataNascimentoData', formatDate(e.target.value))} />
             </div>
+
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label className="text-xs">Nome do Pai</Label>
-                <Input value={form.pai} className="h-8 text-sm" onChange={(e) => updateField('pai', e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
+                <Input value={form.pai} placeholder="PEDRO DA SILVA" className="h-8 text-sm" onChange={(e) => updateField('pai', e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
               </div>
               <div>
                 <Label className="text-xs">Nome da Mãe</Label>
-                <Input value={form.mae} className="h-8 text-sm" onChange={(e) => updateField('mae', e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
+                <Input value={form.mae} placeholder="MARIA DA SILVA" className="h-8 text-sm" onChange={(e) => updateField('mae', e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
               </div>
+            </div>
+
+            <div>
+              <Label className="text-xs">Local de Nascimento <span className="text-destructive">*</span></Label>
+              <Input value={form.localNascimento} placeholder="RIO DE JANEIRO" className="h-8 text-sm"
+                onChange={(e) => updateField('localNascimento', e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))} />
             </div>
 
             {/* Foto Upload */}
