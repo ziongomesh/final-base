@@ -421,10 +421,63 @@ export default function CnhDigital() {
     updateObsField(newObs, customObs);
   };
 
-  const handleCustomObsChange = (value: string) => {
-    setCustomObs(value);
-    updateObsField(selectedObs, value);
+  // Formatar observações
+  const formatarObs = (obs: string): string => {
+    if (!obs) return '';
+    const limpa = obs.toString().trim().replace(/;+$/g, '').trim();
+    if (!limpa) return '';
+    if (!limpa.includes(',')) return limpa;
+    const itens = limpa.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (itens.length === 0) return '';
+    return itens.join(', ');
   };
+
+  // Live preview regeneration
+  const watchedValues = form.watch();
+
+  const regenerateCanvases = useCallback(async () => {
+    const values = form.getValues();
+    const combinedDateNascimento = values.dataNascimentoData
+      ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
+      : '';
+
+    const cnhData = {
+      ...values,
+      dataNascimento: combinedDateNascimento,
+      foto: fotoPerfil,
+      assinatura: assinatura,
+    };
+
+    try {
+      if (canvasFrenteRef.current) {
+        await generateCNH(canvasFrenteRef.current, cnhData, values.cnhDefinitiva || 'sim');
+        setPreviewFrenteUrl(canvasFrenteRef.current.toDataURL('image/png'));
+      }
+      if (canvasMeioRef.current) {
+        await generateCNHMeio(canvasMeioRef.current, {
+          ...cnhData,
+          obs: formatarObs(values.obs || ''),
+          estadoExtenso: values.estadoExtenso || getStateFullName(values.uf),
+        });
+        setPreviewMeioUrl(canvasMeioRef.current.toDataURL('image/png'));
+      }
+      if (canvasVersoRef.current) {
+        await generateCNHVerso(canvasVersoRef.current, cnhData);
+        setPreviewVersoUrl(canvasVersoRef.current.toDataURL('image/png'));
+      }
+    } catch (err) {
+      console.warn('Erro ao gerar preview ao vivo:', err);
+    }
+  }, [fotoPerfil, assinatura]);
+
+  // Debounced live regeneration
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      regenerateCanvases();
+    }, 500);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [watchedValues, fotoPerfil, assinatura, regenerateCanvases]);
 
   if (loading) {
     return (
@@ -444,6 +497,7 @@ export default function CnhDigital() {
     
     const extraMissing: string[] = [];
     if (!fotoPerfil) extraMissing.push('Foto de Perfil');
+    if (!assinatura) extraMissing.push('Assinatura Digital');
     const allMissing = [...missingFields, ...extraMissing];
     if (allMissing.length > 0) {
       toast.error(`Campos obrigatórios não preenchidos: ${allMissing.join(', ')}`, {
@@ -453,7 +507,7 @@ export default function CnhDigital() {
     }
   };
 
-  const handleGeneratePreview = async (data: CnhFormData) => {
+  const handleCreateAccess = async (data: CnhFormData) => {
     setTriedSubmit(true);
     if (!fotoPerfil) {
       toast.error('Foto de perfil é obrigatória', { position: 'top-right' });
@@ -463,67 +517,164 @@ export default function CnhDigital() {
       toast.error('Assinatura digital é obrigatória', { position: 'top-right' });
       return;
     }
+    setShowConfirmDialog(true);
+  };
 
-    // Combine birth date fields into dataNascimento
+  const handleSaveToDatabase = async () => {
+    if (isCreatingCnh) return;
+    const data = form.getValues();
     const combinedDateNascimento = `${data.dataNascimentoData}, ${data.localNascimento}, ${data.ufNascimento}`;
+    
+    const cpf = data.cpf?.replace(/\D/g, '');
+    if (!cpf || cpf.length !== 11) {
+      toast.error('CPF inválido');
+      return;
+    }
 
-    const previewData = {
-      ...data,
-      dataNascimento: combinedDateNascimento,
-      foto: fotoPerfil,
-      assinatura: assinatura,
-    };
+    const adminStr = localStorage.getItem('admin');
+    if (!adminStr) {
+      toast.error('Sessão expirada. Faça login novamente.');
+      return;
+    }
+    const adminData = JSON.parse(adminStr);
 
-    setCnhPreviewData(previewData);
-    setShowPreview(true);
+    try {
+      if (adminData.session_token) {
+        const freshBalance = await api.credits.getBalance(adminData.id);
+        if (freshBalance !== null && freshBalance !== undefined) {
+          const credits = typeof freshBalance === 'object' ? (freshBalance as any).credits : freshBalance;
+          adminData.creditos = credits;
+          localStorage.setItem('admin', JSON.stringify({ ...JSON.parse(adminStr), creditos: credits }));
+        }
+      }
+    } catch { }
+
+    if (adminData.creditos <= 0) {
+      toast.error('Créditos insuficientes para criar CNH.');
+      return;
+    }
+
+    setIsCreatingCnh(true);
+    setCreationStep('Preparando dados da CNH...');
+
+    try {
+      setCreationStep('Gerando imagens...');
+      await regenerateCanvases();
+
+      const cnhFrenteBase64 = canvasFrenteRef.current?.toDataURL('image/png') || '';
+      const cnhMeioBase64 = canvasMeioRef.current?.toDataURL('image/png') || '';
+      const cnhVersoBase64 = canvasVersoRef.current?.toDataURL('image/png') || '';
+
+      setCreationStep('Montando PDF...');
+      let pdfPageBase64 = '';
+      try {
+        pdfPageBase64 = await generateCNHPdfPage(cnhFrenteBase64, cnhMeioBase64, cnhVersoBase64);
+      } catch (pdfErr) {
+        console.warn('Erro ao gerar página PDF:', pdfErr);
+      }
+
+      let fotoBase64 = '';
+      if (fotoPerfil) {
+        fotoBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(fotoPerfil);
+        });
+      }
+
+      let assinaturaBase64 = '';
+      if (assinatura) {
+        assinaturaBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(assinatura);
+        });
+      }
+
+      setCreationStep('Salvando no servidor...');
+
+      const result = await cnhService.save({
+        admin_id: adminData.id,
+        session_token: adminData.session_token,
+        cpf: data.cpf,
+        nome: data.nome,
+        dataNascimento: combinedDateNascimento,
+        sexo: data.sexo,
+        nacionalidade: data.nacionalidade,
+        docIdentidade: data.docIdentidade,
+        categoria: data.categoria,
+        numeroRegistro: data.numeroRegistro,
+        dataEmissao: data.dataEmissao,
+        dataValidade: data.dataValidade,
+        hab: data.hab,
+        pai: data.pai,
+        mae: data.mae,
+        uf: data.uf,
+        localEmissao: data.localEmissao,
+        estadoExtenso: data.estadoExtenso,
+        espelho: data.espelho,
+        codigo_seguranca: data.codigo_seguranca,
+        renach: data.renach,
+        obs: data.obs,
+        matrizFinal: data.matrizFinal,
+        cnhDefinitiva: data.cnhDefinitiva || 'sim',
+        cnhFrenteBase64,
+        cnhMeioBase64,
+        cnhVersoBase64,
+        fotoBase64,
+        assinaturaBase64,
+        pdfBase64: pdfPageBase64,
+      });
+
+      setSuccessData({
+        id: result.id,
+        cpf: data.cpf,
+        nome: data.nome,
+        senha: result.senha || cpf.slice(-6),
+        pdf: result.pdf,
+        dataExpiracao: result.dataExpiracao,
+      });
+
+      const updatedAdmin = { ...adminData, creditos: adminData.creditos - 1 };
+      localStorage.setItem('admin', JSON.stringify(updatedAdmin));
+
+      setShowSuccessModal(true);
+      playSuccessSound();
+      toast.success('CNH criada com sucesso! 1 crédito descontado.');
+      
+      // Reset form
+      form.reset();
+      setFotoPerfil(null);
+      setAssinatura(null);
+      setSelectedObs([]);
+      setCustomObs('');
+      setTriedSubmit(false);
+    } catch (error: any) {
+      console.error('Erro ao salvar CNH:', error);
+      if (error.status === 409 && error.details) {
+        const details = error.details;
+        if (details.is_own) {
+          toast.error(`Este CPF já possui uma CNH cadastrada por você. Vá ao Histórico para excluí-la.`, {
+            duration: 8000,
+            action: { label: 'Ir ao Histórico', onClick: () => navigate('/historico') },
+          });
+        } else {
+          toast.error(`Este CPF já possui uma CNH cadastrada por ${details.creator_name || 'outro usuário'}.`, { duration: 8000 });
+        }
+      } else {
+        toast.error(error.message || 'Erro ao salvar CNH');
+      }
+    } finally {
+      setIsCreatingCnh(false);
+      setCreationStep('');
+    }
   };
 
-  const handleClosePreview = () => {
-    setShowPreview(false);
-    setCnhPreviewData(null);
+  const openImageModal = (url: string, title: string) => {
+    setModalImageUrl(url);
+    setModalImageTitle(title);
+    setShowImageModal(true);
   };
-
-  const handleEditFromPreview = () => {
-    setShowPreview(false);
-  };
-
-  const handleSaveSuccess = () => {
-    form.reset();
-    setFotoPerfil(null);
-    setAssinatura(null);
-    setSelectedObs([]);
-    setCustomObs('');
-  };
-
-  // Se estiver mostrando o preview
-  if (showPreview && cnhPreviewData) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6 max-w-6xl">
-          {/* Progress indicator */}
-          <div className="flex items-center gap-4 bg-card rounded-full px-6 py-3 border w-fit mx-auto">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">1</div>
-              <span className="text-sm font-medium">Preencher</span>
-            </div>
-            <div className="w-8 h-0.5 bg-border" />
-            <div className="flex items-center gap-2 text-primary">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">2</div>
-              <span className="text-sm font-medium">Visualizar</span>
-            </div>
-          </div>
-
-          <CnhPreview
-            cnhData={cnhPreviewData}
-            onClose={handleClosePreview}
-            onEdit={handleEditFromPreview}
-            onSaveSuccess={handleSaveSuccess}
-            isDemo={isDemo}
-          />
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout>
