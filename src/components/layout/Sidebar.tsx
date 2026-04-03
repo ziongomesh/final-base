@@ -1,10 +1,11 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { cn } from '@/lib/utils';
 import { 
   Home, LogOut, FolderOpen, Wrench, Download, Settings,
   History, Users, Send, CreditCard
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 
 interface NavItem {
