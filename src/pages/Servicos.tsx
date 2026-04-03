@@ -299,7 +299,7 @@ function CountryCard({ country }: { country: VipCountry }) {
       {open && (
         <div className="p-2 space-y-1 bg-transparent">
           {documentTypes.map((doc) => (
-            <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-border/40 bg-muted/30 opacity-60 cursor-default">
+            <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-white/5 bg-white/[0.02] opacity-60 cursor-default">
               <span className="flex-1 text-xs text-foreground">{doc}</span>
               <Badge variant="secondary" className="text-[9px] px-1.5 py-0">
                 <Clock className="h-2 w-2 mr-0.5" /> Breve
