@@ -494,7 +494,7 @@ export default function RgDigital() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium text-muted-foreground">Frente</h4>
-                      <div className="border rounded-lg overflow-hidden bg-muted/30">
+                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
                         {previewImages.frente ? (
                           <img src={previewImages.frente} alt="Frente" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                         ) : (
@@ -502,6 +502,7 @@ export default function RgDigital() {
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                           </div>
                         )}
+                        <WatermarkOverlay />
                       </div>
                     </div>
                     <div className="space-y-2">
