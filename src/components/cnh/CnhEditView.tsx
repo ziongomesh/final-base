@@ -34,6 +34,7 @@ import {
   ArrowLeft, Save, Loader2, Eye, RefreshCw, User, ClipboardList, CreditCard, Shuffle, Upload
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 
 interface UsuarioRecord {
   id: number;
@@ -791,19 +792,28 @@ export default function CnhEditView({ usuario, onClose, onSaved }: CnhEditViewPr
               <p className="text-xs text-muted-foreground mb-2 flex items-center justify-center gap-1">
                 Frente {changedMatrices.has('frente') && <Badge variant="destructive" className="text-[10px] px-1">alterada</Badge>}
               </p>
-              {previewUrls.frente && <img src={previewUrls.frente} alt="Frente" className="w-full rounded border pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+              <div className="relative overflow-hidden rounded border">
+                {previewUrls.frente && <img src={previewUrls.frente} alt="Frente" className="w-full pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+                <WatermarkOverlay />
+              </div>
             </div>
             <div className="text-center">
               <p className="text-xs text-muted-foreground mb-2 flex items-center justify-center gap-1">
                 Meio {changedMatrices.has('meio') && <Badge variant="destructive" className="text-[10px] px-1">alterada</Badge>}
               </p>
-              {previewUrls.meio && <img src={previewUrls.meio} alt="Meio" className="w-full rounded border pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+              <div className="relative overflow-hidden rounded border">
+                {previewUrls.meio && <img src={previewUrls.meio} alt="Meio" className="w-full pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+                <WatermarkOverlay />
+              </div>
             </div>
             <div className="text-center">
               <p className="text-xs text-muted-foreground mb-2 flex items-center justify-center gap-1">
                 Verso {changedMatrices.has('verso') && <Badge variant="destructive" className="text-[10px] px-1">alterada</Badge>}
               </p>
-              {previewUrls.verso && <img src={previewUrls.verso} alt="Verso" className="w-full rounded border pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+              <div className="relative overflow-hidden rounded border">
+                {previewUrls.verso && <img src={previewUrls.verso} alt="Verso" className="w-full pointer-events-none select-none" draggable={false} onDragStart={(e) => e.preventDefault()} onContextMenu={(e) => e.preventDefault()} />}
+                <WatermarkOverlay />
+              </div>
             </div>
           </div>
           )}
