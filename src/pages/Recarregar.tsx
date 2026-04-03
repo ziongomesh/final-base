@@ -367,41 +367,35 @@ export default function Recarregar() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="space-y-4 animate-fade-in max-w-4xl mx-auto">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Recarregar Créditos</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Escolha um pacote de créditos para recarregar via PIX
-            </p>
+            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+            <p className="text-xs text-muted-foreground">Escolha um pacote de créditos para recarregar via PIX</p>
           </div>
-          <div className="text-left sm:text-right">
-            <p className="text-xs sm:text-sm text-muted-foreground">Saldo atual</p>
-            <p className="text-xl sm:text-2xl font-bold text-primary">{credits} créditos</p>
+          <div className="text-right">
+            <p className="text-[10px] text-muted-foreground">Saldo atual</p>
+            <p className="text-lg font-bold text-primary">{credits} créditos</p>
           </div>
         </div>
 
         {/* Credit Packages */}
         <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <Tag className="h-5 w-5 text-primary" />
+          <CardHeader className="p-3 sm:p-4">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Tag className="h-4 w-4 text-primary" />
               Pacotes de Créditos
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Selecione um pacote para recarregar
-            </CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-6">
+          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-4">
             {/* Package Cards Grid */}
             {/* Section 1: Pacotes Populares */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Star className="h-4 w-4 text-primary fill-primary" />
-                <h3 className="font-semibold text-foreground">Pacotes Populares</h3>
-                <Badge variant="secondary" className="text-[10px]">Mais vendidos</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <Star className="h-3.5 w-3.5 text-primary fill-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Populares</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <TooltipProvider>
                   {POPULAR_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -411,7 +405,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
                               selectedPackage.credits === pkg.credits
                                 ? 'border-primary bg-primary/10'
                                 : 'border-primary/30 bg-primary/5 hover:border-primary'
@@ -422,7 +416,7 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-xl font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
                             <div className="text-xs text-muted-foreground">créditos</div>
                             <div className="mt-1">
                               <Badge variant="secondary" className="text-[10px]">
@@ -455,12 +449,11 @@ export default function Recarregar() {
 
             {/* Section 2: Pacotes Intermediários */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingDown className="h-4 w-4 text-green-500" />
-                <h3 className="font-semibold text-foreground">Pacotes Intermediários</h3>
-                <Badge variant="outline" className="text-[10px] text-green-600 border-green-500">Melhor custo-benefício</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="h-3.5 w-3.5 text-green-500" />
+                <h3 className="font-semibold text-sm text-foreground">Intermediários</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <TooltipProvider>
                   {INTERMEDIATE_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -470,7 +463,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
                               selectedPackage.credits === pkg.credits
                                 ? 'border-primary bg-primary/10'
                                 : 'border-muted hover:border-primary/50'
@@ -481,7 +474,7 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-xl font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
                             <div className="text-xs text-muted-foreground">créditos</div>
                             <div className="mt-1">
                               <Badge variant="secondary" className="text-[10px]">
@@ -514,12 +507,11 @@ export default function Recarregar() {
 
             {/* Section 3: Grandes Volumes */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <CreditCard className="h-4 w-4 text-amber-500" />
-                <h3 className="font-semibold text-foreground">Grandes Volumes</h3>
-                <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-500">Máximo desconto</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <CreditCard className="h-3.5 w-3.5 text-amber-500" />
+                <h3 className="font-semibold text-sm text-foreground">Grandes Volumes</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                 <TooltipProvider>
                   {LARGE_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -531,7 +523,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
                               isPremium
                                 ? selectedPackage.credits === pkg.credits
                                   ? 'border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-orange-500/20 ring-2 ring-amber-400/50 shadow-lg shadow-amber-500/20'
@@ -557,8 +549,8 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className={`text-xl font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
-                              {isPremium && <Gem className="h-4 w-4 inline mr-1 text-amber-500" />}
+                            <div className={`text-lg font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
+                              {isPremium && <Gem className="h-3.5 w-3.5 inline mr-1 text-amber-500" />}
                               {pkg.credits}
                             </div>
                             <div className="text-xs text-muted-foreground">créditos</div>
@@ -592,9 +584,9 @@ export default function Recarregar() {
             </div>
 
             {/* Slider Section */}
-            <div className="bg-muted/30 rounded-xl p-6">
-              <p className="text-sm text-muted-foreground mb-4">Ou arraste para selecionar:</p>
-              <div className="px-3">
+            <div className="bg-muted/30 rounded-lg p-4">
+              <p className="text-xs text-muted-foreground mb-3">Ou arraste para selecionar:</p>
+              <div className="px-2">
                 <Slider
                   value={[sliderValue]}
                   onValueChange={handleSliderChange}
@@ -604,13 +596,13 @@ export default function Recarregar() {
                   className="w-full"
                 />
               </div>
-              <div className="flex justify-between mt-4 text-xs text-muted-foreground">
+              <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
                 {CREDIT_PACKAGES.map((pkg, index) => (
                   <button
                     key={pkg.credits}
                     onClick={() => handleSelectPackage(pkg, index)}
-                    className={`min-w-[2rem] text-center hover:text-primary transition-colors ${
-                      sliderValue === index ? 'text-primary font-bold scale-110' : ''
+                    className={`min-w-[1.5rem] text-center hover:text-primary transition-colors ${
+                      sliderValue === index ? 'text-primary font-bold' : ''
                     }`}
                   >
                     {pkg.credits}
@@ -620,36 +612,34 @@ export default function Recarregar() {
             </div>
 
             {/* Payment Summary */}
-            <div className="p-4 rounded-lg gradient-green text-success-foreground">
+            <div className="p-3 rounded-lg gradient-green text-success-foreground">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-sm opacity-90">Pacote selecionado</p>
-                  <p className="text-2xl font-bold">{selectedPackage.credits} créditos</p>
-                  <p className="text-xs opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
+                  <p className="text-xs opacity-90">Pacote selecionado</p>
+                  <p className="text-lg font-bold">{selectedPackage.credits} créditos</p>
+                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm opacity-90">Total</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-xs opacity-90">Total</p>
+                  <p className="text-lg font-bold">
                     R$ {selectedPackage.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   {calculateSavings(selectedPackage, BASE_PRICE).savings > 0 && (
-                    <p className="text-xs font-medium flex items-center justify-end gap-1">
+                    <p className="text-[10px] font-medium flex items-center justify-end gap-1">
                       <TrendingDown className="h-3 w-3" />
                       Economia: R$ {calculateSavings(selectedPackage, BASE_PRICE).savings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  className="flex-1 h-12 text-lg bg-white/20 hover:bg-white/30 text-white" 
-                  onClick={handleRecharge} 
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <QrCode className="mr-2 h-5 w-5" />}
-                  {isProcessing ? 'Gerando PIX...' : 'Pagar com PIX'}
-                </Button>
-              </div>
+              <Button 
+                className="w-full h-10 text-sm bg-white/20 hover:bg-white/30 text-white" 
+                onClick={handleRecharge} 
+                disabled={isProcessing}
+              >
+                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <QrCode className="mr-2 h-4 w-4" />}
+                {isProcessing ? 'Gerando PIX...' : 'Pagar com PIX'}
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -1160,15 +1150,15 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   // ===== REVENDEDOR DO ADMIN 3: RECARGA VIA PIX =====
   return (
     <DashboardLayout>
-      <div className="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="space-y-4 animate-fade-in max-w-4xl mx-auto">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Recarregar Créditos</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Escolha um pacote ou compre créditos avulsos via PIX</p>
+            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+            <p className="text-xs text-muted-foreground">Escolha um pacote ou compre créditos avulsos via PIX</p>
           </div>
-          <div className="text-left sm:text-right">
-            <p className="text-xs sm:text-sm text-muted-foreground">Saldo atual</p>
-            <p className="text-xl sm:text-2xl font-bold text-primary">{credits} créditos</p>
+          <div className="text-right">
+            <p className="text-[10px] text-muted-foreground">Saldo atual</p>
+            <p className="text-lg font-bold text-primary">{credits} créditos</p>
           </div>
         </div>
 
