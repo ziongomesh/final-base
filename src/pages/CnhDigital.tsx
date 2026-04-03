@@ -718,7 +718,7 @@ export default function CnhDigital() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview, handleFormInvalid)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleCreateAccess, handleFormInvalid)} className="space-y-6">
             {/* CPF Header Card */}
             <Card>
               <CardContent className="pt-6">
