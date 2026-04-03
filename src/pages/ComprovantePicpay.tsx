@@ -109,7 +109,6 @@ export default function ComprovantePicpay() {
       toast.success('Comprovante PicPay criado com sucesso!');
 
       // Copy data
-      const downloadLinks = await mysqlApi.settings.getDownloadLinks?.() || {};
       const copyText = [
         `👤 CPF: ${formData.paraCpf || 'N/A'}`,
         `🔑 Senha: ${senha}`,
@@ -118,12 +117,6 @@ export default function ComprovantePicpay() {
         `⚠️ INFORMAÇÕES DO SERVIÇO`,
         `Tipo: Comprovante PIX PicPay`,
         `Criado em: ${new Date().toLocaleDateString('pt-BR')}`,
-        '',
-        `📱 APP ANDROID (APK):`,
-        downloadLinks.picpay_apk || downloadLinks.govbr_apk || 'N/A',
-        '',
-        `🌐 LINK WEB PARA IPHONE:`,
-        downloadLinks.picpay_iphone || downloadLinks.govbr_iphone || 'N/A',
       ].join('\n');
 
       try {
