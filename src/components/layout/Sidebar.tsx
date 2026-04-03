@@ -36,7 +36,7 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[68px] bg-[hsl(201,40%,18%)] flex flex-col items-center py-5 z-50">
+    <aside className="fixed left-0 top-0 h-screen w-[68px] bg-[#0a111c] flex flex-col items-center py-5 z-50 border-r border-white/5">
       {/* Logo */}
       <Link to="/dashboard" className="mb-8 hover:opacity-80 transition-opacity">
         <Logo className="h-8 w-8" />
@@ -54,8 +54,8 @@ export function Sidebar() {
                     className={cn(
                       'w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150',
                       isActive
-                        ? 'bg-primary text-white shadow-md shadow-primary/30'
-                        : 'text-white/50 hover:text-white hover:bg-white/10'
+                        ? 'bg-[#5ba8d4] text-white shadow-md shadow-[#5ba8d4]/30'
+                        : 'text-white/30 hover:text-white/60 hover:bg-white/5'
                     )}
                   >
                     <item.icon className="h-[18px] w-[18px]" />
@@ -75,7 +75,7 @@ export function Sidebar() {
         <TooltipTrigger asChild>
           <button
             onClick={signOut}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="h-[18px] w-[18px]" />
           </button>
