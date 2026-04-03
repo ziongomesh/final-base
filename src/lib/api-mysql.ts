@@ -506,6 +506,10 @@ export const mysqlApi = {
     list: async () => fetchAPI('/suggestions'),
     markRead: async (id: number) => fetchAPI(`/suggestions/${id}/read`, { method: 'PUT' }),
   },
+
+  picpay: {
+    save: async (data: any) => fetchAPI('/picpay/save', { method: 'POST', body: JSON.stringify(data) }),
+  },
 };
 
 export default mysqlApi;
