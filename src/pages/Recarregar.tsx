@@ -391,11 +391,11 @@ export default function Recarregar() {
             {/* Package Cards Grid */}
             {/* Section 1: Pacotes Populares */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="h-3.5 w-3.5 text-primary fill-primary" />
-                <h3 className="font-semibold text-sm text-foreground">Populares</h3>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Star className="h-3 w-3 text-primary fill-primary" />
+                <h3 className="font-semibold text-xs text-foreground">Populares</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                 <TooltipProvider>
                   {POPULAR_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
