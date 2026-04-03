@@ -423,7 +423,7 @@ export default function Recarregar() {
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
                             </div>
-                            <div className="mt-1 text-sm font-semibold text-primary">
+                            <div className="mt-0.5 text-xs font-semibold text-primary">
                               R$ {pkg.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </div>
                           </button>
