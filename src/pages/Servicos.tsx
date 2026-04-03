@@ -446,7 +446,7 @@ export default function Servicos() {
             </div>
 
             {/* Observação */}
-            <div className="rounded-lg border border-border bg-muted/30 p-3">
+            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
               <p className="text-xs font-semibold text-foreground mb-1">ℹ️ Como funciona?</p>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Após todos os módulos do Brasil nativos da base estiverem disponíveis, iremos disponibilizar o internacional.
