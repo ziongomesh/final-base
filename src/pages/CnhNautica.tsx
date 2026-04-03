@@ -72,6 +72,7 @@ export default function CnhNautica() {
   const [govbrIphone, setGovbrIphone] = useState('');
   const [galleryType, setGalleryType] = useState<'foto' | null>(null);
   const chaPreviewRef = useRef<ChaPreviewHandle>(null);
+  const liveChaPreviewRef = useRef<ChaPreviewHandle>(null);
   const { cpfDuplicate, showDuplicateModal, checkCpf, dismissModal, resetCheck } = useCpfCheck({
     admin_id: admin?.id || 0,
     session_token: admin?.session_token || '',
