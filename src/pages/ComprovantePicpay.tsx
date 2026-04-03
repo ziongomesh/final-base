@@ -67,17 +67,19 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">Para (Nome do destinatário)</Label>
                   <Input
-                    placeholder="Nome completo do destinatário"
+                    placeholder="NOME COMPLETO DO DESTINATÁRIO"
                     value={formData.paraNome}
-                    onChange={(e) => updateField('paraNome', e.target.value)}
+                    onChange={(e) => updateField('paraNome', e.target.value.toUpperCase())}
+                    className="uppercase"
                   />
                 </div>
                 <div>
                   <Label className="text-xs">De (Nome do remetente)</Label>
                   <Input
-                    placeholder="Nome completo do remetente"
+                    placeholder="NOME COMPLETO DO REMETENTE"
                     value={formData.deNome}
-                    onChange={(e) => updateField('deNome', e.target.value)}
+                    onChange={(e) => updateField('deNome', e.target.value.toUpperCase())}
+                    className="uppercase"
                   />
                 </div>
               </CardContent>
