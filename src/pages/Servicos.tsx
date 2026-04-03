@@ -177,7 +177,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
   return (
     <div ref={cardRef} className="relative">
       <div
-        className={`bg-card border border-border rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
+        className={`bg-white/5 border border-white/10 rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
         onClick={() => !isMaintenance && canAccess && navigate(service.route)}
       >
         <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
