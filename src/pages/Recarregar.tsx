@@ -367,35 +367,35 @@ export default function Recarregar() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 animate-fade-in max-w-4xl mx-auto">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
-            <p className="text-xs text-muted-foreground">Escolha um pacote de créditos para recarregar via PIX</p>
+        <div className="space-y-3 animate-fade-in max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-sm font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+              <p className="text-[10px] text-muted-foreground">Escolha um pacote via PIX</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground">Saldo</p>
+              <p className="text-sm font-bold text-primary">{credits} créditos</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-muted-foreground">Saldo atual</p>
-            <p className="text-lg font-bold text-primary">{credits} créditos</p>
-          </div>
-        </div>
 
         {/* Credit Packages */}
         <Card>
-          <CardHeader className="p-3 sm:p-4">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Tag className="h-4 w-4 text-primary" />
+          <CardHeader className="p-2.5 sm:p-3">
+            <CardTitle className="flex items-center gap-2 text-xs">
+              <Tag className="h-3.5 w-3.5 text-primary" />
               Pacotes de Créditos
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-4">
+          <CardContent className="p-2.5 sm:p-3 pt-0 sm:pt-0 space-y-3">
             {/* Package Cards Grid */}
             {/* Section 1: Pacotes Populares */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="h-3.5 w-3.5 text-primary fill-primary" />
-                <h3 className="font-semibold text-sm text-foreground">Populares</h3>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Star className="h-3 w-3 text-primary fill-primary" />
+                <h3 className="font-semibold text-xs text-foreground">Populares</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                 <TooltipProvider>
                   {POPULAR_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -405,7 +405,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2 rounded-lg border-2 transition-all text-left relative ${
                               selectedPackage.credits === pkg.credits
                                 ? 'border-primary bg-primary/10'
                                 : 'border-primary/30 bg-primary/5 hover:border-primary'
@@ -416,14 +416,14 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
-                            <div className="text-xs text-muted-foreground">créditos</div>
-                            <div className="mt-1">
+                            <div className="text-base font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-[10px] text-muted-foreground">créditos</div>
+                            <div className="mt-0.5">
                               <Badge variant="secondary" className="text-[10px]">
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
                             </div>
-                            <div className="mt-1 text-sm font-semibold text-primary">
+                            <div className="mt-0.5 text-xs font-semibold text-primary">
                               R$ {pkg.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </div>
                           </button>
@@ -449,11 +449,11 @@ export default function Recarregar() {
 
             {/* Section 2: Pacotes Intermediários */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingDown className="h-3.5 w-3.5 text-green-500" />
-                <h3 className="font-semibold text-sm text-foreground">Intermediários</h3>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <TrendingDown className="h-3 w-3 text-green-500" />
+                <h3 className="font-semibold text-xs text-foreground">Intermediários</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                 <TooltipProvider>
                   {INTERMEDIATE_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -463,7 +463,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2 rounded-lg border-2 transition-all text-left relative ${
                               selectedPackage.credits === pkg.credits
                                 ? 'border-primary bg-primary/10'
                                 : 'border-muted hover:border-primary/50'
@@ -474,14 +474,14 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className="text-lg font-bold text-foreground">{pkg.credits}</div>
-                            <div className="text-xs text-muted-foreground">créditos</div>
-                            <div className="mt-1">
+                            <div className="text-base font-bold text-foreground">{pkg.credits}</div>
+                            <div className="text-[10px] text-muted-foreground">créditos</div>
+                            <div className="mt-0.5">
                               <Badge variant="secondary" className="text-[10px]">
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
                             </div>
-                            <div className="mt-1 text-sm font-semibold text-primary">
+                            <div className="mt-0.5 text-xs font-semibold text-primary">
                               R$ {pkg.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </div>
                           </button>
@@ -507,11 +507,11 @@ export default function Recarregar() {
 
             {/* Section 3: Grandes Volumes */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <CreditCard className="h-3.5 w-3.5 text-amber-500" />
-                <h3 className="font-semibold text-sm text-foreground">Grandes Volumes</h3>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <CreditCard className="h-3 w-3 text-amber-500" />
+                <h3 className="font-semibold text-xs text-foreground">Grandes Volumes</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                 <TooltipProvider>
                   {LARGE_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
@@ -523,7 +523,7 @@ export default function Recarregar() {
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => handleSelectPackage({ ...pkg, popular: false }, index)}
-                            className={`p-2.5 rounded-lg border-2 transition-all text-left relative ${
+                            className={`p-2 rounded-lg border-2 transition-all text-left relative ${
                               isPremium
                                 ? selectedPackage.credits === pkg.credits
                                   ? 'border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-orange-500/20 ring-2 ring-amber-400/50 shadow-lg shadow-amber-500/20'
@@ -549,17 +549,17 @@ export default function Recarregar() {
                                 -{percentOff}%
                               </div>
                             )}
-                            <div className={`text-lg font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
-                              {isPremium && <Gem className="h-3.5 w-3.5 inline mr-1 text-amber-500" />}
+                            <div className={`text-base font-bold ${isPremium ? 'text-amber-500' : 'text-foreground'}`}>
+                              {isPremium && <Gem className="h-3 w-3 inline mr-0.5 text-amber-500" />}
                               {pkg.credits}
                             </div>
-                            <div className="text-xs text-muted-foreground">créditos</div>
-                            <div className="mt-1">
-                              <Badge variant={isPremium ? "default" : "secondary"} className={`text-[10px] ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0' : ''}`}>
+                            <div className="text-[10px] text-muted-foreground">créditos</div>
+                            <div className="mt-0.5">
+                              <Badge variant={isPremium ? "default" : "secondary"} className={`text-[9px] ${isPremium ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0' : ''}`}>
                                 R$ {pkg.unitPrice.toFixed(2)}/un
                               </Badge>
                             </div>
-                            <div className={`mt-1 text-sm font-semibold ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                            <div className={`mt-0.5 text-xs font-semibold ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
                               R$ {pkg.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </div>
                           </button>
@@ -584,8 +584,8 @@ export default function Recarregar() {
             </div>
 
             {/* Slider Section */}
-            <div className="bg-muted/30 rounded-lg p-4">
-              <p className="text-xs text-muted-foreground mb-3">Ou arraste para selecionar:</p>
+            <div className="bg-muted/30 rounded-lg p-3">
+              <p className="text-[10px] text-muted-foreground mb-2">Ou arraste para selecionar:</p>
               <div className="px-2">
                 <Slider
                   value={[sliderValue]}
@@ -612,16 +612,16 @@ export default function Recarregar() {
             </div>
 
             {/* Payment Summary */}
-            <div className="p-3 rounded-lg gradient-green text-success-foreground">
-              <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-lg gradient-green text-success-foreground">
+              <div className="flex items-center justify-between mb-1.5">
                 <div>
-                  <p className="text-xs opacity-90">Pacote selecionado</p>
-                  <p className="text-lg font-bold">{selectedPackage.credits} créditos</p>
-                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
+                  <p className="text-[10px] opacity-90">Selecionado</p>
+                  <p className="text-sm font-bold">{selectedPackage.credits} créditos</p>
+                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)}/un</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs opacity-90">Total</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-[10px] opacity-90">Total</p>
+                  <p className="text-sm font-bold">
                     R$ {selectedPackage.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   {calculateSavings(selectedPackage, BASE_PRICE).savings > 0 && (
@@ -633,7 +633,7 @@ export default function Recarregar() {
                 </div>
               </div>
               <Button 
-                className="w-full h-10 text-sm bg-white/20 hover:bg-white/30 text-white" 
+                className="w-full h-8 text-xs bg-white/20 hover:bg-white/30 text-white" 
                 onClick={handleRecharge} 
                 disabled={isProcessing}
               >
