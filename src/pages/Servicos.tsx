@@ -57,6 +57,15 @@ const categories: ServiceCategory[] = [
     ],
   },
   {
+    title: 'Documentos em Foto',
+    icon: Camera,
+    services: [
+      { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 1, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+    ],
+  },
+  {
     title: 'Carteira Estudantil',
     icon: IdCard,
     services: [
