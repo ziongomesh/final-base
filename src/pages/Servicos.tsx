@@ -268,12 +268,15 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
   const isAtestados = cat.title === 'Atestados';
+  const isFoto = cat.title === 'Documentos em Foto';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
   const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
+  const fotoDocumentos = cat.services.filter(s => s.fotoGroup === 'documentos');
+  const fotoCartoes = cat.services.filter(s => s.fotoGroup === 'cartoes');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
