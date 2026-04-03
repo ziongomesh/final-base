@@ -186,12 +186,12 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
             : <Icon className="h-7 w-7 text-primary" />}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm text-foreground truncate">{service.name}</h3>
-          <p className="text-xs text-muted-foreground truncate">{service.description}</p>
+          <h3 className="font-semibold text-sm text-white truncate">{service.name}</h3>
+          <p className="text-xs text-white/40 truncate">{service.description}</p>
           {service.specs && service.specs.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
               {service.specs.map((spec) => (
-                <span key={spec} className="text-[9px] text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">{spec}</span>
+                <span key={spec} className="text-[9px] text-white/30 bg-white/5 px-1.5 py-0.5 rounded">{spec}</span>
               ))}
             </div>
           )}
