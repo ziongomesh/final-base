@@ -228,6 +228,55 @@ export default function RgDigital() {
     }
   }, [selectedUf, form]);
 
+  // Live preview regeneration
+  const watchedValues = form.watch();
+  const regenerateLivePreview = useCallback(async () => {
+    const values = form.getValues();
+    if (!fotoPerfil || !assinatura || !values.nomeCompleto) return;
+    const rgData: RgData = {
+      nomeCompleto: values.nomeCompleto,
+      nomeSocial: values.nomeSocial,
+      cpf: values.cpf,
+      dataNascimento: values.dataNascimento,
+      naturalidade: values.naturalidade,
+      genero: values.genero,
+      nacionalidade: values.nacionalidade,
+      validade: values.validade,
+      uf: values.uf,
+      dataEmissao: values.dataEmissao,
+      local: values.local,
+      orgaoExpedidor: values.orgaoExpedidor,
+      pai: values.pai,
+      mae: values.mae,
+      foto: fotoPerfil,
+      assinatura: assinatura,
+    };
+    try {
+      if (liveCanvasFrenteRef.current) {
+        await generateRGFrente(liveCanvasFrenteRef.current, rgData);
+        setLivePreviewImages(prev => ({ ...prev, frente: liveCanvasFrenteRef.current!.toDataURL('image/png') }));
+      }
+      if (liveCanvasVersoRef.current) {
+        const cleanCpf = values.cpf.replace(/\D/g, '');
+        const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
+        const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
+        await generateRGVerso(liveCanvasVersoRef.current, rgData, qrUrl);
+        setLivePreviewImages(prev => ({ ...prev, verso: liveCanvasVersoRef.current!.toDataURL('image/png') }));
+      }
+    } catch (err) {
+      console.warn('Erro ao gerar live preview RG:', err);
+    }
+  }, [fotoPerfil, assinatura]);
+
+  useEffect(() => {
+    if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current);
+    liveDebounceRef.current = setTimeout(() => {
+      regenerateLivePreview();
+    }, 600);
+    return () => { if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current); };
+  }, [watchedValues, fotoPerfil, assinatura, regenerateLivePreview]);
+
   const generateRandomDates = () => {
     const month = Math.floor(Math.random() * 8) + 3;
     const day = Math.floor(Math.random() * 28) + 1;
