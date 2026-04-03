@@ -419,52 +419,8 @@ export default function RgDigital() {
       setIsSubmitting(false);
     }
   };
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Frente</h4>
-                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
-                        {previewImages.frente ? (
-                          <img src={previewImages.frente} alt="Frente" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                        ) : (
-                          <div className="aspect-[1.6/1] flex items-center justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                          </div>
-                        )}
-                        <WatermarkOverlay />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Verso</h4>
-                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
-                        {previewImages.verso ? (
-                          <img src={previewImages.verso} alt="Verso" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                        ) : (
-                          <div className="aspect-[1.6/1] flex items-center justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                          </div>
-                        )}
-                        <WatermarkOverlay />
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
-                    <Button variant="outline" onClick={() => setShowPreview(false)} className="flex-1">
-                      <ArrowLeft className="h-4 w-4 mr-2" /> Voltar para Editar
-                    </Button>
-                    <Button onClick={handleSave} disabled={isSubmitting} className="flex-1">
-                      {isSubmitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</> : <><Shield className="h-4 w-4 mr-2" /> Gerar RG Digital</>}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
-  // FORM VIEW
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-6xl">
