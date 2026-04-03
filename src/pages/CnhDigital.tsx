@@ -994,7 +994,6 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="matrizFinal" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
-                      </div>
                       <FormControl>
                         <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<" className="h-8 text-sm font-mono"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s<]/g, ''))} />
