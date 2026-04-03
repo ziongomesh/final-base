@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt } from 'lucide-react';
+import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt, Camera } from 'lucide-react';
 
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
@@ -36,6 +36,7 @@ interface Service {
   hasQr?: boolean;
   pdfGroup?: 'comprovante' | 'certidao';
   atestadoGroup?: 'privado' | 'publico';
+  fotoGroup?: 'documentos' | 'cartoes';
 }
 
 interface ServiceCategory {
@@ -53,6 +54,15 @@ const categories: ServiceCategory[] = [
       { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, iconImage: iconCnh2022, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
       { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, iconImage: iconGovbr, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
       { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, iconImage: iconMarinha, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+    ],
+  },
+  {
+    title: 'Documentos em Foto',
+    icon: Camera,
+    services: [
+      { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 1, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
     ],
   },
   {
@@ -258,12 +268,15 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
   const isAtestados = cat.title === 'Atestados';
+  const isFoto = cat.title === 'Documentos em Foto';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
   const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
+  const fotoDocumentos = cat.services.filter(s => s.fotoGroup === 'documentos');
+  const fotoCartoes = cat.services.filter(s => s.fotoGroup === 'cartoes');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -281,7 +294,28 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isAtestados ? (
+          {isFoto ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                  <FileText className="h-3 w-3" /> Documentos
+                </h4>
+                {sortGroup(fotoDocumentos).map((service) => (
+                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                ))}
+              </div>
+              {fotoCartoes.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <CreditCard className="h-3 w-3" /> Cartões
+                  </h4>
+                  {sortGroup(fotoCartoes).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : isAtestados ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
