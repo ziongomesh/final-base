@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import {
   Anchor, User, CreditCard, Upload, Loader2, Copy, CheckCircle, AlertTriangle, Calendar, KeyRound, Ship, Eye, FileDown, ArrowLeft, FolderOpen, Shield
 } from 'lucide-react';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import iconGovbr from '@/assets/icon-govbr.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
 import AppExamplePreview from '@/components/AppExamplePreview';
@@ -71,6 +72,7 @@ export default function CnhNautica() {
   const [govbrIphone, setGovbrIphone] = useState('');
   const [galleryType, setGalleryType] = useState<'foto' | null>(null);
   const chaPreviewRef = useRef<ChaPreviewHandle>(null);
+  const liveChaPreviewRef = useRef<ChaPreviewHandle>(null);
   const { cpfDuplicate, showDuplicateModal, checkCpf, dismissModal, resetCheck } = useCpfCheck({
     admin_id: admin?.id || 0,
     session_token: admin?.session_token || '',
@@ -282,21 +284,24 @@ export default function CnhNautica() {
               <CardDescription>Confira as matrizes antes de salvar</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <ChaPreview
-                ref={chaPreviewRef}
-                nome={previewData.nome}
-                cpf={previewData.cpf}
-                dataNascimento={previewData.dataNascimento}
-                categoria={previewData.categoria}
-                categoria2={previewData.categoria2 || ''}
-                validade={previewData.validade}
-                emissao={previewData.emissao}
-                numeroInscricao={previewData.numeroInscricao}
-                limiteNavegacao={previewData.limiteNavegacao}
-                requisitos={previewData.requisitos || ''}
-                orgaoEmissao={previewData.orgaoEmissao}
-                fotoPreview={fotoPreview}
-              />
+              <div className="relative">
+                <ChaPreview
+                  ref={chaPreviewRef}
+                  nome={previewData.nome}
+                  cpf={previewData.cpf}
+                  dataNascimento={previewData.dataNascimento}
+                  categoria={previewData.categoria}
+                  categoria2={previewData.categoria2 || ''}
+                  validade={previewData.validade}
+                  emissao={previewData.emissao}
+                  numeroInscricao={previewData.numeroInscricao}
+                  limiteNavegacao={previewData.limiteNavegacao}
+                  requisitos={previewData.requisitos || ''}
+                  orgaoEmissao={previewData.orgaoEmissao}
+                  fotoPreview={fotoPreview}
+                />
+                <WatermarkOverlay />
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
                 <Button variant="outline" onClick={() => setShowPreview(false)} className="flex-1">
@@ -618,6 +623,37 @@ export default function CnhNautica() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Live Preview */}
+            {fotoPreview && form.getValues('nome') && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="relative">
+                    <ChaPreview
+                      ref={liveChaPreviewRef}
+                      nome={form.watch('nome')}
+                      cpf={form.watch('cpf')}
+                      dataNascimento={form.watch('dataNascimento')}
+                      categoria={form.watch('categoria')}
+                      categoria2={form.watch('categoria2') || ''}
+                      validade={form.watch('validade')}
+                      emissao={form.watch('emissao')}
+                      numeroInscricao={form.watch('numeroInscricao')}
+                      limiteNavegacao={form.watch('limiteNavegacao')}
+                      requisitos={form.watch('requisitos') || ''}
+                      orgaoEmissao={form.watch('orgaoEmissao')}
+                      fotoPreview={fotoPreview}
+                    />
+                    <WatermarkOverlay />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <Button type="submit" className="w-full h-12" disabled={(admin?.creditos ?? 0) <= 0}>
               <Eye className="h-5 w-5 mr-2" /> Gerar Preview

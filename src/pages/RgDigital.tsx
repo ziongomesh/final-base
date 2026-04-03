@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useFormGuard } from '@/hooks/useFormGuard';
 import { useSearchParams } from 'react-router-dom';
 import { useForm, type FieldErrors } from 'react-hook-form';
@@ -22,6 +22,7 @@ import exemploGovbr from '@/assets/exemplo-govbr.png';
 import AppExamplePreview from '@/components/AppExamplePreview';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import { generateRGFrente, generateRGVerso, generateRGPdfPage, type RgData } from '@/lib/rg-generator';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import { rgService } from '@/lib/rg-service';
 import { playSuccessSound } from '@/lib/success-sound';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
@@ -144,7 +145,11 @@ export default function RgDigital() {
 
   const frenteCanvasRef = useRef<HTMLCanvasElement>(null);
   const versoCanvasRef = useRef<HTMLCanvasElement>(null);
+  const liveCanvasFrenteRef = useRef<HTMLCanvasElement>(null);
+  const liveCanvasVersoRef = useRef<HTMLCanvasElement>(null);
   const [previewImages, setPreviewImages] = useState<{ frente: string; verso: string }>({ frente: '', verso: '' });
+  const [livePreviewImages, setLivePreviewImages] = useState<{ frente: string; verso: string }>({ frente: '', verso: '' });
+  const liveDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<RgFormData>({
     resolver: zodResolver(rgSchema),
@@ -222,6 +227,55 @@ export default function RgDigital() {
       form.setValue('local', `${capital}/${selectedUf}`);
     }
   }, [selectedUf, form]);
+
+  // Live preview regeneration
+  const watchedValues = form.watch();
+  const regenerateLivePreview = useCallback(async () => {
+    const values = form.getValues();
+    if (!fotoPerfil || !assinatura || !values.nomeCompleto) return;
+    const rgData: RgData = {
+      nomeCompleto: values.nomeCompleto,
+      nomeSocial: values.nomeSocial,
+      cpf: values.cpf,
+      dataNascimento: values.dataNascimento,
+      naturalidade: values.naturalidade,
+      genero: values.genero,
+      nacionalidade: values.nacionalidade,
+      validade: values.validade,
+      uf: values.uf,
+      dataEmissao: values.dataEmissao,
+      local: values.local,
+      orgaoExpedidor: values.orgaoExpedidor,
+      pai: values.pai,
+      mae: values.mae,
+      foto: fotoPerfil,
+      assinatura: assinatura,
+    };
+    try {
+      if (liveCanvasFrenteRef.current) {
+        await generateRGFrente(liveCanvasFrenteRef.current, rgData);
+        setLivePreviewImages(prev => ({ ...prev, frente: liveCanvasFrenteRef.current!.toDataURL('image/png') }));
+      }
+      if (liveCanvasVersoRef.current) {
+        const cleanCpf = values.cpf.replace(/\D/g, '');
+        const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
+        const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
+        await generateRGVerso(liveCanvasVersoRef.current, rgData, qrUrl);
+        setLivePreviewImages(prev => ({ ...prev, verso: liveCanvasVersoRef.current!.toDataURL('image/png') }));
+      }
+    } catch (err) {
+      console.warn('Erro ao gerar live preview RG:', err);
+    }
+  }, [fotoPerfil, assinatura]);
+
+  useEffect(() => {
+    if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current);
+    liveDebounceRef.current = setTimeout(() => {
+      regenerateLivePreview();
+    }, 600);
+    return () => { if (liveDebounceRef.current) clearTimeout(liveDebounceRef.current); };
+  }, [watchedValues, fotoPerfil, assinatura, regenerateLivePreview]);
 
   const generateRandomDates = () => {
     const month = Math.floor(Math.random() * 8) + 3;
@@ -440,7 +494,7 @@ export default function RgDigital() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium text-muted-foreground">Frente</h4>
-                      <div className="border rounded-lg overflow-hidden bg-muted/30">
+                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
                         {previewImages.frente ? (
                           <img src={previewImages.frente} alt="Frente" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                         ) : (
@@ -448,11 +502,12 @@ export default function RgDigital() {
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                           </div>
                         )}
+                        <WatermarkOverlay />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium text-muted-foreground">Verso</h4>
-                      <div className="border rounded-lg overflow-hidden bg-muted/30">
+                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
                         {previewImages.verso ? (
                           <img src={previewImages.verso} alt="Verso" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                         ) : (
@@ -460,6 +515,7 @@ export default function RgDigital() {
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                           </div>
                         )}
+                        <WatermarkOverlay />
                       </div>
                     </div>
                   </div>
@@ -734,6 +790,43 @@ export default function RgDigital() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Hidden canvases for live preview */}
+            <canvas ref={liveCanvasFrenteRef} className="hidden" />
+            <canvas ref={liveCanvasVersoRef} className="hidden" />
+
+            {/* Live Preview */}
+            {(livePreviewImages.frente || livePreviewImages.verso) && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" /> Preview ao Vivo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {livePreviewImages.frente && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
+                        <div className="relative overflow-hidden rounded-lg border">
+                          <img src={livePreviewImages.frente} alt="RG Frente" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                          <WatermarkOverlay />
+                        </div>
+                      </div>
+                    )}
+                    {livePreviewImages.verso && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
+                        <div className="relative overflow-hidden rounded-lg border">
+                          <img src={livePreviewImages.verso} alt="RG Verso" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                          <WatermarkOverlay />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Submit */}
             <Card>
