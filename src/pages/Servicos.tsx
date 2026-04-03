@@ -36,6 +36,7 @@ interface Service {
   hasQr?: boolean;
   pdfGroup?: 'comprovante' | 'certidao';
   atestadoGroup?: 'privado' | 'publico';
+  fotoGroup?: 'documentos' | 'cartoes';
 }
 
 interface ServiceCategory {
