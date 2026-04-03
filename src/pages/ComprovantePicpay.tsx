@@ -33,6 +33,7 @@ export default function ComprovantePicpay() {
     paraNome: '',
     deNome: '',
     valor: '',
+    contaRecebedor: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
