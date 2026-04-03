@@ -507,11 +507,11 @@ export default function Recarregar() {
 
             {/* Section 3: Grandes Volumes */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <CreditCard className="h-3.5 w-3.5 text-amber-500" />
-                <h3 className="font-semibold text-sm text-foreground">Grandes Volumes</h3>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <CreditCard className="h-3 w-3 text-amber-500" />
+                <h3 className="font-semibold text-xs text-foreground">Grandes Volumes</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                 <TooltipProvider>
                   {LARGE_PACKAGES.map((pkg) => {
                     const { savings, percentOff } = calculateSavings(pkg, BASE_PRICE);
