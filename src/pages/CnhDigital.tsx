@@ -421,8 +421,8 @@ export default function CnhDigital() {
     const extraMissing: string[] = [];
     if (!fotoPerfil) extraMissing.push('Foto de Perfil');
     if (!assinatura) extraMissing.push('Assinatura Digital');
-    const allMissing = [...missingFields, ...extraMissing];
-      toast.error(`Campos obrigatórios não preenchidos: ${missingFields.join(', ')}${Object.keys(errors).length > 5 ? ` e mais ${Object.keys(errors).length - 5}` : ''}`, {
+    if (allMissing.length > 0) {
+      toast.error(`Campos obrigatórios não preenchidos: ${allMissing.join(', ')}`, {
         position: 'top-right',
         duration: 5000,
       });
