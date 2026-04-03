@@ -77,21 +77,19 @@ export function MobileNav() {
                 {filteredItems.map((item) => {
                   const isActive = location.pathname === item.href;
                   return (
-                    <SheetClose asChild key={item.href}>
-                      <Link to={item.href}>
-                        <button
-                          className={cn(
-                            'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors',
-                            isActive
-                              ? 'bg-primary/15 text-primary'
-                              : 'text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/60'
-                          )}
-                        >
-                          <item.icon className={cn("h-4 w-4 shrink-0", isActive && "text-primary")} />
-                          {item.label}
-                        </button>
-                      </Link>
-                    </SheetClose>
+                    <button
+                      key={item.href}
+                      onClick={() => { setOpen(false); guardedNavigate(item.href); }}
+                      className={cn(
+                        'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors',
+                        isActive
+                          ? 'bg-primary/15 text-primary'
+                          : 'text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/60'
+                      )}
+                    >
+                      <item.icon className={cn("h-4 w-4 shrink-0", isActive && "text-primary")} />
+                      {item.label}
+                    </button>
                   );
                 })}
               </nav>
