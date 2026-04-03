@@ -244,7 +244,10 @@ export default function CnhNautica() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    return `CHA Náutica ✅\n👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}\n🔑 Senha: ${resultInfo.senha}\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+    let text = `CHA Náutica ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
+    if (govbrIphone) text += `\nApp iPhone: ${govbrIphone}`;
+    if (govbrApk) text += `\nApp Android: ${govbrApk}`;
+    return text;
   };
 
   const expirationDate = (() => {
@@ -670,18 +673,6 @@ export default function CnhNautica() {
                     <Copy className="w-4 h-4 mr-2" /> Copiar Dados
                   </Button>
                   <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
-                  <Button onClick={() => {
-                    if (!govbrIphone) { toast.error('Link iPhone não configurado'); return; }
-                    copyToClipboard(govbrIphone, 'Link iPhone copiado!');
-                  }} variant="outline" className="w-full">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Link iPhone
-                  </Button>
-                  <Button onClick={() => {
-                    if (!govbrApk) { toast.error('Link APK não configurado'); return; }
-                    copyToClipboard(govbrApk, 'Link APK copiado!');
-                  }} variant="outline" className="w-full">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Link Android
-                  </Button>
                 </div>
 
                 <Button className="w-full" onClick={() => { setShowSuccess(false); resetForm(); }}>

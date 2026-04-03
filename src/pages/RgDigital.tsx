@@ -738,35 +738,15 @@ export default function RgDigital() {
                 )}
                 <Button variant="outline" className="w-full" onClick={() => {
                   const expirationDate = (() => { const d = new Date(); d.setDate(d.getDate() + 45); return d.toLocaleDateString('pt-BR'); })();
-                  const text = `RG Digital ✅\n👤 CPF: ${formatCPF(rgInfo.cpf)}\n🔑 Senha: ${rgInfo.senha}\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+                  let text = `RG Digital ✅\nCPF: ${formatCPF(rgInfo.cpf)}\nSenha: ${rgInfo.senha}\nValidade: 45 dias`;
+                  if (downloadLinks.govbr_iphone) text += `\nApp iPhone: ${downloadLinks.govbr_iphone}`;
+                  if (downloadLinks.govbr_apk) text += `\nApp Android: ${downloadLinks.govbr_apk}`;
                   navigator.clipboard.writeText(text);
                   toast.success('Dados copiados!');
                 }}>
                   <Copy className="h-4 w-4 mr-2" /> Copiar Dados
                 </Button>
                 <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
-                <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1" onClick={() => {
-                    if (downloadLinks.govbr_apk) {
-                      navigator.clipboard.writeText(downloadLinks.govbr_apk);
-                      toast.success('Link Android copiado!');
-                    } else {
-                      toast.error('Link APK não configurado');
-                    }
-                  }}>
-                    <Copy className="w-4 h-4 mr-2" /> Link Android
-                  </Button>
-                  <Button variant="outline" className="flex-1" onClick={() => {
-                    if (downloadLinks.govbr_iphone) {
-                      navigator.clipboard.writeText(downloadLinks.govbr_iphone);
-                      toast.success('Link iPhone copiado!');
-                    } else {
-                      toast.error('Link iPhone não configurado');
-                    }
-                  }}>
-                    <Copy className="w-4 h-4 mr-2" /> Link iPhone
-                  </Button>
-                </div>
                 <Button className="w-full" onClick={() => { setShowSuccess(false); form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); }}>
                   Voltar ao Início
                 </Button>

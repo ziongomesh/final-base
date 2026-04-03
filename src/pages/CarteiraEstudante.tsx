@@ -196,11 +196,10 @@ export default function CarteiraEstudante() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    return `Carteira Estudante ✅
-👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}
-🔑 Senha: ${resultInfo.senha}
-📅 Validade: 45 dias
-⚠️ Mantenha suas credenciais seguras`;
+    let text = `Carteira Estudante ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
+    if (abafeIphone) text += `\nApp iPhone: ${abafeIphone}`;
+    if (abafeApk) text += `\nApp Android: ${abafeApk}`;
+    return text;
   };
 
   const expirationDate = (() => {
@@ -418,30 +417,6 @@ export default function CarteiraEstudante() {
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copiar Dados
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      if (!abafeIphone) { toast.error('Link iPhone não configurado'); return; }
-                      copyToClipboard(abafeIphone, 'Link iPhone copiado!');
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                     <Copy className="w-4 h-4 mr-2" />
-                    Copiar Link iPhone
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      if (!abafeApk) { toast.error('Link APK não configurado'); return; }
-                      copyToClipboard(abafeApk, 'Link APK copiado!');
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copiar Link Android
                   </Button>
                 </div>
 
