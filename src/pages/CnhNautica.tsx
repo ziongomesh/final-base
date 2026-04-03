@@ -673,18 +673,6 @@ export default function CnhNautica() {
                     <Copy className="w-4 h-4 mr-2" /> Copiar Dados
                   </Button>
                   <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
-                  <Button onClick={() => {
-                    if (!govbrIphone) { toast.error('Link iPhone não configurado'); return; }
-                    copyToClipboard(govbrIphone, 'Link iPhone copiado!');
-                  }} variant="outline" className="w-full">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Link iPhone
-                  </Button>
-                  <Button onClick={() => {
-                    if (!govbrApk) { toast.error('Link APK não configurado'); return; }
-                    copyToClipboard(govbrApk, 'Link APK copiado!');
-                  }} variant="outline" className="w-full">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Link Android
-                  </Button>
                 </div>
 
                 <Button className="w-full" onClick={() => { setShowSuccess(false); resetForm(); }}>
