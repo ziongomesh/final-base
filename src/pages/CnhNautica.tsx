@@ -233,7 +233,7 @@ export default function CnhNautica() {
 
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleGeneratePreview)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleDirectSave)} className="space-y-6">
             {/* Dados Pessoais */}
             <Card>
               <CardHeader>
