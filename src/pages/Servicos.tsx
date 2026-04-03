@@ -287,10 +287,10 @@ function CountryCard({ country }: { country: VipCountry }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border border-border/50 rounded-lg overflow-hidden">
+    <div className="border border-white/10 rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-card hover:bg-muted/50'}`}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-white/5 hover:bg-white/10'}`}
       >
         <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={country.name} className="h-5 w-7 rounded-sm object-cover" loading="lazy" />
         <span className="flex-1 text-left font-medium text-sm text-foreground">{country.name}</span>
