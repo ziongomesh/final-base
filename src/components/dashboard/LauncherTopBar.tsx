@@ -20,7 +20,7 @@ const searchableItems = [
 ];
 
 export default function LauncherTopBar() {
-  const { admin } = useAuth();
+  const { admin, credits } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
@@ -35,52 +35,83 @@ export default function LauncherTopBar() {
   const firstName = admin?.nome?.split(' ')[0] || 'Usuário';
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      {/* Search */}
-      <div className="relative flex-1 max-w-xl">
-        <div className="flex items-center gap-2 bg-[#1a2332] rounded-full px-4 py-2.5 border border-white/5">
-          <Search className="h-4 w-4 text-white/30" />
-          <input
-            type="text"
-            placeholder="Pesquise o que você quer..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setTimeout(() => setFocused(false), 200)}
-            className="bg-transparent text-sm text-white placeholder-white/30 outline-none flex-1"
-          />
+    <div className="flex items-center justify-between gap-6">
+      {/* Left spacer (for sidebar alignment) */}
+      <div className="flex-1" />
+
+      {/* Center: Search + Credits badge */}
+      <div className="flex items-center gap-3">
+        {/* Search */}
+        <div className="relative">
+          <button
+            onClick={() => setFocused(true)}
+            className="h-10 w-10 rounded-full bg-[#1a1a2e] border border-white/10 flex items-center justify-center hover:border-white/20 transition-colors"
+          >
+            <Search className="h-4 w-4 text-white/50" />
+          </button>
+
+          {focused && (
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 w-80 bg-[#1a1a2e] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
+              <div className="p-3 border-b border-white/5">
+                <input
+                  type="text"
+                  placeholder="Pesquise o que você quer..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onBlur={() => setTimeout(() => setFocused(false), 200)}
+                  autoFocus
+                  className="bg-transparent text-sm text-white placeholder-white/30 outline-none w-full"
+                />
+              </div>
+              {filtered.length > 0 && (
+                <div className="max-h-60 overflow-y-auto">
+                  {filtered.map((item) => (
+                    <button
+                      key={item.route}
+                      onClick={() => { navigate(item.route); setQuery(''); setFocused(false); }}
+                      className="w-full text-left px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {query.length > 0 && filtered.length === 0 && (
+                <p className="px-4 py-3 text-xs text-white/30">Nenhum resultado</p>
+              )}
+            </div>
+          )}
         </div>
 
-        {focused && filtered.length > 0 && (
-          <div className="absolute top-full mt-2 left-0 right-0 bg-[#1a2332] border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl">
-            {filtered.map((item) => (
-              <button
-                key={item.route}
-                onClick={() => { navigate(item.route); setQuery(''); }}
-                className="w-full text-left px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
-              >
-                {item.label}
-              </button>
-            ))}
+        {/* Credits badge (like the avatar group in reference) */}
+        <div className="flex items-center gap-2 bg-[#1a1a2e] rounded-full px-4 py-2 border border-white/10">
+          <div className="flex -space-x-1">
+            <div className="h-6 w-6 rounded-full bg-[#5ba8d4]/30 border border-[#5ba8d4]/50" />
+            <div className="h-6 w-6 rounded-full bg-[#a078d4]/30 border border-[#a078d4]/50" />
+            <div className="h-6 w-6 rounded-full bg-[#e8a838]/30 border border-[#e8a838]/50 flex items-center justify-center">
+              <span className="text-[8px] text-white/70">+</span>
+            </div>
           </div>
-        )}
+          <span className="text-sm text-white/80 font-medium">{credits.toLocaleString('pt-BR')}</span>
+          <span className="text-xs text-white/40">créditos</span>
+        </div>
       </div>
 
-      {/* Profile */}
+      {/* Right: Profile */}
       <div className="flex items-center gap-3">
-        <div className="text-right hidden sm:block">
-          <p className="text-sm font-semibold text-white">{firstName}</p>
-          <p className="text-[10px] text-white/40 capitalize">{admin?.rank || 'Revendedor'}</p>
+        <div className="text-right">
+          <p className="text-sm font-semibold text-white leading-tight">{firstName}</p>
+          <p className="text-[11px] text-white/40 capitalize">{admin?.rank || 'Revendedor'}</p>
         </div>
-        <div className="relative group cursor-pointer">
+        <div className="relative group cursor-pointer" onClick={() => navigate('/configuracoes')}>
           {admin?.profile_photo ? (
             <img
               src={admin.profile_photo}
               alt={firstName}
-              className="h-10 w-10 rounded-full object-cover ring-2 ring-[#5ba8d4]/40"
+              className="h-11 w-11 rounded-full object-cover ring-2 ring-[#5ba8d4]/40"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#5ba8d4] to-[#4a90b8] flex items-center justify-center ring-2 ring-[#5ba8d4]/30">
+            <div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#5ba8d4] to-[#4a90b8] flex items-center justify-center ring-2 ring-[#5ba8d4]/30">
               <span className="text-sm font-bold text-white">{firstName[0]}</span>
             </div>
           )}
