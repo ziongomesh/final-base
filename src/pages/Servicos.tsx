@@ -35,6 +35,7 @@ interface Service {
   specs?: string[];
   hasQr?: boolean;
   pdfGroup?: 'comprovante' | 'certidao';
+  atestadoGroup?: 'privado' | 'publico';
 }
 
 interface ServiceCategory {
