@@ -1097,7 +1097,6 @@ export default function CnhDigital() {
 
                   <div className="space-y-1.5">
                     <FormLabel className="text-xs">Observações</FormLabel>
-                    </div>
                     <div className="grid grid-cols-2 gap-1.5">
                       {CNH_OBSERVACOES.map(obs => (
                         <div key={obs} className="flex items-center space-x-1.5">
