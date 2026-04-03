@@ -495,6 +495,12 @@ export default function CrlvPositionTool() {
     },
   });
 
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [watch, setFormDirty]);
+
   const values = watch();
   const cpfDigits = values.cpfCnpj?.replace(/\D/g, '').length ?? 0;
   const cpfReady = cpfConfirmed;
