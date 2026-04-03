@@ -281,10 +281,10 @@ export default function CnhDigital() {
   // Auto estado extenso + cidade when UF changes
   useEffect(() => {
     const sub = form.watch((value, { name }) => {
-      if (name === 'ufNascimento' && value.ufNascimento) {
+      if (name === 'uf' && value.uf) {
         try {
-          form.setValue('estadoExtenso', getStateFullName(value.ufNascimento));
-          form.setValue('localEmissao', getStateCapital(value.ufNascimento));
+          form.setValue('estadoExtenso', getStateFullName(value.uf));
+          form.setValue('localEmissao', getStateCapital(value.uf));
         } catch (e) {
           console.error('Erro ao atualizar estado/cidade:', e);
         }
