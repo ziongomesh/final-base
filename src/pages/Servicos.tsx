@@ -222,7 +222,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
       >
         <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
           {service.iconImage
-            ? <img src={service.iconImage} alt={service.name} className={`object-center ${service.id === 'cnh-arrais-nautica' ? 'h-full w-full object-contain' : 'h-[140%] w-[140%] object-cover'}`} />
+            ? <img src={service.iconImage} alt={service.name} className={`object-center ${service.id === 'cnh-arrais-nautica' ? 'h-full w-full object-contain' : service.id === 'atestado-upa24h' ? 'h-[75%] w-[75%] object-contain' : 'h-[140%] w-[140%] object-cover'}`} />
             : <Icon className="h-7 w-7 text-primary" />}
         </div>
         <div className="flex-1 min-w-0">
