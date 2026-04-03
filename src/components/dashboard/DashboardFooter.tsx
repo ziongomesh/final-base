@@ -25,7 +25,7 @@ export default function DashboardFooter() {
 
         {/* Copyright */}
         <p className="text-xs text-white/25 text-center">
-          © 2024 – 2026 // <span className="text-white/40 font-semibold">Bluelake</span>.
+          © 2024 – 2026 // <span className="text-white/40 font-semibold">DataSistemas</span>.
           <br />
           Todos os direitos reservados.
         </p>
