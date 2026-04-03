@@ -186,12 +186,12 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
             : <Icon className="h-7 w-7 text-primary" />}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm text-foreground truncate">{service.name}</h3>
-          <p className="text-xs text-muted-foreground truncate">{service.description}</p>
+          <h3 className="font-semibold text-sm text-white truncate">{service.name}</h3>
+          <p className="text-xs text-white/40 truncate">{service.description}</p>
           {service.specs && service.specs.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
               {service.specs.map((spec) => (
-                <span key={spec} className="text-[9px] text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">{spec}</span>
+                <span key={spec} className="text-[9px] text-white/30 bg-white/5 px-1.5 py-0.5 rounded">{spec}</span>
               ))}
             </div>
           )}
@@ -202,7 +202,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
               <Eye className="h-2.5 w-2.5" /> Exemplo
             </button>
           )}
-          <span className="text-xs text-muted-foreground hidden sm:inline">{service.credits} cred.</span>
+          <span className="text-xs text-white/30 hidden sm:inline">{service.credits} cred.</span>
           {isMaintenance ? (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-0.5">
               <Wrench className="h-2.5 w-2.5" /> Manutenção
@@ -245,25 +245,25 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/5 hover:bg-white/10 font-semibold text-sm transition-colors"
       >
-        <Icon className="h-5 w-5 text-muted-foreground" />
-        <span className="flex-1 text-left text-foreground">{cat.title}</span>
+        <Icon className="h-5 w-5 text-white/40" />
+        <span className="flex-1 text-left text-white">{cat.title}</span>
         {activeCount > 0 && (
           <Badge variant="secondary" className="text-[10px] border-0">{activeCount} ativo{activeCount > 1 ? 's' : ''}</Badge>
         )}
-        {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        {open ? <ChevronUp className="h-4 w-4 text-white/40" /> : <ChevronDown className="h-4 w-4 text-white/40" />}
       </button>
       {open && (
         <div className="p-2 bg-transparent">
           {isPdfCategory && comprovantes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-1 border-b border-border">Comprovantes</h4>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Comprovantes</h4>
                 {sortGroup(comprovantes).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
               </div>
               <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-1 border-b border-border">Certidões</h4>
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Certidões</h4>
                 {sortGroup(certidoes).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
@@ -293,14 +293,14 @@ function CountryCard({ country }: { country: VipCountry }) {
         className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-white/5 hover:bg-white/10'}`}
       >
         <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={country.name} className="h-5 w-7 rounded-sm object-cover" loading="lazy" />
-        <span className="flex-1 text-left font-medium text-sm text-foreground">{country.name}</span>
-        {open ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+        <span className="flex-1 text-left font-medium text-sm text-white">{country.name}</span>
+        {open ? <ChevronUp className="h-3.5 w-3.5 text-white/30" /> : <ChevronDown className="h-3.5 w-3.5 text-white/30" />}
       </button>
       {open && (
         <div className="p-2 space-y-1 bg-transparent">
           {documentTypes.map((doc) => (
-            <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-border/40 bg-muted/30 opacity-60 cursor-default">
-              <span className="flex-1 text-xs text-foreground">{doc}</span>
+            <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-white/5 bg-white/[0.02] opacity-60 cursor-default">
+              <span className="flex-1 text-xs text-white/60">{doc}</span>
               <Badge variant="secondary" className="text-[9px] px-1.5 py-0">
                 <Clock className="h-2 w-2 mr-0.5" /> Breve
               </Badge>
@@ -384,11 +384,11 @@ export default function Servicos() {
     <DashboardLayout>
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Serviços</h1>
-          <p className="text-muted-foreground mt-1">Escolha um serviço para começar</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Serviços</h1>
+          <p className="text-white/40 mt-1">Escolha um serviço para começar</p>
           <button
             onClick={() => navigate('/historico-servicos')}
-            className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-muted/50 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all"
           >
             <History className="h-3.5 w-3.5" />
             Histórico de Serviços
@@ -399,8 +399,8 @@ export default function Servicos() {
           <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
             <div>
-              <p className="font-semibold text-foreground">Você está sem créditos</p>
-              <p className="text-sm text-muted-foreground">Recarregue com seu master para continuar utilizando os serviços.</p>
+              <p className="font-semibold text-white">Você está sem créditos</p>
+              <p className="text-sm text-white/50">Recarregue com seu master para continuar utilizando os serviços.</p>
             </div>
           </div>
         )}
@@ -447,8 +447,8 @@ export default function Servicos() {
 
             {/* Observação */}
             <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-              <p className="text-xs font-semibold text-foreground mb-1">ℹ️ Como funciona?</p>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <p className="text-xs font-semibold text-white mb-1">ℹ️ Como funciona?</p>
+              <p className="text-[11px] text-white/40 leading-relaxed">
                 Após todos os módulos do Brasil nativos da base estiverem disponíveis, iremos disponibilizar o internacional.
                 Você poderá gerar passaportes em foto, extratos, PDFs, licenças de dirigir, militares — idênticas 100% ao original.
               </p>
