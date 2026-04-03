@@ -1216,77 +1216,81 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                 Compre pacotes com bônus e economize
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
-              {RESELLER_PACKAGES.map((pkg) => {
-                const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
-                const isSelected = selectedPkg?.name === pkg.name;
-                return (
-                  <button
-                    key={pkg.name}
-                    onClick={() => setSelectedPkg(pkg)}
-                    disabled={isProcessing}
-                    className={`w-full py-3 px-4 rounded-lg border-2 transition-all text-center relative bg-card hover:bg-muted/30 group ${
-                      isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/60'
-                    }`}
-                  >
-                    <Badge className={`${pkg.badgeColor} text-white text-[10px] absolute -top-2.5 left-1/2 -translate-x-1/2`}>
-                      {pkg.badge}
-                    </Badge>
-                    <p className="text-lg font-bold text-primary">{pkg.credits} créditos</p>
-                    <p className="text-sm text-foreground font-medium">
-                      por R$ {pkg.total.toFixed(2).replace('.', ',')}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      R$ {(pkg.total / pkg.credits).toFixed(2).replace('.', ',')} / crédito
-                    </p>
-                    {bonusValue > 0 && (
-                      <p className="text-xs text-green-500 font-medium mt-0.5">
-                        +{pkg.bonus} bônus (R$ {bonusValue.toFixed(2).replace('.', ',')} grátis!)
-                      </p>
-                    )}
-                  </button>
-                );
-              })}
-
-              {/* Pacotes Super Promoções */}
-              <div className="pt-3 border-t border-border/50">
-                <div className="flex items-center gap-2 mb-3">
-                  <Zap className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-semibold text-foreground">Super Promoções</span>
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[9px] border-0">LIMITADO</Badge>
-                </div>
-                {RESELLER_PROMO_PACKAGES.map((pkg) => {
+            <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                {RESELLER_PACKAGES.map((pkg) => {
                   const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
                   const isSelected = selectedPkg?.name === pkg.name;
-                  const savingsPercent = Math.round((1 - pkg.total / (pkg.credits * RESELLER_UNIT_PRICE)) * 100);
                   return (
                     <button
                       key={pkg.name}
                       onClick={() => setSelectedPkg(pkg)}
                       disabled={isProcessing}
-                      className={`w-full py-3 px-4 rounded-lg border-2 transition-all text-center relative bg-card hover:bg-muted/30 group mb-3 ${
-                        isSelected ? 'border-primary bg-primary/5 ring-2 ring-primary/30' : 'border-amber-500/40 hover:border-amber-500'
+                      className={`py-2.5 px-2 rounded-lg border-2 transition-all text-center relative bg-card hover:bg-muted/30 ${
+                        isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/60'
                       }`}
                     >
-                      <Badge className={`${pkg.badgeColor} text-white text-[10px] absolute -top-2.5 left-1/2 -translate-x-1/2 border-0`}>
+                      <Badge className={`${pkg.badgeColor} text-white text-[8px] px-1.5 py-0 absolute -top-2 left-1/2 -translate-x-1/2`}>
                         {pkg.badge}
                       </Badge>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        -{savingsPercent}%
-                      </div>
-                      <p className="text-lg font-bold text-primary">{pkg.credits} créditos</p>
-                      <p className="text-sm text-foreground font-medium">
-                        por R$ {pkg.total.toFixed(2).replace('.', ',')}
+                      <p className="text-sm font-bold text-primary">{pkg.credits} créditos</p>
+                      <p className="text-xs text-foreground font-medium">
+                        R$ {pkg.total.toFixed(2).replace('.', ',')}
                       </p>
-                      <p className="text-[11px] text-muted-foreground">
-                        R$ {(pkg.total / pkg.credits).toFixed(2).replace('.', ',')} / crédito
+                      <p className="text-[10px] text-muted-foreground">
+                        R$ {(pkg.total / pkg.credits).toFixed(2).replace('.', ',')} /un
                       </p>
-                      <p className="text-xs text-green-500 font-medium mt-0.5">
-                        +{pkg.bonus} bônus (R$ {bonusValue.toFixed(2).replace('.', ',')} grátis!)
-                      </p>
+                      {bonusValue > 0 && (
+                        <p className="text-[10px] text-green-500 font-medium">
+                          +{pkg.bonus} bônus
+                        </p>
+                      )}
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Super Promoções */}
+              <div className="pt-2 border-t border-border/50">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Zap className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-xs font-semibold text-foreground">Super Promoções</span>
+                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] border-0 px-1.5 py-0">LIMITADO</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {RESELLER_PROMO_PACKAGES.map((pkg) => {
+                    const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
+                    const isSelected = selectedPkg?.name === pkg.name;
+                    const savingsPercent = Math.round((1 - pkg.total / (pkg.credits * RESELLER_UNIT_PRICE)) * 100);
+                    return (
+                      <button
+                        key={pkg.name}
+                        onClick={() => setSelectedPkg(pkg)}
+                        disabled={isProcessing}
+                        className={`py-2.5 px-2 rounded-lg border-2 transition-all text-center relative bg-card hover:bg-muted/30 ${
+                          isSelected ? 'border-primary bg-primary/5 ring-2 ring-primary/30' : 'border-amber-500/40 hover:border-amber-500'
+                        }`}
+                      >
+                        <Badge className={`${pkg.badgeColor} text-white text-[8px] px-1.5 py-0 absolute -top-2 left-1/2 -translate-x-1/2 border-0`}>
+                          {pkg.badge}
+                        </Badge>
+                        <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0 rounded-full leading-4">
+                          -{savingsPercent}%
+                        </div>
+                        <p className="text-sm font-bold text-primary">{pkg.credits} créditos</p>
+                        <p className="text-xs text-foreground font-medium">
+                          R$ {pkg.total.toFixed(2).replace('.', ',')}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          R$ {(pkg.total / pkg.credits).toFixed(2).replace('.', ',')} /un
+                        </p>
+                        <p className="text-[10px] text-green-500 font-medium">
+                          +{pkg.bonus} bônus
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {selectedPkg && (
