@@ -245,8 +245,8 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/5 hover:bg-white/10 font-semibold text-sm transition-colors"
       >
-        <Icon className="h-5 w-5 text-muted-foreground" />
-        <span className="flex-1 text-left text-foreground">{cat.title}</span>
+        <Icon className="h-5 w-5 text-white/40" />
+        <span className="flex-1 text-left text-white">{cat.title}</span>
         {activeCount > 0 && (
           <Badge variant="secondary" className="text-[10px] border-0">{activeCount} ativo{activeCount > 1 ? 's' : ''}</Badge>
         )}
