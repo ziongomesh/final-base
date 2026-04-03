@@ -124,6 +124,11 @@ export default function CnhNautica() {
       requisitos: '******** / ********', orgaoEmissao: 'CPSP (SP)',
     },
   });
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {

@@ -156,6 +156,12 @@ export default function RgDigital() {
     },
   });
 
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
+
   // Demo auto-fill for RG
   useEffect(() => {
     if (!isDemo || demoFilling) return;

@@ -97,6 +97,11 @@ export default function CarteiraEstudante() {
       nome: '', cpf: '', rg: '', dataNascimento: '', faculdade: '', graduacao: '',
     },
   });
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    const sub = form.watch(() => setFormDirty(true));
+    return () => { sub.unsubscribe(); setFormDirty(false); };
+  }, [form, setFormDirty]);
 
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
