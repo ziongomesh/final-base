@@ -906,6 +906,19 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
+                  <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">UF de Emissão <span className="text-destructive">*</span></FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
 
                   <div className="grid grid-cols-2 gap-2">
                     <FormField control={form.control} name="categoria" render={({ field }) => (
