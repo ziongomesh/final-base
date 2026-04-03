@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Edit2, Check, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
@@ -15,16 +15,56 @@ interface ServiceData {
 }
 
 const SERVICE_COLORS = [
-  'hsl(340 75% 55%)',   // pink
-  'hsl(280 65% 55%)',   // purple
-  'hsl(201 55% 59%)',   // blue
-  'hsl(40 75% 55%)',    // gold
-  'hsl(160 60% 45%)',   // green
-  'hsl(210 20% 35%)',   // grey
+  'hsl(340 75% 55%)',
+  'hsl(280 65% 55%)',
+  'hsl(201 55% 59%)',
+  'hsl(40 75% 55%)',
+  'hsl(160 60% 45%)',
+  'hsl(210 20% 35%)',
 ];
+
+const GOALS_KEY = (adminId: number) => `dashboard_goals_${adminId}`;
 
 export default function StatisticsChart({ adminId, docStats }: Props) {
   const [serviceData, setServiceData] = useState<ServiceData[]>([]);
+  const [weekGoal, setWeekGoal] = useState(50);
+  const [monthGoal, setMonthGoal] = useState(200);
+  const [editingWeek, setEditingWeek] = useState(false);
+  const [editingMonth, setEditingMonth] = useState(false);
+  const [weekInput, setWeekInput] = useState('50');
+  const [monthInput, setMonthInput] = useState('200');
+
+  // Load saved goals
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(GOALS_KEY(adminId));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.weekGoal) { setWeekGoal(parsed.weekGoal); setWeekInput(String(parsed.weekGoal)); }
+        if (parsed.monthGoal) { setMonthGoal(parsed.monthGoal); setMonthInput(String(parsed.monthGoal)); }
+      }
+    } catch {}
+  }, [adminId]);
+
+  const saveGoals = (wg: number, mg: number) => {
+    localStorage.setItem(GOALS_KEY(adminId), JSON.stringify({ weekGoal: wg, monthGoal: mg }));
+  };
+
+  const handleSaveWeek = () => {
+    const v = parseInt(weekInput);
+    if (isNaN(v) || v <= 0) return;
+    setWeekGoal(v);
+    saveGoals(v, monthGoal);
+    setEditingWeek(false);
+  };
+
+  const handleSaveMonth = () => {
+    const v = parseInt(monthInput);
+    if (isNaN(v) || v <= 0) return;
+    setMonthGoal(v);
+    saveGoals(weekGoal, v);
+    setEditingMonth(false);
+  };
 
   useEffect(() => {
     async function fetchServiceCounts() {
@@ -47,7 +87,6 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
           { name: 'Estudante', value: estudante.count || 0, color: SERVICE_COLORS[5] },
         ].sort((a, b) => b.value - a.value);
 
-        // If all zero, show placeholder
         const total = raw.reduce((s, r) => s + r.value, 0);
         if (total === 0) {
           setServiceData([
@@ -56,7 +95,7 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
             { name: 'CRLV', value: 25, color: SERVICE_COLORS[2] },
           ]);
         } else {
-          setServiceData(raw.filter(r => r.value > 0));
+          setServiceData(raw);
         }
       } catch {
         setServiceData([
@@ -70,9 +109,6 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
   }, [adminId]);
 
   const total = serviceData.reduce((s, d) => s + d.value, 0);
-
-  const weekGoal = 50;
-  const monthGoal = 200;
   const weekProgress = Math.min((docStats.week / weekGoal) * 100, 100);
   const monthProgress = Math.min((docStats.month / monthGoal) * 100, 100);
 
@@ -84,16 +120,14 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center gap-2">
         <TrendingUp className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
         <h2 className="text-base font-bold text-white">Estatísticas</h2>
       </div>
 
-      {/* Donut chart + service breakdown */}
+      {/* Donut chart + ALL services breakdown */}
       <div className="p-5" style={cardStyle}>
         <div className="flex items-center gap-8">
-          {/* Donut */}
           <div className="relative w-[180px] h-[180px] shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -115,16 +149,14 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            {/* Center label */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold text-white">{total}</span>
               <span className="text-[10px]" style={{ color: 'hsl(210 20% 40%)' }}>Total</span>
             </div>
           </div>
 
-          {/* Legend / breakdown */}
-          <div className="flex-1 space-y-3">
-            <h3 className="text-sm font-semibold text-white mb-4">Serviços Mais Feitos</h3>
+          <div className="flex-1 space-y-2.5">
+            <h3 className="text-sm font-semibold text-white mb-3">Serviços por Módulo</h3>
             {serviceData.map((item) => {
               const pct = total > 0 ? Math.round((item.value / total) * 100) : 0;
               return (
@@ -133,7 +165,10 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-white/70 truncate">{item.name}</span>
-                      <span className="text-sm font-bold text-white ml-2">{pct}%</span>
+                      <div className="flex items-center gap-2 ml-2">
+                        <span className="text-[10px] text-white/40">{item.value}</span>
+                        <span className="text-sm font-bold text-white">{pct}%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -143,12 +178,39 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
         </div>
       </div>
 
-      {/* Progress bars */}
+      {/* Editable Progress bars */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Week goal */}
         <div className="p-5" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-white">Meta Semanal</span>
-            <span className="text-xs" style={{ color: 'hsl(201 55% 59%)' }}>{docStats.week}/{weekGoal}</span>
+            {editingWeek ? (
+              <div className="flex items-center gap-2 flex-1">
+                <span className="text-sm font-semibold text-white shrink-0">Meta:</span>
+                <input
+                  type="number"
+                  value={weekInput}
+                  onChange={(e) => setWeekInput(e.target.value)}
+                  className="w-16 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-sm text-white outline-none focus:border-[hsl(201,55%,59%)]"
+                  autoFocus
+                />
+                <button onClick={handleSaveWeek} className="p-1 hover:bg-white/10 rounded">
+                  <Check className="h-3.5 w-3.5 text-green-400" />
+                </button>
+                <button onClick={() => { setEditingWeek(false); setWeekInput(String(weekGoal)); }} className="p-1 hover:bg-white/10 rounded">
+                  <X className="h-3.5 w-3.5 text-red-400" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span className="text-sm font-semibold text-white">Meta Semanal</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: 'hsl(201 55% 59%)' }}>{docStats.week}/{weekGoal}</span>
+                  <button onClick={() => setEditingWeek(true)} className="p-1 hover:bg-white/10 rounded">
+                    <Edit2 className="h-3 w-3 text-white/30" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="h-2 rounded-full overflow-hidden" style={{ background: 'hsl(210 30% 14%)' }}>
             <div
@@ -164,10 +226,37 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
           </p>
         </div>
 
+        {/* Month goal */}
         <div className="p-5" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-white">Meta Mensal</span>
-            <span className="text-xs" style={{ color: 'hsl(40 75% 55%)' }}>{docStats.month}/{monthGoal}</span>
+            {editingMonth ? (
+              <div className="flex items-center gap-2 flex-1">
+                <span className="text-sm font-semibold text-white shrink-0">Meta:</span>
+                <input
+                  type="number"
+                  value={monthInput}
+                  onChange={(e) => setMonthInput(e.target.value)}
+                  className="w-16 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-sm text-white outline-none focus:border-[hsl(40,75%,55%)]"
+                  autoFocus
+                />
+                <button onClick={handleSaveMonth} className="p-1 hover:bg-white/10 rounded">
+                  <Check className="h-3.5 w-3.5 text-green-400" />
+                </button>
+                <button onClick={() => { setEditingMonth(false); setMonthInput(String(monthGoal)); }} className="p-1 hover:bg-white/10 rounded">
+                  <X className="h-3.5 w-3.5 text-red-400" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span className="text-sm font-semibold text-white">Meta Mensal</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: 'hsl(40 75% 55%)' }}>{docStats.month}/{monthGoal}</span>
+                  <button onClick={() => setEditingMonth(true)} className="p-1 hover:bg-white/10 rounded">
+                    <Edit2 className="h-3 w-3 text-white/30" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="h-2 rounded-full overflow-hidden" style={{ background: 'hsl(210 30% 14%)' }}>
             <div
