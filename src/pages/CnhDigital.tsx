@@ -821,33 +821,6 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-2">
-                      <FormField control={form.control} name="localNascimento" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Local <span className="text-destructive">*</span></FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="RIO DE JANEIRO"
-                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    </div>
-                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>UF <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
-                          <SelectContent>
-                            {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
@@ -915,6 +888,34 @@ export default function CnhDigital() {
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2">
+                      <FormField control={form.control} name="localNascimento" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Local de Nascimento <span className="text-destructive">*</span></FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="RIO DE JANEIRO"
+                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>UF de Emissão <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <FormField control={form.control} name="categoria" render={({ field }) => (
