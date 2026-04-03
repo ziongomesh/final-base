@@ -83,6 +83,17 @@ export default function ComprovantePicpay() {
                     className="uppercase"
                   />
                 </div>
+                <div>
+                  <Label className="text-xs">Valor (R$)</Label>
+                  <Input
+                    placeholder="2.405,00"
+                    value={formData.valor}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^0-9.,]/g, '');
+                      updateField('valor', raw);
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
