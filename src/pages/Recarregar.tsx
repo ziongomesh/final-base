@@ -612,12 +612,12 @@ export default function Recarregar() {
             </div>
 
             {/* Payment Summary */}
-            <div className="p-3 rounded-lg gradient-green text-success-foreground">
-              <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-lg gradient-green text-success-foreground">
+              <div className="flex items-center justify-between mb-1.5">
                 <div>
-                  <p className="text-xs opacity-90">Pacote selecionado</p>
-                  <p className="text-lg font-bold">{selectedPackage.credits} créditos</p>
-                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
+                  <p className="text-[10px] opacity-90">Selecionado</p>
+                  <p className="text-sm font-bold">{selectedPackage.credits} créditos</p>
+                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)}/un</p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs opacity-90">Total</p>
