@@ -974,7 +974,6 @@ export default function CnhDigital() {
                   <FormField control={form.control} name="localEmissao" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Cidade / Estado <span className="text-destructive">*</span></FormLabel>
-                      </div>
                       <FormControl>
                         <Input {...field} placeholder="RIO DE JANEIRO, RJ" className="h-8 text-sm"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ0-9\s,\/]/g, ''))} />
