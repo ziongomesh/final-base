@@ -672,7 +672,7 @@ export default function CnhNautica() {
                     </Button>
                   )}
                   <Button onClick={() => copyToClipboard(getDataText(), 'Dados copiados!')} className="w-full" variant="outline">
-                    <Copy className="w-4 h-4 mr-2" /> Copiar Dados
+                    <Copy className="w-4 h-4 mr-2" /> Copiar Dados do Usuário
                   </Button>
                   <AppExamplePreview appName="Gov.br" exampleImage={exemploGovbr} />
                 </div>

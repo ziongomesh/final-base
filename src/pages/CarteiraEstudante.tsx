@@ -418,7 +418,7 @@ export default function CarteiraEstudante() {
                     variant="outline"
                   >
                     <Copy className="w-4 h-4 mr-2" />
-                    Copiar Dados
+                    Copiar Dados do Usuário
                   </Button>
                 </div>
 
