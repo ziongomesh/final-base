@@ -69,8 +69,8 @@ const App = () => (
         <Toaster />
         <BrowserRouter>
           <AuthProvider>
+            <FormGuardProvider>
             <Suspense fallback={<LazyFallback />}>
-              <Routes>
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/dashboard" element={<Dashboard />} />
