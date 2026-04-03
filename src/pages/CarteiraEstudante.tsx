@@ -196,11 +196,10 @@ export default function CarteiraEstudante() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    return `Carteira Estudante ✅
-👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}
-🔑 Senha: ${resultInfo.senha}
-📅 Validade: 45 dias
-⚠️ Mantenha suas credenciais seguras`;
+    let text = `Carteira Estudante ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
+    if (abafeIphone) text += `\nApp iPhone: ${abafeIphone}`;
+    if (abafeApk) text += `\nApp Android: ${abafeApk}`;
+    return text;
   };
 
   const expirationDate = (() => {
