@@ -779,7 +779,7 @@ export default function CnhDigital() {
                     )} />
                     <FormField control={form.control} name="uf" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">UF <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel className="text-xs">UF Nasc. <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || undefined}>
                           <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
                           <SelectContent>
