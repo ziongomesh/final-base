@@ -985,9 +985,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="estadoExtenso" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">Estado por Extenso <span className="text-destructive">*</span></FormLabel>
-                        <WhereIsTooltip description="Nome completo do estado." />
+                      <FormLabel className="text-xs">Estado por Extenso <span className="text-destructive">*</span></FormLabel>
                       </div>
                       <FormControl>
                         <Input {...field} placeholder="MINAS GERAIS" className="h-8 text-sm"
