@@ -135,9 +135,6 @@ export default function LauncherTopBar() {
             className="h-9 w-9 rounded-full object-cover"
             style={{ border: '2px solid hsl(201 55% 59% / 0.3)' }}
           />
-              <span className="text-xs font-bold text-white">{firstName[0]}</span>
-            </div>
-          )}
         </div>
       </div>
     </div>
