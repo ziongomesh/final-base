@@ -1000,6 +1000,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<" className="h-8 text-sm font-mono"
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s<]/g, ''))} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
