@@ -996,9 +996,7 @@ export default function CnhDigital() {
 
                   <FormField control={form.control} name="matrizFinal" render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
-                        <WhereIsTooltip description="Código na parte inferior da CNH." />
+                      <FormLabel className="text-xs">MRZ (Leitura Óptica)</FormLabel>
                       </div>
                       <FormControl>
                         <Input {...field} placeholder="FELIPE<<DA<<SILVA<<<<<<" className="h-8 text-sm font-mono"
