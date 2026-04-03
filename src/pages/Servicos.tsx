@@ -257,10 +257,13 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const activeCount = cat.services.filter(s => s.available).length;
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
+  const isAtestados = cat.title === 'Atestados';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
+  const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
+  const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -278,7 +281,26 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isPdfCategory && certidoes.length > 0 ? (
+          {isAtestados ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                  <Lock className="h-3 w-3" /> Privados
+                </h4>
+                {sortGroup(atestadoPrivados).map((service) => (
+                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                ))}
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                  <Globe className="h-3 w-3" /> Públicos
+                </h4>
+                {sortGroup(atestadoPublicos).map((service) => (
+                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                ))}
+              </div>
+            </div>
+          ) : isPdfCategory && certidoes.length > 0 ? (
             <div className="space-y-4">
               {pdfOthers.length > 0 && (
                 <div className="space-y-2">
