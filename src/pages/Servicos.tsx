@@ -177,7 +177,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
   return (
     <div ref={cardRef} className="relative">
       <div
-        className={`bg-card border border-border rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
+        className={`bg-white/5 border border-white/10 rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
         onClick={() => !isMaintenance && canAccess && navigate(service.route)}
       >
         <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
@@ -219,7 +219,7 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
         </div>
       </div>
       {showExample && service.exampleImage && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-white/10 bg-[#0d1520] shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <img src={service.exampleImage} alt={`Exemplo ${service.name}`} className="w-full object-contain max-h-[300px]" draggable={false} onContextMenu={(e) => e.preventDefault()} />
         </div>
       )}
@@ -240,10 +240,10 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden">
+    <div className="border border-white/10 rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-3.5 bg-card hover:bg-muted/50 font-semibold text-sm transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-3.5 bg-white/5 hover:bg-white/10 font-semibold text-sm transition-colors"
       >
         <Icon className="h-5 w-5 text-muted-foreground" />
         <span className="flex-1 text-left text-foreground">{cat.title}</span>
@@ -253,7 +253,7 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
       {open && (
-        <div className="p-2 bg-card">
+        <div className="p-2 bg-transparent">
           {isPdfCategory && comprovantes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -287,17 +287,17 @@ function CountryCard({ country }: { country: VipCountry }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border border-border/50 rounded-lg overflow-hidden">
+    <div className="border border-white/10 rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-card hover:bg-muted/50'}`}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-white/5 hover:bg-white/10'}`}
       >
         <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={country.name} className="h-5 w-7 rounded-sm object-cover" loading="lazy" />
         <span className="flex-1 text-left font-medium text-sm text-foreground">{country.name}</span>
         {open ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
       </button>
       {open && (
-        <div className="p-2 space-y-1 bg-card">
+        <div className="p-2 space-y-1 bg-transparent">
           {documentTypes.map((doc) => (
             <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-border/40 bg-muted/30 opacity-60 cursor-default">
               <span className="flex-1 text-xs text-foreground">{doc}</span>
@@ -339,7 +339,7 @@ function VipCategoryAccordion({ cat }: { cat: VipCategory }) {
         }
       </button>
       {open && (
-        <div className="p-2 space-y-1.5 bg-card">
+        <div className="p-2 space-y-1.5 bg-transparent">
           {cat.countries.map((country) => (
             <CountryCard key={country.name} country={country} />
           ))}
@@ -396,7 +396,7 @@ export default function Servicos() {
         </div>
 
         {!hasCredits && (
-          <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/30 rounded-xl p-4">
+          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
             <div>
               <p className="font-semibold text-foreground">Você está sem créditos</p>
@@ -406,7 +406,7 @@ export default function Servicos() {
         )}
 
         <Tabs defaultValue="nacional" className="w-full">
-          <TabsList className="w-full mb-4 h-11">
+          <TabsList className="w-full mb-4 h-11 bg-white/5 border border-white/10">
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
@@ -446,7 +446,7 @@ export default function Servicos() {
             </div>
 
             {/* Observação */}
-            <div className="rounded-lg border border-border bg-muted/30 p-3">
+            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
               <p className="text-xs font-semibold text-foreground mb-1">ℹ️ Como funciona?</p>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Após todos os módulos do Brasil nativos da base estiverem disponíveis, iremos disponibilizar o internacional.
