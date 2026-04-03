@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { 
   Home, LogOut, FolderOpen, Wrench, Download, Settings,
-  History, Users, Send, CreditCard, Bell
+  History, Users, Send, CreditCard
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
@@ -12,11 +12,10 @@ interface NavItem {
   icon: React.ElementType;
   href: string;
   roles: Array<'dono' | 'sub' | 'master' | 'revendedor'>;
-  badge?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { label: 'Início', icon: Home, href: '/dashboard', roles: ['dono', 'sub', 'master', 'revendedor'], badge: true },
+  { label: 'Início', icon: Home, href: '/dashboard', roles: ['dono', 'sub', 'master', 'revendedor'] },
   { label: 'Serviços', icon: FolderOpen, href: '/servicos', roles: ['dono', 'sub', 'master', 'revendedor'] },
   { label: 'Histórico', icon: History, href: '/historico-servicos', roles: ['dono', 'sub', 'master', 'revendedor'] },
   { label: 'Revendedores', icon: Users, href: '/revendedores', roles: ['master', 'sub'] },
@@ -39,8 +38,14 @@ export function Sidebar() {
     <aside
       className="fixed left-0 top-0 h-screen w-[220px] flex flex-col z-50"
       style={{
-        background: '#0c1420',
-        borderRight: '1px solid rgba(91,168,212,0.08)',
+        background: `
+          linear-gradient(180deg, 
+            hsl(210 30% 7%) 0%, 
+            hsl(215 35% 9%) 50%,
+            hsl(210 30% 7%) 100%
+          )
+        `,
+        borderRight: '1px solid hsl(210 40% 15% / 0.5)',
       }}
     >
       {/* Logo */}
@@ -51,8 +56,8 @@ export function Sidebar() {
       {/* Section label */}
       <div className="px-6 pb-3">
         <div className="flex items-center gap-2">
-          <div className="h-px flex-1 bg-[#5ba8d4]/20" />
-          <span className="text-[10px] font-semibold tracking-[0.15em] text-[#5ba8d4] uppercase">
+          <div className="h-px flex-1" style={{ background: 'hsl(201 55% 59% / 0.15)' }} />
+          <span className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: 'hsl(201 55% 59%)' }}>
             Área do Cliente
           </span>
         </div>
@@ -66,16 +71,22 @@ export function Sidebar() {
             <Link key={item.href} to={item.href}>
               <div
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200',
                   isActive
-                    ? 'bg-[#5ba8d4]/10 text-[#5ba8d4] font-medium'
-                    : 'text-white/50 hover:text-white/80 hover:bg-white/[0.03]'
+                    ? 'font-medium'
+                    : 'hover:bg-white/[0.03]'
                 )}
+                style={isActive ? {
+                  background: 'hsl(201 55% 59% / 0.08)',
+                  color: 'hsl(201 55% 59%)',
+                } : {
+                  color: 'hsl(210 20% 50%)',
+                }}
               >
                 <item.icon className="h-4 w-4 flex-shrink-0" />
                 <span className="flex-1">{item.label}</span>
-                {isActive && item.badge && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#5ba8d4]" />
+                {isActive && (
+                  <div className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(201 55% 59%)' }} />
                 )}
               </div>
             </Link>
@@ -87,7 +98,10 @@ export function Sidebar() {
       <div className="px-3 pb-4 pt-2">
         <button
           onClick={signOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/30 hover:text-red-400 hover:bg-red-500/5 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors"
+          style={{ color: 'hsl(210 20% 35%)' }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'hsl(0 60% 60%)'; e.currentTarget.style.background = 'hsl(0 60% 60% / 0.05)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'hsl(210 20% 35%)'; e.currentTarget.style.background = 'transparent'; }}
         >
           <LogOut className="h-4 w-4" />
           <span>Sair</span>

@@ -57,8 +57,16 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0f16]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5ba8d4]" />
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: `
+            radial-gradient(ellipse at 50% 0%, hsl(220 40% 12%) 0%, transparent 60%),
+            linear-gradient(to bottom, hsl(220 25% 6%), hsl(220 20% 4%))
+          `,
+        }}
+      >
+        <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid hsl(201 55% 59%)' }} />
       </div>
     );
   }
@@ -80,20 +88,14 @@ export default function Dashboard() {
       <AlertNotification adminId={admin.id} />
       <NewModuleNotification adminId={admin.id} />
 
-      <div className="animate-fade-in max-w-[1100px] mx-auto">
-        {/* Top Bar */}
+      <div className="animate-fade-in max-w-[1000px] mx-auto">
         <LauncherTopBar />
 
-        {/* Main content */}
-        <div className="mt-6 space-y-6">
-          {/* Statistics with chart + progress bars */}
+        <div className="space-y-6">
           <StatisticsChart adminId={admin.id} docStats={myDocStats} />
-
-          {/* Last Records */}
           <LastRecords adminId={admin.id} />
         </div>
 
-        {/* Team (Master) */}
         {role === 'master' && (
           <div className="mt-6">
             <MasterTeamTabs adminId={admin.id} />

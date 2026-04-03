@@ -15,7 +15,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   useCreditNotifications();
 
   return (
-    <div className="min-h-screen bg-[#0a0f16] flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{
+        background: `
+          radial-gradient(ellipse at 50% 0%, hsl(220 40% 12%) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 50%, hsl(230 30% 10%) 0%, transparent 50%),
+          linear-gradient(to bottom, hsl(220 25% 6%), hsl(220 20% 4%))
+        `,
+      }}
+    >
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />
