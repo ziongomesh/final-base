@@ -745,6 +745,22 @@ export default function CnhDigital() {
                     </FormItem>
                   )} />
 
+                  <FormField control={form.control} name="cpf" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CPF <span className="text-destructive">*</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="000.000.000-00" maxLength={14}
+                          onChange={(e) => {
+                            const formatted = formatCPF(e.target.value);
+                            field.onChange(formatted);
+                            cpfCheck.checkCpf(formatted);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
                   <div className="grid grid-cols-2 gap-3">
                     <FormField control={form.control} name="uf" render={({ field }) => (
                       <FormItem>
