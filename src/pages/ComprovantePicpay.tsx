@@ -18,6 +18,7 @@ export default function ComprovantePicpay() {
   const [formData, setFormData] = useState<PicpayFormData>({
     paraNome: '',
     deNome: '',
+    valor: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
