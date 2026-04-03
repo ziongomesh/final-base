@@ -339,7 +339,7 @@ function VipCategoryAccordion({ cat }: { cat: VipCategory }) {
         }
       </button>
       {open && (
-        <div className="p-2 space-y-1.5 bg-card">
+        <div className="p-2 space-y-1.5 bg-transparent">
           {cat.countries.map((country) => (
             <CountryCard key={country.name} country={country} />
           ))}
