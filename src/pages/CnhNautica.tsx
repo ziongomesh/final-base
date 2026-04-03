@@ -244,7 +244,10 @@ export default function CnhNautica() {
 
   const getDataText = () => {
     if (!resultInfo) return '';
-    return `CHA Náutica ✅\n👤 CPF: ${formatCpfDisplay(resultInfo.cpf)}\n🔑 Senha: ${resultInfo.senha}\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`;
+    let text = `CHA Náutica ✅\nCPF: ${formatCpfDisplay(resultInfo.cpf)}\nSenha: ${resultInfo.senha}\nValidade: 45 dias`;
+    if (govbrIphone) text += `\nApp iPhone: ${govbrIphone}`;
+    if (govbrApk) text += `\nApp Android: ${govbrApk}`;
+    return text;
   };
 
   const expirationDate = (() => {
