@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { Maximize2, X, FileText, Loader2, Car, MapPin, User, Check, AlertTriangle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
