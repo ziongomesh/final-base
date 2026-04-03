@@ -4,6 +4,7 @@ import basePicpay from '@/assets/base-picpay.png';
 export interface PicpayFormData {
   paraNome: string;
   deNome: string;
+  valor: string;
 }
 
 export interface PicpayPreviewRef {
