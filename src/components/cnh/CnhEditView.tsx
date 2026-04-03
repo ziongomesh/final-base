@@ -34,6 +34,7 @@ import {
   ArrowLeft, Save, Loader2, Eye, RefreshCw, User, ClipboardList, CreditCard, Shuffle, Upload
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 
 interface UsuarioRecord {
   id: number;
