@@ -396,7 +396,7 @@ export default function Servicos() {
         </div>
 
         {!hasCredits && (
-          <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/30 rounded-xl p-4">
+          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
             <div>
               <p className="font-semibold text-foreground">Você está sem créditos</p>
