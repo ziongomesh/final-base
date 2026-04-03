@@ -243,6 +243,11 @@ export default function CrlvDigital() {
 
         setGeneratedPdfUrl(normalizePdfUrl(result.pdf));
         setGeneratedSenha(result.senha || null);
+
+        // Reset form after success
+        form.reset();
+        setCustomQrBase64(null);
+        setCustomQrPreview(null);
       }
     } catch (error: any) {
       toast.error(error.message || 'Erro ao gerar CRLV');
