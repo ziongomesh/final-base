@@ -575,9 +575,9 @@ export default function CnhDigital() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* SEÇÃO 1 - Dados Pessoais */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <User className="h-4 w-4" /> Seção 1
+                    <User className="h-4 w-4" /> Dados Pessoais
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
