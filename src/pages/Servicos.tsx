@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench } from 'lucide-react';
+import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt } from 'lucide-react';
 
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
@@ -65,15 +65,34 @@ const categories: ServiceCategory[] = [
     ],
   },
   {
+    title: 'Veículos',
+    icon: Car,
+    services: [
+      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true },
+    ],
+  },
+  {
     title: 'PDF',
     icon: FileText,
     services: [
-      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true, pdfGroup: 'comprovante' },
       { id: 'comprovante-residencia', name: 'COMPROVANTE DE RESIDÊNCIA', description: 'Comprovante de endereço', credits: 1, available: false, route: '#', icon: Home, pdfGroup: 'comprovante' },
       { id: 'certidao-nascimento-qr-on', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento com QR Code', credits: 1, available: false, route: '#', icon: FileText, hasQr: true, pdfGroup: 'certidao' },
       { id: 'certidao-nascimento-qr-off', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento sem QR Code', credits: 1, available: false, route: '#', icon: FileText, hasQr: false, pdfGroup: 'certidao' },
       { id: 'certidao-obito', name: 'CERTIDÃO DE ÓBITO', description: 'Certidão de óbito digital', credits: 1, available: false, route: '#', icon: FileText, pdfGroup: 'certidao' },
       { id: 'certidao-casamento', name: 'CERTIDÃO DE CASAMENTO', description: 'Certidão de casamento digital', credits: 1, available: false, route: '#', icon: FileText, pdfGroup: 'certidao' },
+    ],
+  },
+  {
+    title: 'Comprovantes',
+    icon: Receipt,
+    services: [
+      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt },
     ],
   },
   {
@@ -233,10 +252,11 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const Icon = cat.icon;
   const activeCount = cat.services.filter(s => s.available).length;
   const isPdfCategory = cat.title === 'PDF';
+  const isComprovantes = cat.title === 'Comprovantes';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
-  const comprovantes = cat.services.filter(s => s.pdfGroup === 'comprovante');
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
+  const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -254,20 +274,27 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isPdfCategory && comprovantes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Comprovantes</h4>
-                {sortGroup(comprovantes).map((service) => (
-                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
-                ))}
-              </div>
+          {isPdfCategory && certidoes.length > 0 ? (
+            <div className="space-y-4">
+              {pdfOthers.length > 0 && (
+                <div className="space-y-2">
+                  {sortGroup(pdfOthers).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10">Certidões</h4>
                 {sortGroup(certidoes).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
               </div>
+            </div>
+          ) : isComprovantes ? (
+            <div className="max-h-[280px] overflow-y-auto space-y-2 pr-1 scrollbar-thin" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(210 20% 25%) transparent' }}>
+              {sorted.map((service) => (
+                <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+              ))}
             </div>
           ) : (
             <div className="space-y-2">
