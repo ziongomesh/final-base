@@ -717,9 +717,9 @@ export default function CnhDigital() {
 
               {/* SEÇÃO 2 - Dados da CNH */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <ClipboardList className="h-4 w-4" /> Seção 2
+                    <ClipboardList className="h-4 w-4" /> Dados da CNH
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
