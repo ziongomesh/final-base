@@ -421,6 +421,11 @@ export default function CnhDigital() {
     updateObsField(newObs, customObs);
   };
 
+  const handleCustomObsChange = (value: string) => {
+    setCustomObs(value);
+    updateObsField(selectedObs, value);
+  };
+
   // Formatar observações
   const formatarObs = (obs: string): string => {
     if (!obs) return '';
