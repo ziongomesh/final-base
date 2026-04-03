@@ -507,7 +507,7 @@ export default function RgDigital() {
                     </div>
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium text-muted-foreground">Verso</h4>
-                      <div className="border rounded-lg overflow-hidden bg-muted/30">
+                      <div className="relative border rounded-lg overflow-hidden bg-muted/30">
                         {previewImages.verso ? (
                           <img src={previewImages.verso} alt="Verso" className="w-full h-auto pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                         ) : (
@@ -515,6 +515,7 @@ export default function RgDigital() {
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                           </div>
                         )}
+                        <WatermarkOverlay />
                       </div>
                     </div>
                   </div>
