@@ -612,36 +612,34 @@ export default function Recarregar() {
             </div>
 
             {/* Payment Summary */}
-            <div className="p-4 rounded-lg gradient-green text-success-foreground">
+            <div className="p-3 rounded-lg gradient-green text-success-foreground">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-sm opacity-90">Pacote selecionado</p>
-                  <p className="text-2xl font-bold">{selectedPackage.credits} créditos</p>
-                  <p className="text-xs opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
+                  <p className="text-xs opacity-90">Pacote selecionado</p>
+                  <p className="text-lg font-bold">{selectedPackage.credits} créditos</p>
+                  <p className="text-[10px] opacity-80">R$ {selectedPackage.unitPrice.toFixed(2)} por unidade</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm opacity-90">Total</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-xs opacity-90">Total</p>
+                  <p className="text-lg font-bold">
                     R$ {selectedPackage.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   {calculateSavings(selectedPackage, BASE_PRICE).savings > 0 && (
-                    <p className="text-xs font-medium flex items-center justify-end gap-1">
+                    <p className="text-[10px] font-medium flex items-center justify-end gap-1">
                       <TrendingDown className="h-3 w-3" />
                       Economia: R$ {calculateSavings(selectedPackage, BASE_PRICE).savings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  className="flex-1 h-12 text-lg bg-white/20 hover:bg-white/30 text-white" 
-                  onClick={handleRecharge} 
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <QrCode className="mr-2 h-5 w-5" />}
-                  {isProcessing ? 'Gerando PIX...' : 'Pagar com PIX'}
-                </Button>
-              </div>
+              <Button 
+                className="w-full h-10 text-sm bg-white/20 hover:bg-white/30 text-white" 
+                onClick={handleRecharge} 
+                disabled={isProcessing}
+              >
+                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <QrCode className="mr-2 h-4 w-4" />}
+                {isProcessing ? 'Gerando PIX...' : 'Pagar com PIX'}
+              </Button>
             </div>
           </CardContent>
         </Card>
