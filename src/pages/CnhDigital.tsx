@@ -826,33 +826,6 @@ export default function CnhDigital() {
                     )} />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-2">
-                      <FormField control={form.control} name="localNascimento" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs">Local de Nascimento <span className="text-destructive">*</span></FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="RIO DE JANEIRO" className="h-8 text-sm"
-                              onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    </div>
-                    <FormField control={form.control} name="ufNascimento" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs">UF <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
-                          <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="UF" /></SelectTrigger></FormControl>
-                          <SelectContent>
-                            {BRAZILIAN_STATES.map(s => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
 
                   {/* Banner de sugestão automática de datas */}
                   {autoDatesSuggestion && (
