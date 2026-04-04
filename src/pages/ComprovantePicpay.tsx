@@ -249,6 +249,7 @@ export default function ComprovantePicpay() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="cnpj">CNPJ</SelectItem>
                       <SelectItem value="telefone">Telefone</SelectItem>
                       <SelectItem value="email">E-mail</SelectItem>
                     </SelectContent>
