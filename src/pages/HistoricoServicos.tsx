@@ -27,11 +27,9 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { cnhService } from '@/lib/cnh-service';
-import { mysqlApi } from '@/lib/api-mysql';
 import { rgService, type RgRecord } from '@/lib/rg-service';
-import { crlvService, type CrlvRecord } from '@/lib/crlv-service';
+import { estudanteService, type EstudanteRecord } from '@/lib/estudante-service';
 import { nauticaService, type NauticaRecord } from '@/lib/cnh-nautica-service';
-import { crlvService, type CrlvRecord } from '@/lib/crlv-service';
 import { toast } from 'sonner';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
