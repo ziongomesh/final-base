@@ -37,6 +37,10 @@ export default function ComprovantePicpay() {
     contaRecebedor: '',
   });
 
+  const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  }, []);
+
   const definirDataAtual = useCallback(() => {
     const now = new Date();
     const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -48,10 +52,6 @@ export default function ComprovantePicpay() {
     const seg = String(now.getSeconds()).padStart(2, '0');
     updateField('dataHora', `${dia}/${mes}/${ano} - ${hora}:${min}:${seg}`);
   }, [updateField]);
-
-  const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
-  }, []);
 
   if (loading) {
     return (
