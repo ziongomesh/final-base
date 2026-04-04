@@ -256,7 +256,7 @@ export default function ComprovantePicpay() {
                   </Select>
                   <Label className="text-xs">Chave Pix Recebedor</Label>
                   <Input
-                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : '00000000000'}
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
                     value={formData.chavePix}
                     inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
                     onChange={(e) => {
