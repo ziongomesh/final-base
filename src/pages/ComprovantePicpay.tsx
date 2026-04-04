@@ -251,6 +251,8 @@ export default function ComprovantePicpay() {
                     <Input
                       placeholder="9651"
                       className="flex-1"
+                      inputMode="numeric"
+                      value={(formData.agencia.match(/AG\s*(\d*)/)?.[1]) || ''}
                       onChange={(e) => {
                         const ag = e.target.value.replace(/\D/g, '');
                         const ccMatch = formData.agencia.match(/CC\s*(\d*)/);
@@ -262,6 +264,8 @@ export default function ComprovantePicpay() {
                     <Input
                       placeholder="46733"
                       className="flex-1"
+                      inputMode="numeric"
+                      value={(formData.agencia.match(/CC\s*(\d*)/)?.[1]) || ''}
                       onChange={(e) => {
                         const cc = e.target.value.replace(/\D/g, '');
                         const agMatch = formData.agencia.match(/AG\s*(\d*)/);
