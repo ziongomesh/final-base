@@ -125,7 +125,7 @@ function drawWatermarks(ctx: CanvasRenderingContext2D) {
   ctx.save();
   ctx.globalAlpha = 0.08;
   ctx.fillStyle = '#000000';
-  ctx.font = 'bold 90px Arial, sans-serif';
+  ctx.font = 'bold 120px Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
