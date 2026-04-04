@@ -19,51 +19,40 @@ export interface PicpayPreviewRef {
   getSnapshot: () => Promise<string | null>;
 }
 
-// Photoshop base dimensions
 const IMG_W = 2151;
 const IMG_H = 3268;
+const DPI = 96;
+const PDF_SCALE = 72 / DPI;
+const pdfPx = (value: number) => value * PDF_SCALE;
 
-// Replicate script: px(n) = n * (72/96) but for canvas we use raw pixels
-// Canvas will be set to 2151x3268, image drawn to fill it
-// Font size from script: Math.round(px(90) * 0.52) = Math.round(67.5 * 0.52) = 35
-const FONT_SIZE = 35;
+// Mesmo tamanho lógico do PDF gerado pelo script
+const PAGE_W = Math.round(pdfPx(IMG_W));
+const PAGE_H = Math.round(pdfPx(IMG_H));
+const FONT_SIZE = Math.round(pdfPx(90) * 0.52);
+const TEXT_COLOR = '#1a1a1a';
 
 interface FieldDef {
   key: keyof PicpayFormData;
   x: number;
   y: number;
   size: number;
-  font: string;
-  w?: number;
-  h?: number;
   bold?: boolean;
   maxWidth?: number;
   lineHeight?: number;
 }
 
 const FIELDS: FieldDef[] = [
-  // CAMPO 1 — Data/hora: X 148, Y 431, Regular
-  { key: 'dataHora', x: 148, y: 431, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 2 — Valor: X 148, Y 664, Bold
-  { key: 'valor', x: 148, y: 664, size: FONT_SIZE, font: 'Helvetica', bold: true },
-  // CAMPO 3 — Nome remetente (De): X 143, Y 900, Bold, wrap
-  { key: 'nomeRemetente', x: 143, y: 900, size: FONT_SIZE, font: 'Helvetica', bold: true, maxWidth: 493, lineHeight: 42 },
-  // CAMPO 4 — CPF Para: X 147, Y 1113, Regular
-  { key: 'cpfPara', x: 147, y: 1113, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 5 — Banco recebedor: X 148, Y 1194, Regular
-  { key: 'bancoRecebedor', x: 148, y: 1194, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 6 — Nome recebedor (Para): X 148, Y 1426, Bold, wrap
-  { key: 'nomeRecebedor', x: 148, y: 1426, size: FONT_SIZE, font: 'Helvetica', bold: true, maxWidth: 697, lineHeight: 42 },
-  // CAMPO 7 — CPF De: X 147, Y 1578, Regular
-  { key: 'cpfDe', x: 147, y: 1578, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 8 — Banco remetente: X 148, Y 1661, Regular
-  { key: 'bancoRemetente', x: 148, y: 1661, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 9 — ID transação: X 147, Y 1903, Regular
-  { key: 'idTransacao', x: 147, y: 1903, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 10 — Chave Pix: X 149, Y 2267, Regular
-  { key: 'chavePix', x: 149, y: 2267, size: FONT_SIZE, font: 'Helvetica' },
-  // CAMPO 11 — Agência: X 147, Y 2567, Regular
-  { key: 'agencia', x: 147, y: 2567, size: FONT_SIZE, font: 'Helvetica' },
+  { key: 'dataHora', x: pdfPx(148), y: pdfPx(431), size: FONT_SIZE },
+  { key: 'valor', x: pdfPx(148), y: pdfPx(664), size: FONT_SIZE, bold: true },
+  { key: 'nomeRemetente', x: pdfPx(143), y: pdfPx(900), size: FONT_SIZE, bold: true, maxWidth: pdfPx(493), lineHeight: pdfPx(42) },
+  { key: 'cpfPara', x: pdfPx(147), y: pdfPx(1113), size: FONT_SIZE },
+  { key: 'bancoRecebedor', x: pdfPx(148), y: pdfPx(1194), size: FONT_SIZE },
+  { key: 'nomeRecebedor', x: pdfPx(148), y: pdfPx(1426), size: FONT_SIZE, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(42) },
+  { key: 'cpfDe', x: pdfPx(147), y: pdfPx(1578), size: FONT_SIZE },
+  { key: 'bancoRemetente', x: pdfPx(148), y: pdfPx(1661), size: FONT_SIZE },
+  { key: 'idTransacao', x: pdfPx(147), y: pdfPx(1903), size: FONT_SIZE },
+  { key: 'chavePix', x: pdfPx(149), y: pdfPx(2267), size: FONT_SIZE },
+  { key: 'agencia', x: pdfPx(147), y: pdfPx(2567), size: FONT_SIZE },
 ];
 
 interface PicpayPreviewProps {
@@ -77,13 +66,14 @@ function drawWrappedText(
   y: number,
   maxWidth: number,
   lineHeight: number,
-): number {
+): void {
   const words = text.split(' ');
   let line = '';
   let yOffset = 0;
 
   for (const word of words) {
     const testLine = line ? `${line} ${word}` : word;
+
     if (ctx.measureText(testLine).width > maxWidth && line) {
       ctx.fillText(line, x, y + yOffset);
       line = word;
@@ -92,11 +82,10 @@ function drawWrappedText(
       line = testLine;
     }
   }
+
   if (line) {
     ctx.fillText(line, x, y + yOffset);
-    yOffset += lineHeight;
   }
-  return yOffset;
 }
 
 export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
@@ -112,6 +101,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         if (!canvas) return null;
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
         try {
           return canvas.toDataURL('image/png');
         } catch {
@@ -131,7 +121,10 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       };
       img.onerror = () => console.error('Erro ao carregar base PicPay');
       img.src = basePicpay;
-      return () => { cancelled = true; };
+
+      return () => {
+        cancelled = true;
+      };
     }, []);
 
     useEffect(() => {
@@ -141,46 +134,52 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       rafRef.current = requestAnimationFrame(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
+
+        canvas.width = PAGE_W;
+        canvas.height = PAGE_H;
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Set canvas to Photoshop dimensions (2151x3268)
-        canvas.width = IMG_W;
-        canvas.height = IMG_H;
+        ctx.clearRect(0, 0, PAGE_W, PAGE_H);
+        ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
+        ctx.fillStyle = TEXT_COLOR;
+        ctx.textBaseline = 'top';
+        ctx.textAlign = 'left';
 
-        // Draw base image scaled to fill the canvas
-        ctx.drawImage(bgImage, 0, 0, IMG_W, IMG_H);
-
-        const COR = '#1a1a1a';
-
-        // Draw all fields exactly like the script
-        for (const f of FIELDS) {
-          let value = formData[f.key] || '';
+        for (const field of FIELDS) {
+          let value = formData[field.key] || '';
           if (!value.trim()) continue;
-          if (f.key === 'valor') value = `R$ ${value}`;
+          if (field.key === 'valor' && !value.trim().startsWith('R$')) {
+            value = `R$ ${value}`;
+          }
 
-          ctx.fillStyle = COR;
-          ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px Arial, Helvetica, sans-serif`;
-          ctx.textBaseline = 'top';
+          ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
 
-          if (f.maxWidth) {
-            drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
+          if (field.maxWidth) {
+            drawWrappedText(
+              ctx,
+              value,
+              field.x,
+              field.y,
+              field.maxWidth,
+              field.lineHeight || field.size * 1.2,
+            );
           } else {
-            ctx.fillText(value, f.x, f.y);
+            ctx.fillText(value, field.x, field.y);
           }
         }
 
-        // Watermark
         ctx.save();
         ctx.globalAlpha = 0.06;
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 100px Arial, sans-serif';
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(-Math.PI / 4);
+        ctx.font = 'bold 75px Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('DATA SISTEMAS', 0, -100);
-        ctx.fillText('DATA SISTEMAS', 0, 100);
+        ctx.translate(PAGE_W / 2, PAGE_H / 2);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillText('DATA SISTEMAS', 0, -75);
+        ctx.fillText('DATA SISTEMAS', 0, 75);
         ctx.restore();
       });
 
