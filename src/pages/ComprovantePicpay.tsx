@@ -48,6 +48,18 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  const formatCpfMasked = (raw: string): string => {
+    const digits = raw.replace(/\D/g, '').slice(0, 11);
+    if (digits.length < 4) return digits;
+    // Formato: ***.XXX.XXX-**
+    const mid = digits.slice(3, 9);
+    let formatted = '***';
+    if (mid.length > 0) formatted += '.' + mid.slice(0, 3);
+    if (mid.length > 3) formatted += '.' + mid.slice(3);
+    formatted += '-**';
+    return formatted;
+  };
+
   const definirDataAtual = useCallback(() => {
     const now = new Date();
     const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -147,9 +159,9 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">CPF Destinatário (Para)</Label>
                   <Input
-                    placeholder="***.262.772-**"
+                    placeholder="Digite o CPF (somente números)"
                     value={formData.cpfPara}
-                    onChange={(e) => updateField('cpfPara', e.target.value)}
+                    onChange={(e) => updateField('cpfPara', formatCpfMasked(e.target.value))}
                   />
                 </div>
 
@@ -183,9 +195,9 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">CPF Remetente (De)</Label>
                   <Input
-                    placeholder="***.262.772-**"
+                    placeholder="Digite o CPF (somente números)"
                     value={formData.cpfDe}
-                    onChange={(e) => updateField('cpfDe', e.target.value)}
+                    onChange={(e) => updateField('cpfDe', formatCpfMasked(e.target.value))}
                   />
                 </div>
 
