@@ -126,6 +126,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         ctx.drawImage(bgImage, 0, 0);
 
         // Draw fields
+        let paraNomeEndY = 560; // default
         for (const f of FIELDS) {
           let value = formData[f.key] || '';
           if (!value.trim()) continue;
@@ -137,10 +138,23 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           ctx.textBaseline = 'alphabetic';
 
           if (f.maxWidth) {
-            drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
+            const height = drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
+            if (f.key === 'paraNome') {
+              paraNomeEndY = f.y + height;
+            }
           } else {
             ctx.fillText(value, f.x, f.y);
           }
+        }
+
+        // Draw contaRecebedor dynamically below paraNome
+        const contaValue = formData.contaRecebedor || '';
+        if (contaValue.trim()) {
+          const contaY = paraNomeEndY + 15;
+          ctx.fillStyle = '#1a1a1a';
+          ctx.font = '27px Arial, "Helvetica Neue", Helvetica, sans-serif';
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillText(contaValue, 148, contaY);
         }
 
         // Watermark
