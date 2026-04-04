@@ -41,30 +41,30 @@ interface FieldDef {
   maxLines?: number;
 }
 
-// Field positions mapped to the Bradesco base image
+// Field positions mapped to the Bradesco base image (2180x3208)
 const FIELDS: FieldDef[] = [
   // Dados de quem pagou - Nome
-  { key: 'nomePagador', x: pdfPx(56), y: pdfPx(395), size: FONT_SIZE, bold: false },
+  { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false },
   // Dados de quem pagou - CPF
-  { key: 'cpfPagador', x: pdfPx(56), y: pdfPx(435), size: FONT_SIZE - 2, bold: false },
+  { key: 'cpfPagador', x: pdfPx(95), y: pdfPx(690), size: FONT_SIZE, bold: false },
   // Dados de quem pagou - Ag/CC
-  { key: 'agenciaConta', x: pdfPx(56), y: pdfPx(475), size: FONT_SIZE - 2, bold: false },
+  { key: 'agenciaConta', x: pdfPx(95), y: pdfPx(760), size: FONT_SIZE, bold: false },
   // Dados da Transação - Valor
-  { key: 'valor', x: pdfPx(56), y: pdfPx(590), size: FONT_SIZE + 4, bold: true },
+  { key: 'valor', x: pdfPx(95), y: pdfPx(940), size: FONT_SIZE + 12, bold: true },
   // Dados da Transação - Data
-  { key: 'dataHora', x: pdfPx(56), y: pdfPx(635), size: FONT_SIZE - 2, bold: false },
+  { key: 'dataHora', x: pdfPx(95), y: pdfPx(1030), size: FONT_SIZE, bold: false },
   // Dados da Transação - ID
-  { key: 'idTransacao', x: pdfPx(56), y: pdfPx(675), size: FONT_SIZE - 4, bold: false },
+  { key: 'idTransacao', x: pdfPx(95), y: pdfPx(1100), size: FONT_SIZE - 2, bold: false },
   // Dados de quem recebeu - Nome
-  { key: 'nomeRecebedor', x: pdfPx(56), y: pdfPx(790), size: FONT_SIZE, bold: false, maxWidth: pdfPx(600), lineHeight: pdfPx(48), maxLines: 2 },
+  { key: 'nomeRecebedor', x: pdfPx(95), y: pdfPx(1310), size: FONT_SIZE, bold: false, maxWidth: pdfPx(1100), lineHeight: pdfPx(52), maxLines: 2 },
   // Dados de quem recebeu - CPF
-  { key: 'cpfRecebedor', x: pdfPx(56), y: pdfPx(830), size: FONT_SIZE - 2, bold: false },
+  { key: 'cpfRecebedor', x: pdfPx(95), y: pdfPx(1380), size: FONT_SIZE, bold: false },
   // Dados de quem recebeu - Instituição
-  { key: 'instituicaoRecebedor', x: pdfPx(56), y: pdfPx(870), size: FONT_SIZE - 2, bold: false },
+  { key: 'instituicaoRecebedor', x: pdfPx(95), y: pdfPx(1450), size: FONT_SIZE, bold: false },
   // Dados de quem recebeu - Chave Pix
-  { key: 'chavePix', x: pdfPx(56), y: pdfPx(910), size: FONT_SIZE - 2, bold: false },
+  { key: 'chavePix', x: pdfPx(95), y: pdfPx(1520), size: FONT_SIZE, bold: false },
   // Autenticação
-  { key: 'autenticacao', x: pdfPx(56), y: pdfPx(1090), size: FONT_SIZE - 2, bold: false },
+  { key: 'autenticacao', x: pdfPx(95), y: pdfPx(1830), size: FONT_SIZE - 2, bold: false },
 ];
 
 function drawWrappedText(
