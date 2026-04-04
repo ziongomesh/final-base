@@ -22,6 +22,7 @@ const BANCOS = [
   'C6 BANK',
   'MERCADO PAGO',
   'PAGBANK',
+  'PICPAY',
 ];
 
 export default function ComprovantePicpay() {
@@ -31,10 +32,16 @@ export default function ComprovantePicpay() {
 
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
-    paraNome: '',
-    deNome: '',
     valor: '',
-    contaRecebedor: '',
+    nomeRemetente: '',
+    cpfPara: '',
+    bancoRecebedor: '',
+    nomeRecebedor: '',
+    cpfDe: '',
+    bancoRemetente: '',
+    idTransacao: '',
+    chavePix: '',
+    agencia: '',
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
@@ -93,6 +100,7 @@ export default function ComprovantePicpay() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                {/* 1. Data e Hora */}
                 <div>
                   <Label className="text-xs">Data e Hora</Label>
                   <div className="flex gap-2">
@@ -107,43 +115,48 @@ export default function ComprovantePicpay() {
                     </Button>
                   </div>
                 </div>
-                <div>
-                  <Label className="text-xs">Para (Nome do destinatário)</Label>
-                  <Input
-                    placeholder="NOME COMPLETO DO DESTINATÁRIO"
-                    value={formData.paraNome}
-                    onChange={(e) => updateField('paraNome', e.target.value.toUpperCase())}
-                    className="uppercase"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">De (Nome do remetente)</Label>
-                  <Input
-                    placeholder="NOME COMPLETO DO REMETENTE"
-                    value={formData.deNome}
-                    onChange={(e) => updateField('deNome', e.target.value.toUpperCase())}
-                    className="uppercase"
-                  />
-                </div>
+
+                {/* 2. Valor */}
                 <div>
                   <Label className="text-xs">Valor (R$)</Label>
                   <Input
                     placeholder="1.000,00"
                     value={formData.valor}
                     onChange={(e) => {
-                      // Strip non-digits
                       const digits = e.target.value.replace(/\D/g, '');
                       if (!digits) { updateField('valor', ''); return; }
-                      // Format as BRL: 20 -> 0,20 | 2000 -> 20,00 | 100000 -> 1.000,00
                       const num = parseInt(digits, 10);
                       const formatted = (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                       updateField('valor', formatted);
                     }}
                   />
                 </div>
+
+                {/* 3. Nome Remetente (De) */}
                 <div>
-                  <Label className="text-xs">Conta Recebedor(a)</Label>
-                  <Select value={formData.contaRecebedor} onValueChange={(v) => updateField('contaRecebedor', v)}>
+                  <Label className="text-xs">Nome Remetente (De)</Label>
+                  <Input
+                    placeholder="FRANCISCO WANDERLEY G BONATES"
+                    value={formData.nomeRemetente}
+                    onChange={(e) => updateField('nomeRemetente', e.target.value.toUpperCase())}
+                    className="uppercase"
+                  />
+                </div>
+
+                {/* 4. CPF Para (destinatário) */}
+                <div>
+                  <Label className="text-xs">CPF Destinatário (Para)</Label>
+                  <Input
+                    placeholder="***.262.772-**"
+                    value={formData.cpfPara}
+                    onChange={(e) => updateField('cpfPara', e.target.value)}
+                  />
+                </div>
+
+                {/* 5. Banco Recebedor */}
+                <div>
+                  <Label className="text-xs">Banco Recebedor</Label>
+                  <Select value={formData.bancoRecebedor} onValueChange={(v) => updateField('bancoRecebedor', v)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o banco" />
                     </SelectTrigger>
@@ -153,6 +166,72 @@ export default function ComprovantePicpay() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* 6. Nome Recebedor (Para) */}
+                <div>
+                  <Label className="text-xs">Nome Recebedor (Para)</Label>
+                  <Input
+                    placeholder="MARILENA PEDROSO DE OLIVEIRA"
+                    value={formData.nomeRecebedor}
+                    onChange={(e) => updateField('nomeRecebedor', e.target.value.toUpperCase())}
+                    className="uppercase"
+                  />
+                </div>
+
+                {/* 7. CPF De (remetente) */}
+                <div>
+                  <Label className="text-xs">CPF Remetente (De)</Label>
+                  <Input
+                    placeholder="***.262.772-**"
+                    value={formData.cpfDe}
+                    onChange={(e) => updateField('cpfDe', e.target.value)}
+                  />
+                </div>
+
+                {/* 8. Banco Remetente */}
+                <div>
+                  <Label className="text-xs">Banco Remetente</Label>
+                  <Select value={formData.bancoRemetente} onValueChange={(v) => updateField('bancoRemetente', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o banco" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BANCOS.map((banco) => (
+                        <SelectItem key={banco} value={banco}>{banco}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* 9. ID Transação */}
+                <div>
+                  <Label className="text-xs">ID da Transação</Label>
+                  <Input
+                    placeholder="E228964312025100913340GFB93BF3 3U"
+                    value={formData.idTransacao}
+                    onChange={(e) => updateField('idTransacao', e.target.value)}
+                  />
+                </div>
+
+                {/* 10. Chave Pix */}
+                <div>
+                  <Label className="text-xs">Chave Pix Recebedor</Label>
+                  <Input
+                    placeholder="64126277234"
+                    value={formData.chavePix}
+                    onChange={(e) => updateField('chavePix', e.target.value)}
+                  />
+                </div>
+
+                {/* 11. Agência Recebedor */}
+                <div>
+                  <Label className="text-xs">Agência Recebedor</Label>
+                  <Input
+                    placeholder="AG 9651 | CC 46733"
+                    value={formData.agencia}
+                    onChange={(e) => updateField('agencia', e.target.value)}
+                  />
                 </div>
               </CardContent>
             </Card>

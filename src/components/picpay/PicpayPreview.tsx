@@ -3,18 +3,24 @@ import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
   dataHora: string;
-  paraNome: string;
-  deNome: string;
   valor: string;
-  contaRecebedor: string;
+  nomeRemetente: string;
+  cpfPara: string;
+  bancoRecebedor: string;
+  nomeRecebedor: string;
+  cpfDe: string;
+  bancoRemetente: string;
+  idTransacao: string;
+  chavePix: string;
+  agencia: string;
 }
 
 export interface PicpayPreviewRef {
   getSnapshot: () => Promise<string | null>;
 }
 
-// Field definitions with Photoshop coordinates (base image 1263x1920)
-// Word-wrap fields have maxWidth set
+// Base image: 2151x3268
+// All coordinates from Photoshop (raw pixels)
 interface FieldDef {
   key: keyof PicpayFormData;
   x: number;
@@ -26,18 +32,29 @@ interface FieldDef {
   lineHeight?: number;
 }
 
-// All fields use Arial Bold ~16pt mapped to canvas pixels
-// The base image is 1263x1920, coordinates are raw pixel positions
-// contaRecebedor is drawn dynamically after paraNome
 const FIELDS: FieldDef[] = [
-  // Para - nome (word-wrap) - Arial Bold 16.07pt
-  { key: 'paraNome', x: 143, y: 560, size: 33, bold: true, color: '#1a1a1a', maxWidth: 360, lineHeight: 40 },
-
-  // De - nome (word-wrap) - Arial Bold 16.07pt
-  { key: 'deNome', x: 148, y: 880, size: 33, bold: true, color: '#1a1a1a', maxWidth: 480, lineHeight: 40 },
-
-  // Valor - X:148, Y:664 - Arial Bold 16.07pt
-  { key: 'valor', x: 148, y: 664, size: 33, bold: true, color: '#1a1a1a' },
+  // 1. Data/Hora - X:148, Y:431 - Regular ~24px equivalent
+  { key: 'dataHora', x: 148, y: 431, size: 24, color: '#1a1a1a' },
+  // 2. Valor - X:148, Y:664 - Bold
+  { key: 'valor', x: 148, y: 664, size: 35, bold: true, color: '#1a1a1a' },
+  // 3. Nome Remetente (De) - X:143, Y:900 - Bold, wrap
+  { key: 'nomeRemetente', x: 143, y: 900, size: 35, bold: true, color: '#1a1a1a', maxWidth: 493, lineHeight: 42 },
+  // 4. CPF Para - X:147, Y:1113 - Regular
+  { key: 'cpfPara', x: 147, y: 1113, size: 35, color: '#1a1a1a' },
+  // 5. Banco Recebedor - X:148, Y:1194 - Regular
+  { key: 'bancoRecebedor', x: 148, y: 1194, size: 35, color: '#1a1a1a' },
+  // 6. Nome Recebedor (Para) - X:148, Y:1426 - Bold, wrap
+  { key: 'nomeRecebedor', x: 148, y: 1426, size: 35, bold: true, color: '#1a1a1a', maxWidth: 697, lineHeight: 42 },
+  // 7. CPF De (remetente) - X:147, Y:1578 - Regular
+  { key: 'cpfDe', x: 147, y: 1578, size: 35, color: '#1a1a1a' },
+  // 8. Banco Remetente - X:148, Y:1661 - Regular
+  { key: 'bancoRemetente', x: 148, y: 1661, size: 35, color: '#1a1a1a' },
+  // 9. ID Transação - X:147, Y:1903 - Regular
+  { key: 'idTransacao', x: 147, y: 1903, size: 35, color: '#1a1a1a' },
+  // 10. Chave Pix - X:149, Y:2267 - Regular
+  { key: 'chavePix', x: 149, y: 2267, size: 35, color: '#1a1a1a' },
+  // 11. Agência - X:147, Y:2567 - Regular
+  { key: 'agencia', x: 147, y: 2567, size: 35, color: '#1a1a1a' },
 ];
 
 interface PicpayPreviewProps {
@@ -94,7 +111,6 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       },
     }), []);
 
-    // Load base image
     useEffect(() => {
       let cancelled = false;
       const img = new Image();
@@ -109,7 +125,6 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       return () => { cancelled = true; };
     }, []);
 
-    // Redraw on form changes
     useEffect(() => {
       if (!ready || !bgImage) return;
 
@@ -123,20 +138,8 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         canvas.width = bgImage.naturalWidth;
         canvas.height = bgImage.naturalHeight;
 
-        // Draw background
         ctx.drawImage(bgImage, 0, 0);
 
-        // Draw fields
-        // Draw dataHora at X:148, Y:431 - Arial Regular 11.54pt (~24px)
-        const dataHoraValue = formData.dataHora || '';
-        if (dataHoraValue.trim()) {
-          ctx.fillStyle = '#1a1a1a';
-          ctx.font = '24px Arial, "Helvetica Neue", Helvetica, sans-serif';
-          ctx.textBaseline = 'alphabetic';
-          ctx.fillText(dataHoraValue, 148, 431);
-        }
-
-        // Draw other fields
         for (const f of FIELDS) {
           let value = formData[f.key] || '';
           if (!value.trim()) continue;
@@ -151,15 +154,6 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           } else {
             ctx.fillText(value, f.x, f.y);
           }
-        }
-
-        // Draw contaRecebedor at fixed position X:148, Y:1194
-        const contaValue = formData.contaRecebedor || '';
-        if (contaValue.trim()) {
-          ctx.fillStyle = '#1a1a1a';
-          ctx.font = '27px Arial, "Helvetica Neue", Helvetica, sans-serif';
-          ctx.textBaseline = 'alphabetic';
-          ctx.fillText(contaValue, 148, 1194);
         }
 
         // Watermark
