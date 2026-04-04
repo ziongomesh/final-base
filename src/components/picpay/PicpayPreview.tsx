@@ -19,50 +19,51 @@ export interface PicpayPreviewRef {
   getSnapshot: () => Promise<string | null>;
 }
 
-// Original Photoshop coordinates are for 2151x3268
-// Current base image is 1263x1920, so we scale by 1263/2151
-const SCALE = 1263 / 2151;
-const s = (n: number) => Math.round(n * SCALE);
+// Photoshop base dimensions
+const IMG_W = 2151;
+const IMG_H = 3268;
+
+// Replicate script: px(n) = n * (72/96) but for canvas we use raw pixels
+// Canvas will be set to 2151x3268, image drawn to fill it
+// Font size from script: Math.round(px(90) * 0.52) = Math.round(67.5 * 0.52) = 35
+const FONT_SIZE = 35;
 
 interface FieldDef {
   key: keyof PicpayFormData;
   x: number;
   y: number;
   size: number;
-  color?: string;
+  font: string;
+  w?: number;
+  h?: number;
   bold?: boolean;
   maxWidth?: number;
   lineHeight?: number;
 }
 
-// Font size in script: Math.round(px(90) * 0.52) = Math.round(90*0.75*0.52) = 35 at 2151 scale
-// Scaled: 35 * 0.587 ≈ 21
-const FONT_SIZE = s(35);
-const FONT_SIZE_SMALL = s(24); // for dataHora (11.54pt)
-
 const FIELDS: FieldDef[] = [
-  // 1. Data/Hora - X:148, Y:431 - Regular
-  { key: 'dataHora', x: s(148), y: s(431), size: FONT_SIZE_SMALL, color: '#1a1a1a' },
-  // 2. Valor - X:148, Y:664 - Bold
-  { key: 'valor', x: s(148), y: s(664), size: FONT_SIZE, bold: true, color: '#1a1a1a' },
-  // 3. Nome Remetente (De) - X:143, Y:900 - Bold, wrap
-  { key: 'nomeRemetente', x: s(143), y: s(900), size: FONT_SIZE, bold: true, color: '#1a1a1a', maxWidth: s(493), lineHeight: s(42) },
-  // 4. CPF Para - X:147, Y:1113 - Regular
-  { key: 'cpfPara', x: s(147), y: s(1113), size: FONT_SIZE, color: '#1a1a1a' },
-  // 5. Banco Recebedor - X:148, Y:1194 - Regular
-  { key: 'bancoRecebedor', x: s(148), y: s(1194), size: FONT_SIZE, color: '#1a1a1a' },
-  // 6. Nome Recebedor (Para) - X:148, Y:1426 - Bold, wrap
-  { key: 'nomeRecebedor', x: s(148), y: s(1426), size: FONT_SIZE, bold: true, color: '#1a1a1a', maxWidth: s(697), lineHeight: s(42) },
-  // 7. CPF De (remetente) - X:147, Y:1578 - Regular
-  { key: 'cpfDe', x: s(147), y: s(1578), size: FONT_SIZE, color: '#1a1a1a' },
-  // 8. Banco Remetente - X:148, Y:1661 - Regular
-  { key: 'bancoRemetente', x: s(148), y: s(1661), size: FONT_SIZE, color: '#1a1a1a' },
-  // 9. ID Transação - X:147, Y:1903 - Regular
-  { key: 'idTransacao', x: s(147), y: s(1903), size: FONT_SIZE, color: '#1a1a1a' },
-  // 10. Chave Pix - X:149, Y:2267 - Regular
-  { key: 'chavePix', x: s(149), y: s(2267), size: FONT_SIZE, color: '#1a1a1a' },
-  // 11. Agência - X:147, Y:2567 - Regular
-  { key: 'agencia', x: s(147), y: s(2567), size: FONT_SIZE, color: '#1a1a1a' },
+  // CAMPO 1 — Data/hora: X 148, Y 431, Regular
+  { key: 'dataHora', x: 148, y: 431, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 2 — Valor: X 148, Y 664, Bold
+  { key: 'valor', x: 148, y: 664, size: FONT_SIZE, font: 'Helvetica', bold: true },
+  // CAMPO 3 — Nome remetente (De): X 143, Y 900, Bold, wrap
+  { key: 'nomeRemetente', x: 143, y: 900, size: FONT_SIZE, font: 'Helvetica', bold: true, maxWidth: 493, lineHeight: 42 },
+  // CAMPO 4 — CPF Para: X 147, Y 1113, Regular
+  { key: 'cpfPara', x: 147, y: 1113, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 5 — Banco recebedor: X 148, Y 1194, Regular
+  { key: 'bancoRecebedor', x: 148, y: 1194, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 6 — Nome recebedor (Para): X 148, Y 1426, Bold, wrap
+  { key: 'nomeRecebedor', x: 148, y: 1426, size: FONT_SIZE, font: 'Helvetica', bold: true, maxWidth: 697, lineHeight: 42 },
+  // CAMPO 7 — CPF De: X 147, Y 1578, Regular
+  { key: 'cpfDe', x: 147, y: 1578, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 8 — Banco remetente: X 148, Y 1661, Regular
+  { key: 'bancoRemetente', x: 148, y: 1661, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 9 — ID transação: X 147, Y 1903, Regular
+  { key: 'idTransacao', x: 147, y: 1903, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 10 — Chave Pix: X 149, Y 2267, Regular
+  { key: 'chavePix', x: 149, y: 2267, size: FONT_SIZE, font: 'Helvetica' },
+  // CAMPO 11 — Agência: X 147, Y 2567, Regular
+  { key: 'agencia', x: 147, y: 2567, size: FONT_SIZE, font: 'Helvetica' },
 ];
 
 interface PicpayPreviewProps {
@@ -143,19 +144,24 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        canvas.width = bgImage.naturalWidth;
-        canvas.height = bgImage.naturalHeight;
+        // Set canvas to Photoshop dimensions (2151x3268)
+        canvas.width = IMG_W;
+        canvas.height = IMG_H;
 
-        ctx.drawImage(bgImage, 0, 0);
+        // Draw base image scaled to fill the canvas
+        ctx.drawImage(bgImage, 0, 0, IMG_W, IMG_H);
 
+        const COR = '#1a1a1a';
+
+        // Draw all fields exactly like the script
         for (const f of FIELDS) {
           let value = formData[f.key] || '';
           if (!value.trim()) continue;
           if (f.key === 'valor') value = `R$ ${value}`;
 
-          ctx.fillStyle = f.color || '#1a1a1a';
-          ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
-          ctx.textBaseline = 'alphabetic';
+          ctx.fillStyle = COR;
+          ctx.font = `${f.bold ? 'bold ' : ''}${f.size}px Arial, Helvetica, sans-serif`;
+          ctx.textBaseline = 'top';
 
           if (f.maxWidth) {
             drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
@@ -168,12 +174,13 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         ctx.save();
         ctx.globalAlpha = 0.06;
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 50px Arial, sans-serif';
+        ctx.font = 'bold 100px Arial, sans-serif';
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(-Math.PI / 4);
         ctx.textAlign = 'center';
-        ctx.fillText('DATA SISTEMAS', 0, -50);
-        ctx.fillText('DATA SISTEMAS', 0, 50);
+        ctx.textBaseline = 'middle';
+        ctx.fillText('DATA SISTEMAS', 0, -100);
+        ctx.fillText('DATA SISTEMAS', 0, 100);
         ctx.restore();
       });
 
