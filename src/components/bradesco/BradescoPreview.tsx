@@ -19,15 +19,15 @@ export interface BradescoPreviewRef {
   getCleanSnapshot: () => Promise<string | null>;
 }
 
-const IMG_W = 1304;
-const IMG_H = 1920;
+const IMG_W = 2180;
+const IMG_H = 3208;
 const DPI = 96;
 const PDF_SCALE = 72 / DPI;
 const pdfPx = (value: number) => value * PDF_SCALE;
 
 const PAGE_W = Math.round(pdfPx(IMG_W));
 const PAGE_H = Math.round(pdfPx(IMG_H));
-const FONT_SIZE = Math.round(pdfPx(42));
+const FONT_SIZE = Math.round(pdfPx(90) * 0.52);
 const TEXT_COLOR = '#333333';
 
 interface FieldDef {
