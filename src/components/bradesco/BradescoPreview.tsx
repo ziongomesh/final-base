@@ -40,10 +40,14 @@ interface FieldDef {
   maxWidth?: number;
   lineHeight?: number;
   maxLines?: number;
+  labelBold?: boolean;
+  label?: string;
 }
 
 // Field positions mapped to the Bradesco base image (2180x3208)
 const FIELDS: FieldDef[] = [
+  // Número de Controle - label bold, value regular
+  { key: 'numeroControle', x: pdfPx(79), y: pdfPx(510), size: pdfPx(20 / PDF_SCALE), bold: false, label: 'Número de Controle:   ', labelBold: true },
   // Dados de quem pagou - Nome
   { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false },
   // Dados de quem pagou - CPF
