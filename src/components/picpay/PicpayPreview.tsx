@@ -67,15 +67,22 @@ function drawWrappedText(
   y: number,
   maxWidth: number,
   lineHeight: number,
+  maxLines = 2,
 ): void {
   const words = text.split(' ');
   let line = '';
   let yOffset = 0;
+  let lineCount = 0;
 
   for (const word of words) {
     const testLine = line ? `${line} ${word}` : word;
 
     if (ctx.measureText(testLine).width > maxWidth && line) {
+      lineCount++;
+      if (lineCount >= maxLines) {
+        ctx.fillText(line, x, y + yOffset);
+        return;
+      }
       ctx.fillText(line, x, y + yOffset);
       line = word;
       yOffset += lineHeight;
