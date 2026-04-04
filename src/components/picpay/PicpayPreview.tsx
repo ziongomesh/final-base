@@ -52,8 +52,8 @@ const FIELDS: FieldDef[] = [
   { key: 'cpfDe', x: pdfPx(147), y: pdfPx(1578), size: FONT_SIZE + 2 },
   { key: 'bancoRemetente', x: pdfPx(148), y: pdfPx(1661), size: FONT_SIZE },
   { key: 'idTransacao', x: pdfPx(147), y: pdfPx(1903), size: FONT_SIZE + 2 },
-  { key: 'chavePix', x: pdfPx(149), y: pdfPx(2267), size: FONT_SIZE },
-  { key: 'agencia', x: pdfPx(147), y: pdfPx(2567), size: FONT_SIZE },
+  { key: 'chavePix', x: pdfPx(149), y: pdfPx(2267), size: FONT_SIZE + 2 },
+  { key: 'agencia', x: pdfPx(147), y: pdfPx(2567), size: FONT_SIZE + 2 },
 ];
 
 interface PicpayPreviewProps {
