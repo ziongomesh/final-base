@@ -220,11 +220,17 @@ export default function ComprovantePicpay() {
                 {/* 9. ID Transação */}
                 <div>
                   <Label className="text-xs">ID da Transação</Label>
-                  <Input
-                    placeholder="E228964312025100913340GFB93BF3 3U"
-                    value={formData.idTransacao}
-                    onChange={(e) => updateField('idTransacao', e.target.value)}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="E228964312025100913340GFB93BF3 3U"
+                      value={formData.idTransacao}
+                      onChange={(e) => updateField('idTransacao', e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={gerarIdTransacao}>
+                      Gerar
+                    </Button>
+                  </div>
                 </div>
 
                 {/* 10. Chave Pix */}
