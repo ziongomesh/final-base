@@ -126,7 +126,7 @@ export default function ComprovantePicpay() {
       const pdfBytes = await pdfDoc.save();
 
       // Create download URL
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setGeneratedPdfUrl(url);
 
