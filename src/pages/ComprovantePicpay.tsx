@@ -272,7 +272,12 @@ export default function ComprovantePicpay() {
                         }
                         updateField('chavePix', formatted);
                       } else {
-                        updateField('chavePix', e.target.value.replace(/\D/g, ''));
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        let formatted = digits;
+                        if (digits.length > 3) formatted = digits.slice(0, 3) + '.' + digits.slice(3);
+                        if (digits.length > 6) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
+                        if (digits.length > 9) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6, 9) + '-' + digits.slice(9);
+                        updateField('chavePix', formatted);
                       }
                     }}
                   />
