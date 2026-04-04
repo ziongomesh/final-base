@@ -69,6 +69,19 @@ export default function ComprovantePicpay() {
     updateField('dataHora', `${dia}/${mes}/${ano} - ${hora}:${min}:${seg}`);
   }, [updateField]);
 
+  const gerarIdTransacao = useCallback(() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const mo = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const h = String(now.getHours()).padStart(2, '0');
+    const mi = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const hex = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+    const id = `E22896431${y}${mo}${d}${h}${mi}${s}${hex()}${hex()} ${hex().slice(0, 2)}`;
+    updateField('idTransacao', id.slice(0, 35));
+  }, [updateField]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
