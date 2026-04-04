@@ -48,6 +48,18 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  const formatCpfMasked = (raw: string): string => {
+    const digits = raw.replace(/\D/g, '').slice(0, 11);
+    if (digits.length < 4) return digits;
+    // Formato: ***.XXX.XXX-**
+    const mid = digits.slice(3, 9);
+    let formatted = '***';
+    if (mid.length > 0) formatted += '.' + mid.slice(0, 3);
+    if (mid.length > 3) formatted += '.' + mid.slice(3);
+    formatted += '-**';
+    return formatted;
+  };
+
   const definirDataAtual = useCallback(() => {
     const now = new Date();
     const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
