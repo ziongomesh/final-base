@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import baseBradesco from '@/assets/base-bradesco.png';
 
 export interface BradescoFormData {
+  numeroControle: string;
   dataHora: string;
   valor: string;
   nomePagador: string;
