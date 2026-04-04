@@ -27,6 +27,7 @@ interface FieldDef {
 
 // All fields use Arial Bold ~16pt mapped to canvas pixels
 // The base image is 1263x1920, coordinates are raw pixel positions
+// contaRecebedor is drawn dynamically after paraNome
 const FIELDS: FieldDef[] = [
   // Para - nome (word-wrap) - Arial Bold 16.07pt
   { key: 'paraNome', x: 143, y: 560, size: 33, bold: true, color: '#1a1a1a', maxWidth: 360, lineHeight: 40 },
@@ -36,9 +37,6 @@ const FIELDS: FieldDef[] = [
 
   // Valor - X:148, Y:430 - Arial Bold 16.07pt
   { key: 'valor', x: 148, y: 430, size: 33, bold: true, color: '#1a1a1a' },
-
-  // Conta recebedor(a) - X:148, Y:1194 - Arial Regular 13.27pt
-  { key: 'contaRecebedor', x: 148, y: 1194, size: 27, bold: false, color: '#1a1a1a' },
 ];
 
 interface PicpayPreviewProps {
