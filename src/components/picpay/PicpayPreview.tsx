@@ -51,7 +51,7 @@ const FIELDS: FieldDef[] = [
   { key: 'nomeRecebedor', x: pdfPx(148), y: pdfPx(1426), size: FONT_SIZE + 10, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(52), maxLines: 2 },
   { key: 'cpfDe', x: pdfPx(147), y: pdfPx(1578), size: FONT_SIZE + 2 },
   { key: 'bancoRemetente', x: pdfPx(148), y: pdfPx(1661), size: FONT_SIZE },
-  { key: 'idTransacao', x: pdfPx(147), y: pdfPx(1903), size: FONT_SIZE },
+  { key: 'idTransacao', x: pdfPx(147), y: pdfPx(1903), size: FONT_SIZE + 2 },
   { key: 'chavePix', x: pdfPx(149), y: pdfPx(2267), size: FONT_SIZE },
   { key: 'agencia', x: pdfPx(147), y: pdfPx(2567), size: FONT_SIZE },
 ];
@@ -164,7 +164,12 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
 
           ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
 
-          if (field.maxWidth) {
+          if (field.key === 'idTransacao' && value.length > 2) {
+            const mainPart = value.slice(0, -2);
+            const lastTwo = value.slice(-2);
+            ctx.fillText(mainPart, field.x, field.y);
+            ctx.fillText(lastTwo, field.x, field.y + field.size * 1.3);
+          } else if (field.maxWidth) {
             drawWrappedText(
               ctx,
               value,
