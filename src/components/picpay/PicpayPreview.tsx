@@ -39,6 +39,7 @@ interface FieldDef {
   bold?: boolean;
   maxWidth?: number;
   lineHeight?: number;
+  maxLines?: number;
 }
 
 const FIELDS: FieldDef[] = [
