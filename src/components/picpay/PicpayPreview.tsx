@@ -153,6 +153,17 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           if (field.key === 'valor' && !value.trim().startsWith('R$')) {
             value = `R$ ${value}`;
           }
+          // Mascarar CPFs: digits -> ***.XXX.XXX-**
+          if (field.key === 'cpfPara' || field.key === 'cpfDe') {
+            const digits = value.replace(/\D/g, '');
+            if (digits.length >= 4) {
+              const mid = digits.slice(3, 9);
+              value = '***';
+              if (mid.length > 0) value += '.' + mid.slice(0, 3);
+              if (mid.length > 3) value += '.' + mid.slice(3);
+              value += '-**';
+            }
+          }
 
           ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
 
