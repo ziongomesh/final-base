@@ -172,6 +172,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
               field.y,
               field.maxWidth,
               field.lineHeight || field.size * 1.2,
+              field.maxLines || 2,
             );
           } else {
             ctx.fillText(value, field.x, field.y);
