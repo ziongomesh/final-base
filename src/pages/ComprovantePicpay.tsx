@@ -261,6 +261,16 @@ export default function ComprovantePicpay() {
                     onChange={(e) => {
                       if (tipoChavePix === 'email') {
                         updateField('chavePix', e.target.value.toLowerCase());
+                      } else if (tipoChavePix === 'telefone') {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        let formatted = digits;
+                        if (digits.length > 2) {
+                          formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                        }
+                        if (digits.length > 7) {
+                          formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+                        }
+                        updateField('chavePix', formatted);
                       } else {
                         updateField('chavePix', e.target.value.replace(/\D/g, ''));
                       }
