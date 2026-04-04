@@ -49,18 +49,12 @@ export default function ComprovantePicpay() {
   }, []);
 
   const handleCpfInput = (value: string): string => {
-    return value.replace(/\D/g, '').slice(0, 11);
-  };
-
-  const formatCpfMasked = (cpf: string): string => {
-    const digits = cpf.replace(/\D/g, '');
-    if (digits.length < 4) return cpf;
-    const mid = digits.slice(3, 9);
-    let formatted = '***';
-    if (mid.length > 0) formatted += '.' + mid.slice(0, 3);
-    if (mid.length > 3) formatted += '.' + mid.slice(3);
-    formatted += '-**';
-    return formatted;
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length === 11) {
+      const mid = digits.slice(3, 9);
+      return `***.${mid.slice(0, 3)}.${mid.slice(3)}-**`;
+    }
+    return digits;
   };
 
   const definirDataAtual = useCallback(() => {
