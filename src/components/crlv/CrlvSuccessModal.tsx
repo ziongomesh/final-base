@@ -62,7 +62,11 @@ export default function CrlvSuccessModal({ isOpen, onClose, placa, pdfUrl, creat
           <p className="text-xs text-muted-foreground">{dateStr}</p>
         </DialogHeader>
 
-        <div className="pt-3">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-md p-2.5 text-xs text-amber-700 dark:text-amber-400">
+          ⚠️ <strong>Importante:</strong> Baixe e salve o arquivo. O PDF não fica armazenado permanentemente por segurança.
+        </div>
+
+        <div className="pt-2">
           <Button
             variant="outline"
             size="sm"
