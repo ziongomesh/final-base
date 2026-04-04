@@ -38,7 +38,7 @@ export default function ComprovantePicpay() {
     bancoRecebedor: '',
     nomeRecebedor: '',
     cpfDe: '',
-    bancoRemetente: '',
+    bancoRemetente: 'PICPAY',
     idTransacao: '',
     chavePix: '',
     agencia: '',
