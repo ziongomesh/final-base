@@ -272,6 +272,14 @@ export default function ComprovantePicpay() {
                           formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
                         }
                         updateField('chavePix', formatted);
+                      } else if (tipoChavePix === 'cnpj') {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 14);
+                        let formatted = digits;
+                        if (digits.length > 2) formatted = digits.slice(0, 2) + '.' + digits.slice(2);
+                        if (digits.length > 5) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5);
+                        if (digits.length > 8) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8);
+                        if (digits.length > 12) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8, 12) + '-' + digits.slice(12);
+                        updateField('chavePix', formatted);
                       } else {
                         const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
                         let formatted = digits;
