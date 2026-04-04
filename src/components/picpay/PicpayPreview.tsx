@@ -147,14 +147,13 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           }
         }
 
-        // Draw contaRecebedor dynamically below paraNome
+        // Draw contaRecebedor at fixed position X:148, Y:1194
         const contaValue = formData.contaRecebedor || '';
         if (contaValue.trim()) {
-          const contaY = paraNomeEndY + 15;
           ctx.fillStyle = '#1a1a1a';
           ctx.font = '27px Arial, "Helvetica Neue", Helvetica, sans-serif';
           ctx.textBaseline = 'alphabetic';
-          ctx.fillText(contaValue, 148, contaY);
+          ctx.fillText(contaValue, 148, 1194);
         }
 
         // Watermark
