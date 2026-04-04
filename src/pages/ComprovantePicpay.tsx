@@ -94,6 +94,20 @@ export default function ComprovantePicpay() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
+                  <Label className="text-xs">Data e Hora</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="09/out/2025 - 10:34:09"
+                      value={formData.dataHora}
+                      onChange={(e) => updateField('dataHora', e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={definirDataAtual}>
+                      Atual
+                    </Button>
+                  </div>
+                </div>
+                <div>
                   <Label className="text-xs">Para (Nome do destinatário)</Label>
                   <Input
                     placeholder="NOME COMPLETO DO DESTINATÁRIO"

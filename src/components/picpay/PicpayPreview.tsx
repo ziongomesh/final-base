@@ -127,11 +127,19 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         ctx.drawImage(bgImage, 0, 0);
 
         // Draw fields
-        let paraNomeEndY = 560; // default
+        // Draw dataHora at X:148, Y:431 - Arial Regular 11.54pt (~24px)
+        const dataHoraValue = formData.dataHora || '';
+        if (dataHoraValue.trim()) {
+          ctx.fillStyle = '#1a1a1a';
+          ctx.font = '24px Arial, "Helvetica Neue", Helvetica, sans-serif';
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillText(dataHoraValue, 148, 431);
+        }
+
+        // Draw other fields
         for (const f of FIELDS) {
           let value = formData[f.key] || '';
           if (!value.trim()) continue;
-          // Prefix valor with "R$ "
           if (f.key === 'valor') value = `R$ ${value}`;
 
           ctx.fillStyle = f.color || '#1a1a1a';
@@ -139,10 +147,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
           ctx.textBaseline = 'alphabetic';
 
           if (f.maxWidth) {
-            const height = drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
-            if (f.key === 'paraNome') {
-              paraNomeEndY = f.y + height;
-            }
+            drawWrappedText(ctx, value, f.x, f.y, f.maxWidth, f.lineHeight || (f.size + 6));
           } else {
             ctx.fillText(value, f.x, f.y);
           }
