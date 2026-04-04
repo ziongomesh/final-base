@@ -16,7 +16,7 @@ export interface PicpayFormData {
 }
 
 export interface PicpayPreviewRef {
-  getSnapshot: () => Promise<string | null>;
+  getCleanSnapshot: () => Promise<string | null>;
 }
 
 const IMG_W = 2151;
@@ -25,7 +25,6 @@ const DPI = 96;
 const PDF_SCALE = 72 / DPI;
 const pdfPx = (value: number) => value * PDF_SCALE;
 
-// Mesmo tamanho lógico do PDF gerado pelo script
 const PAGE_W = Math.round(pdfPx(IMG_W));
 const PAGE_H = Math.round(pdfPx(IMG_H));
 const FONT_SIZE = Math.round(pdfPx(90) * 0.52);
@@ -96,6 +95,67 @@ function drawWrappedText(
   }
 }
 
+function drawFormFields(ctx: CanvasRenderingContext2D, formData: PicpayFormData) {
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+
+  for (const field of FIELDS) {
+    let value = formData[field.key] || '';
+    if (!value.trim()) continue;
+    if (field.key === 'valor' && !value.trim().startsWith('R$')) {
+      value = `R$ ${value}`;
+    }
+
+    ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
+
+    if (field.key === 'idTransacao' && value.length > 2) {
+      const mainPart = value.slice(0, -2);
+      const lastTwo = value.slice(-2);
+      ctx.fillText(mainPart, field.x, field.y);
+      ctx.fillText(lastTwo, field.x, field.y + field.size * 1.3);
+    } else if (field.maxWidth) {
+      drawWrappedText(
+        ctx,
+        value,
+        field.x,
+        field.y,
+        field.maxWidth,
+        field.lineHeight || field.size * 1.2,
+        field.maxLines || 2,
+      );
+    } else {
+      ctx.fillText(value, field.x, field.y);
+    }
+  }
+}
+
+function drawWatermarks(ctx: CanvasRenderingContext2D) {
+  ctx.save();
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 120px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Draw multiple watermarks across the entire canvas in a grid pattern
+  const text = 'DATA SISTEMAS';
+  const spacingX = 500;
+  const spacingY = 400;
+
+  for (let y = -200; y < PAGE_H + 200; y += spacingY) {
+    for (let x = -200; x < PAGE_W + 200; x += spacingX) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-Math.PI / 6);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  ctx.restore();
+}
+
 export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
   function PicpayPreview({ formData }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -104,19 +164,31 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
     const rafRef = useRef<number>(0);
 
     useImperativeHandle(ref, () => ({
-      getSnapshot: async () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return null;
-        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      getCleanSnapshot: async () => {
+        if (!bgImage) return null;
+
+        // Create an offscreen canvas for the clean version (no watermarks)
+        const offscreen = document.createElement('canvas');
+        offscreen.width = PAGE_W;
+        offscreen.height = PAGE_H;
+        const ctx = offscreen.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.clearRect(0, 0, PAGE_W, PAGE_H);
+        ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
+        drawFormFields(ctx, formData);
 
         try {
-          return canvas.toDataURL('image/png');
+          const dataUrl = offscreen.toDataURL('image/png');
+          // Immediately destroy the offscreen canvas
+          offscreen.width = 0;
+          offscreen.height = 0;
+          return dataUrl;
         } catch {
           return null;
         }
       },
-    }), []);
+    }), [bgImage, formData]);
 
     useEffect(() => {
       let cancelled = false;
@@ -151,50 +223,8 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
 
         ctx.clearRect(0, 0, PAGE_W, PAGE_H);
         ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
-        ctx.fillStyle = TEXT_COLOR;
-        ctx.textBaseline = 'top';
-        ctx.textAlign = 'left';
-
-        for (const field of FIELDS) {
-          let value = formData[field.key] || '';
-          if (!value.trim()) continue;
-          if (field.key === 'valor' && !value.trim().startsWith('R$')) {
-            value = `R$ ${value}`;
-          }
-
-          ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
-
-          if (field.key === 'idTransacao' && value.length > 2) {
-            const mainPart = value.slice(0, -2);
-            const lastTwo = value.slice(-2);
-            ctx.fillText(mainPart, field.x, field.y);
-            ctx.fillText(lastTwo, field.x, field.y + field.size * 1.3);
-          } else if (field.maxWidth) {
-            drawWrappedText(
-              ctx,
-              value,
-              field.x,
-              field.y,
-              field.maxWidth,
-              field.lineHeight || field.size * 1.2,
-              field.maxLines || 2,
-            );
-          } else {
-            ctx.fillText(value, field.x, field.y);
-          }
-        }
-
-        ctx.save();
-        ctx.globalAlpha = 0.06;
-        ctx.fillStyle = '#000000';
-        ctx.font = 'bold 75px Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.translate(PAGE_W / 2, PAGE_H / 2);
-        ctx.rotate(-Math.PI / 4);
-        ctx.fillText('DATA SISTEMAS', 0, -75);
-        ctx.fillText('DATA SISTEMAS', 0, 75);
-        ctx.restore();
+        drawFormFields(ctx, formData);
+        drawWatermarks(ctx);
       });
 
       return () => cancelAnimationFrame(rafRef.current);

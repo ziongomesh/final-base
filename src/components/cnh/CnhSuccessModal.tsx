@@ -157,6 +157,10 @@ export default function CnhSuccessModal({ isOpen, onClose, cpf, senha, nome, pdf
             <p className="text-sm text-muted-foreground">Expira em: <strong>{expirationDate}</strong></p>
           </div>
 
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-md p-3 text-sm text-amber-700 dark:text-amber-400">
+            ⚠️ <strong>Importante:</strong> Baixe e salve o PDF agora. Mantenha seus arquivos seguros.
+          </div>
+
           <AppExamplePreview appName="CNH do Brasil" exampleImage={exemploCnh} />
 
           {/* Ações */}

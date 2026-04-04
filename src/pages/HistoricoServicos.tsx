@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { isUsingMySQL } from '@/lib/db-config';
 
-// Resolve URLs de uploads: se a URL começa com /uploads/, prefixa com a base da API
 function resolveUploadUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
   if (url.startsWith('data:') || url.startsWith('http')) return url;
@@ -19,6 +18,7 @@ function resolveUploadUrl(url: string | null | undefined): string | undefined {
   }
   return url;
 }
+
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,12 +27,9 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { cnhService } from '@/lib/cnh-service';
-import { mysqlApi } from '@/lib/api-mysql';
 import { rgService, type RgRecord } from '@/lib/rg-service';
-import { hapvidaService } from '@/lib/hapvida-service';
 import { estudanteService, type EstudanteRecord } from '@/lib/estudante-service';
 import { nauticaService, type NauticaRecord } from '@/lib/cnh-nautica-service';
-import { crlvService, type CrlvRecord } from '@/lib/crlv-service';
 import { toast } from 'sonner';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -41,7 +38,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  History, Search, IdCard, Eye, Edit, Loader2, Clock, FileText, ChevronDown, ChevronUp, ExternalLink, Trash2, AlertTriangle, CreditCard, RefreshCw, Timer, GraduationCap, Copy, Check, Anchor, FileDown, Truck, Stethoscope, User
+  History, Search, IdCard, Eye, Edit, Loader2, Clock, FileText, ChevronDown, ChevronUp, Trash2, AlertTriangle, CreditCard, RefreshCw, Timer, GraduationCap, Copy, Check, Anchor, FileDown, User
 } from 'lucide-react';
 import CnhEditView from '@/components/cnh/CnhEditView';
 import RgEditView from '@/components/rg/RgEditView';
@@ -84,7 +81,6 @@ interface UsuarioRecord {
   admin_id: number;
 }
 
-// Helper: days until expiration
 function daysUntilExpiration(dataExpiracao: string | null): number | null {
   if (!dataExpiracao) return null;
   const exp = new Date(dataExpiracao);
@@ -123,8 +119,6 @@ export default function HistoricoServicos() {
   const [rgRegistros, setRgRegistros] = useState<RgRecord[]>([]);
   const [estudanteRegistros, setEstudanteRegistros] = useState<EstudanteRecord[]>([]);
   const [nauticaRegistros, setNauticaRegistros] = useState<NauticaRecord[]>([]);
-  const [crlvRegistros, setCrlvRegistros] = useState<CrlvRecord[]>([]);
-  const [hapvidaRegistros, setHapvidaRegistros] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
@@ -186,34 +180,6 @@ export default function HistoricoServicos() {
     try {
       await nauticaService.delete(admin.id, admin.session_token, nauticaId);
       toast.success('CNH Náutica excluída com sucesso');
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao excluir');
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const handleDeleteCrlv = async (crlvId: number) => {
-    if (!admin) return;
-    setDeletingId(crlvId);
-    try {
-      await crlvService.delete(admin.id, admin.session_token, crlvId);
-      toast.success('CRLV excluído com sucesso');
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao excluir');
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const handleDeleteHapvida = async (atestadoId: number) => {
-    if (!admin) return;
-    setDeletingId(atestadoId);
-    try {
-      await hapvidaService.delete(admin.id, admin.session_token!, atestadoId);
-      toast.success('Atestado excluído com sucesso');
       fetchData();
     } catch (err: any) {
       toast.error(err.message || 'Erro ao excluir');
@@ -290,20 +256,16 @@ export default function HistoricoServicos() {
     if (!admin) return;
     setLoadingData(true);
     try {
-      const [cnhData, rgData, estudanteData, nauticaData, crlvData, hapvidaData] = await Promise.all([
+      const [cnhData, rgData, estudanteData, nauticaData] = await Promise.all([
         cnhService.list(admin.id, admin.session_token),
         rgService.list(admin.id, admin.session_token),
         estudanteService.list(admin.id, admin.session_token),
         nauticaService.list(admin.id, admin.session_token),
-        crlvService.list(admin.id, admin.session_token),
-        hapvidaService.list(admin.id, admin.session_token!).catch(() => ({ registros: [] })),
       ]);
       setUsuarios(cnhData?.usuarios || []);
       setRgRegistros(rgData?.registros || []);
       setEstudanteRegistros(estudanteData?.registros || []);
       setNauticaRegistros(nauticaData?.registros || []);
-      setCrlvRegistros(crlvData || []);
-      setHapvidaRegistros(hapvidaData?.registros || []);
     } catch (err: any) {
       console.error('Erro ao carregar histórico:', err);
       toast.error('Erro ao carregar histórico');
@@ -311,8 +273,6 @@ export default function HistoricoServicos() {
       setLoadingData(false);
     }
   };
-
-
 
   useEffect(() => {
     fetchData();
@@ -423,21 +383,8 @@ export default function HistoricoServicos() {
     return (n.nome || '').toLowerCase().includes(q) || (n.cpf || '').includes(q);
   }));
 
-  const filteredCrlvs = applyViewFilter(crlvRegistros.filter(c => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (c.nome_proprietario || '').toLowerCase().includes(q) || (c.cpf_cnpj || '').includes(q) || (c.placa || '').toLowerCase().includes(q);
-  }));
+  const totalRecords = filteredUsuarios.length + filteredRgs.length + filteredEstudantes.length + filteredNauticas.length;
 
-  const filteredHapvidas = applyViewFilter(hapvidaRegistros.filter(h => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (h.nome_paciente || '').toLowerCase().includes(q) || (h.cpf_paciente || '').includes(q);
-  }));
-
-  const totalRecords = filteredUsuarios.length + filteredRgs.length + filteredEstudantes.length + filteredNauticas.length + filteredCrlvs.length + filteredHapvidas.length;
-
-  // When searching, auto-expand modules with results
   const hasSearch = searchQuery.trim().length > 0;
 
   // Records expiring within 5 days
@@ -457,11 +404,7 @@ export default function HistoricoServicos() {
     const days = daysUntilExpiration(n.expires_at);
     return days !== null && days >= 0 && days <= 5;
   });
-  const expiringCrlvs = crlvRegistros.filter(c => {
-    const days = daysUntilExpiration(c.data_expiracao);
-    return days !== null && days >= 0 && days <= 5;
-  });
-  const totalExpiring = expiringCnhs.length + expiringRgs.length + expiringEstudantes.length + expiringNauticas.length + expiringCrlvs.length;
+  const totalExpiring = expiringCnhs.length + expiringRgs.length + expiringEstudantes.length + expiringNauticas.length;
 
   // Last created across all types
   const allRecords = [
@@ -469,8 +412,6 @@ export default function HistoricoServicos() {
     ...filteredRgs.map(r => ({ type: 'rg' as const, data: r, created: r.created_at })),
     ...filteredEstudantes.map(e => ({ type: 'estudante' as const, data: e, created: e.created_at })),
     ...filteredNauticas.map(n => ({ type: 'nautica' as const, data: n, created: n.created_at })),
-    ...filteredCrlvs.map(c => ({ type: 'crlv' as const, data: c, created: c.created_at })),
-    ...filteredHapvidas.map(h => ({ type: 'hapvida' as const, data: h, created: h.created_at })),
   ].sort((a, b) => {
     const da = a.created ? new Date(a.created).getTime() : 0;
     const db = b.created ? new Date(b.created).getTime() : 0;
@@ -545,7 +486,7 @@ export default function HistoricoServicos() {
           </Card>
         ) : (
           <>
-            {/* Serviços próximos a expirar - collapsible, fechado por padrão */}
+            {/* Serviços próximos a expirar */}
             {totalExpiring > 0 && (
               <Card className="border-orange-500/40 bg-orange-500/5">
                 <CardHeader className="pb-3 cursor-pointer" onClick={() => setExpiringOpen(!expiringOpen)}>
@@ -609,7 +550,7 @@ export default function HistoricoServicos() {
             {lastCreated && (
               <div className="border border-primary/20 rounded-md bg-primary/5 p-3">
                 <p className="text-xs text-primary flex items-center gap-1.5 mb-2">
-                  <Clock className="h-3 w-3" /> Último: {lastCreated.type === 'cnh' ? 'CNH' : lastCreated.type === 'rg' ? 'RG' : lastCreated.type === 'nautica' ? 'CHA Náutica' : lastCreated.type === 'crlv' ? 'CRLV' : lastCreated.type === 'hapvida' ? 'Hapvida' : 'Estudante'}
+                  <Clock className="h-3 w-3" /> Último: {lastCreated.type === 'cnh' ? 'CNH' : lastCreated.type === 'rg' ? 'RG' : lastCreated.type === 'nautica' ? 'Arrais Náutica' : 'Estudante'}
                 </p>
                 <div>
                   {lastCreated.type === 'cnh' ? (
@@ -644,13 +585,6 @@ export default function HistoricoServicos() {
                       onRenew={() => handleRenewNautica((lastCreated.data as NauticaRecord).id)}
                       renewingId={renewingId}
                       highlight
-                    />
-                  ) : lastCreated.type === 'crlv' ? (
-                    <CrlvHistoryCard
-                      registro={lastCreated.data as CrlvRecord}
-                      formatCpf={formatCpf}
-                      formatDate={formatDateStr}
-                      onDelete={() => handleDeleteCrlv((lastCreated.data as CrlvRecord).id)}
                     />
                   ) : (
                     <EstudanteHistoryCard
@@ -746,82 +680,7 @@ export default function HistoricoServicos() {
               </Card>
             )}
 
-            {/* Módulo Carteira Estudante */}
-            {filteredEstudantes.length > 0 && (
-              <Card>
-                <CardHeader
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
-                  onClick={() => setExpandedModule(expandedModule === 'estudante' ? null : 'estudante')}
-                >
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <GraduationCap className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <span className="text-base">Carteira Estudante</span>
-                        <p className="text-sm text-muted-foreground font-normal">{filteredEstudantes.length} registro{filteredEstudantes.length !== 1 ? 's' : ''}</p>
-                      </div>
-                    </div>
-                    {(expandedModule === 'estudante' || (hasSearch && filteredEstudantes.length > 0)) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                  </CardTitle>
-                </CardHeader>
-                {(expandedModule === 'estudante' || (hasSearch && filteredEstudantes.length > 0)) && (
-                  <CardContent className="space-y-3 pt-0">
-                    {filteredEstudantes.map((e) => (
-                      <EstudanteHistoryCard
-                        key={e.id}
-                        registro={e}
-                        formatCpf={formatCpf}
-                        formatDate={formatDateStr}
-                        onEdit={() => setEditingEstudante(e)}
-                        onDelete={() => handleDeleteEstudante(e.id)}
-                        onRenew={() => handleRenewEstudante(e.id)}
-                        renewingId={renewingId}
-                      />
-                    ))}
-                  </CardContent>
-                )}
-              </Card>
-            )}
-
-            {/* Módulo CRLV Digital */}
-            {filteredCrlvs.length > 0 && (
-              <Card>
-                <CardHeader
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
-                  onClick={() => setExpandedModule(expandedModule === 'crlv' ? null : 'crlv')}
-                >
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                        <Truck className="h-5 w-5 text-cyan-500" />
-                      </div>
-                      <div>
-                        <span className="text-base">CRLV Digital</span>
-                        <p className="text-sm text-muted-foreground font-normal">{filteredCrlvs.length} registro{filteredCrlvs.length !== 1 ? 's' : ''}</p>
-                      </div>
-                    </div>
-                    {(expandedModule === 'crlv' || (hasSearch && filteredCrlvs.length > 0)) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                  </CardTitle>
-                </CardHeader>
-                {(expandedModule === 'crlv' || (hasSearch && filteredCrlvs.length > 0)) && (
-                  <CardContent className="space-y-3 pt-0">
-                    {filteredCrlvs.map((c) => (
-                      <CrlvHistoryCard
-                        key={c.id}
-                        registro={c}
-                        formatCpf={formatCpf}
-                        formatDate={formatDateStr}
-                        onDelete={() => handleDeleteCrlv(c.id)}
-                      />
-                    ))}
-                  </CardContent>
-                )}
-              </Card>
-            )}
-
-            {/* Módulo CNH Náutica */}
+            {/* Módulo CNH Náutica / Arrais */}
             {filteredNauticas.length > 0 && (
               <Card>
                 <CardHeader
@@ -834,7 +693,7 @@ export default function HistoricoServicos() {
                         <Anchor className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <span className="text-base">CNH Náutica</span>
+                        <span className="text-base">Arrais Náutica</span>
                         <p className="text-sm text-muted-foreground font-normal">{filteredNauticas.length} registro{filteredNauticas.length !== 1 ? 's' : ''}</p>
                       </div>
                     </div>
@@ -853,42 +712,6 @@ export default function HistoricoServicos() {
                         onDelete={() => handleDeleteNautica(n.id)}
                         onRenew={() => handleRenewNautica(n.id)}
                         renewingId={renewingId}
-                      />
-                    ))}
-                  </CardContent>
-                )}
-              </Card>
-            )}
-
-            {/* Módulo Atestado Hapvida */}
-            {filteredHapvidas.length > 0 && (
-              <Card>
-                <CardHeader
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
-                  onClick={() => setExpandedModule(expandedModule === 'hapvida' ? null : 'hapvida')}
-                >
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                        <Stethoscope className="h-5 w-5 text-emerald-500" />
-                      </div>
-                      <div>
-                        <span className="text-base">Atestado Hapvida</span>
-                        <p className="text-sm text-muted-foreground font-normal">{filteredHapvidas.length} registro{filteredHapvidas.length !== 1 ? 's' : ''}</p>
-                      </div>
-                    </div>
-                    {(expandedModule === 'hapvida' || (hasSearch && filteredHapvidas.length > 0)) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                  </CardTitle>
-                </CardHeader>
-                {(expandedModule === 'hapvida' || (hasSearch && filteredHapvidas.length > 0)) && (
-                  <CardContent className="space-y-3 pt-0">
-                    {filteredHapvidas.map((h) => (
-                      <HapvidaHistoryCard
-                        key={h.id}
-                        registro={h}
-                        formatCpf={formatCpf}
-                        formatDate={formatDateStr}
-                        onDelete={() => handleDeleteHapvida(h.id)}
                       />
                     ))}
                   </CardContent>
@@ -1278,7 +1101,6 @@ function NauticaHistoryCard({
     setGeneratingPdf(true);
     try {
       const cleanCpf = registro.cpf.replace(/\D/g, '');
-      // Matrix images follow backend naming: {cpf}matrizcha.png / {cpf}matrizcha2.png (same host as foto)
       let matrizFrenteUrl = '';
       let matrizVersoUrl = '';
       if (registro.foto) {
@@ -1341,107 +1163,6 @@ function NauticaHistoryCard({
             <Edit className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Editar</span>
           </Button>
           <DeleteButton nome={registro.nome} onDelete={onDelete} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ======== CRLV Card ========
-function CrlvHistoryCard({
-  registro, formatCpf, formatDate, onDelete,
-}: {
-  registro: CrlvRecord;
-  formatCpf: (cpf: string) => string;
-  formatDate: (d: string | null) => string;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="border rounded-lg p-4 border-border hover:bg-muted/20 transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{registro.nome_proprietario}</h3>
-            <Badge variant="outline" className="text-[10px]">
-              <Truck className="h-3 w-3 mr-1" /> CRLV
-            </Badge>
-            <ExpirationBadge dataExpiracao={registro.data_expiracao} />
-          </div>
-          <p className="text-xs sm:text-sm text-muted-foreground">CPF/CNPJ: {formatCpf(registro.cpf_cnpj)}</p>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 text-xs text-muted-foreground">
-            <span>Placa: {registro.placa || '—'}</span>
-            <span>Modelo: {registro.marca_modelo || '—'}</span>
-            <span>Renavam: {registro.renavam || '—'}</span>
-            <span>Criado: {formatDate(registro.created_at)}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0 self-end sm:self-center flex-wrap">
-          <CopyDataButton text={`CRLV Digital ✅\n\n👤 Proprietário: ${registro.nome_proprietario}\n🚗 Placa: ${registro.placa}\n📄 Renavam: ${registro.renavam}\n\n📅 Validade: 45 dias\n⚠️ Mantenha suas credenciais seguras`} />
-          {registro.pdf_url && (
-            <Button variant="outline" size="sm" asChild>
-              <a href={resolveUploadUrl(registro.pdf_url)} target="_blank" rel="noopener noreferrer">
-                <FileDown className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">PDF</span>
-              </a>
-            </Button>
-          )}
-          <DeleteButton nome={registro.nome_proprietario} onDelete={onDelete} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ======== Hapvida History Card ========
-function HapvidaHistoryCard({ registro, formatCpf, formatDate, onDelete }: {
-  registro: any;
-  formatCpf: (cpf: string) => string;
-  formatDate: (d: string | null) => string;
-  onDelete: () => void;
-}) {
-  const pdfUrl = registro.pdf_url ? resolveUploadUrl(registro.pdf_url) : null;
-
-  return (
-    <div className="border rounded-lg p-3 sm:p-4 hover:bg-muted/30 transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Stethoscope className="h-4 w-4 text-emerald-500 shrink-0" />
-            <span className="font-semibold text-sm truncate">{registro.nome_paciente}</span>
-            <Badge variant="outline" className="text-[10px]">Hapvida</Badge>
-          </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-            <span>CPF: {formatCpf(registro.cpf_paciente)}</span>
-            <span>CID: {registro.codigo_doenca}</span>
-            <span>{registro.dias_afastamento} dia(s)</span>
-          </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-            <span>Hospital: {registro.nome_hospital}</span>
-            <span>Médico: {registro.nome_medico}</span>
-          </div>
-          <div className="text-[10px] text-muted-foreground mt-1">
-            Criado em {formatDate(registro.created_at)}
-            {registro.admin_nome && <span> • por {registro.admin_nome}</span>}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {pdfUrl && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs"
-              onClick={() => {
-                const a = document.createElement('a');
-                a.href = pdfUrl;
-                a.target = '_blank';
-                a.download = `hapvida_${registro.cpf_paciente}.pdf`;
-                a.click();
-              }}
-            >
-              <FileDown className="h-3 w-3 mr-1" /> PDF
-            </Button>
-          )}
-          <DeleteButton nome={registro.nome_paciente} onDelete={onDelete} />
         </div>
       </div>
     </div>
