@@ -189,19 +189,10 @@ export default function ComprovantePicpay() {
                   />
                 </div>
 
-                {/* 8. Banco Remetente */}
+                {/* 8. Banco Remetente (fixo PICPAY) */}
                 <div>
                   <Label className="text-xs">Banco Remetente</Label>
-                  <Select value={formData.bancoRemetente} onValueChange={(v) => updateField('bancoRemetente', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o banco" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BANCOS.map((banco) => (
-                        <SelectItem key={banco} value={banco}>{banco}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input value="PICPAY" disabled className="bg-muted" />
                 </div>
 
                 {/* 9. ID Transação */}
