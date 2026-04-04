@@ -235,11 +235,28 @@ export default function ComprovantePicpay() {
 
                 {/* 10. Chave Pix */}
                 <div>
+                  <Label className="text-xs">Tipo da Chave Pix</Label>
+                  <Select
+                    value={formData.chavePix ? undefined : ''}
+                    onValueChange={() => {}}
+                  >
+                    <SelectTrigger className="mb-2">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="telefone">Telefone</SelectItem>
+                      <SelectItem value="email">E-mail</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Label className="text-xs">Chave Pix Recebedor</Label>
                   <Input
-                    placeholder="64126277234"
+                    placeholder="Digite a chave pix"
                     value={formData.chavePix}
-                    onChange={(e) => updateField('chavePix', e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value.toLowerCase();
+                      updateField('chavePix', val);
+                    }}
                   />
                 </div>
 
