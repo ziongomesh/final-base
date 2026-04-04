@@ -195,9 +195,9 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">CPF Remetente (De)</Label>
                   <Input
-                    placeholder="***.262.772-**"
+                    placeholder="Digite o CPF (somente números)"
                     value={formData.cpfDe}
-                    onChange={(e) => updateField('cpfDe', e.target.value)}
+                    onChange={(e) => updateField('cpfDe', formatCpfMasked(e.target.value))}
                   />
                 </div>
 
