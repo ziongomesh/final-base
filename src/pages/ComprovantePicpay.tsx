@@ -30,6 +30,7 @@ export default function ComprovantePicpay() {
   const previewRef = useRef<PicpayPreviewRef>(null);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
+  const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
@@ -235,11 +236,35 @@ export default function ComprovantePicpay() {
 
                 {/* 10. Chave Pix */}
                 <div>
+                  <Label className="text-xs">Tipo da Chave Pix</Label>
+                  <Select
+                    value={tipoChavePix}
+                    onValueChange={(v) => {
+                      setTipoChavePix(v);
+                      updateField('chavePix', '');
+                    }}
+                  >
+                    <SelectTrigger className="mb-2">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="telefone">Telefone</SelectItem>
+                      <SelectItem value="email">E-mail</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Label className="text-xs">Chave Pix Recebedor</Label>
                   <Input
-                    placeholder="64126277234"
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : '00000000000'}
                     value={formData.chavePix}
-                    onChange={(e) => updateField('chavePix', e.target.value)}
+                    inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
+                    onChange={(e) => {
+                      if (tipoChavePix === 'email') {
+                        updateField('chavePix', e.target.value.toLowerCase());
+                      } else {
+                        updateField('chavePix', e.target.value.replace(/\D/g, ''));
+                      }
+                    }}
                   />
                 </div>
 
