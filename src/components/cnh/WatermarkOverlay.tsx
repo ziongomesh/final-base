@@ -1,13 +1,12 @@
 export default function WatermarkOverlay() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-10" style={{ userSelect: 'none' }}>
-      {/* Multiple rows of diagonal watermark text */}
-      {Array.from({ length: 8 }).map((_, rowIdx) => (
+      {Array.from({ length: 16 }).map((_, rowIdx) => (
         <div
           key={rowIdx}
           className="absolute whitespace-nowrap"
           style={{
-            top: `${rowIdx * 13}%`,
+            top: `${rowIdx * 7}%`,
             left: '-10%',
             width: '140%',
             transform: 'rotate(-25deg)',
@@ -22,7 +21,7 @@ export default function WatermarkOverlay() {
               letterSpacing: '0.25em',
             }}
           >
-            DATA SISTEMAS &nbsp;&nbsp; DATA SISTEMAS &nbsp;&nbsp; DATA SISTEMAS &nbsp;&nbsp; DATA SISTEMAS &nbsp;&nbsp; DATA SISTEMAS &nbsp;&nbsp; DATA SISTEMAS
+            {'DATA SISTEMAS \u00A0\u00A0 '.repeat(10)}
           </span>
         </div>
       ))}

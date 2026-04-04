@@ -140,8 +140,8 @@ function drawWatermarks(ctx: CanvasRenderingContext2D) {
 
   // Draw multiple watermarks across the entire canvas in a grid pattern
   const text = 'DATA SISTEMAS';
-  const spacingX = 500;
-  const spacingY = 400;
+  const spacingX = 350;
+  const spacingY = 250;
 
   for (let y = -200; y < PAGE_H + 200; y += spacingY) {
     for (let x = -200; x < PAGE_W + 200; x += spacingX) {
