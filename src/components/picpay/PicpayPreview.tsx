@@ -44,11 +44,11 @@ interface FieldDef {
 
 const FIELDS: FieldDef[] = [
   { key: 'dataHora', x: pdfPx(148), y: pdfPx(431), size: FONT_SIZE },
-  { key: 'valor', x: pdfPx(148), y: pdfPx(664), size: FONT_SIZE + 3, bold: true },
-  { key: 'nomeRemetente', x: pdfPx(143), y: pdfPx(900), size: FONT_SIZE + 3, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(42), maxLines: 2 },
+  { key: 'valor', x: pdfPx(148), y: pdfPx(664), size: FONT_SIZE + 7, bold: true },
+  { key: 'nomeRemetente', x: pdfPx(143), y: pdfPx(900), size: FONT_SIZE + 7, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(42), maxLines: 2 },
   { key: 'cpfPara', x: pdfPx(147), y: pdfPx(1113), size: FONT_SIZE, bold: true },
   { key: 'bancoRecebedor', x: pdfPx(148), y: pdfPx(1194), size: FONT_SIZE },
-  { key: 'nomeRecebedor', x: pdfPx(148), y: pdfPx(1426), size: FONT_SIZE + 3, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(42), maxLines: 2 },
+  { key: 'nomeRecebedor', x: pdfPx(148), y: pdfPx(1426), size: FONT_SIZE + 7, bold: true, maxWidth: pdfPx(697), lineHeight: pdfPx(42), maxLines: 2 },
   { key: 'cpfDe', x: pdfPx(147), y: pdfPx(1578), size: FONT_SIZE, bold: true },
   { key: 'bancoRemetente', x: pdfPx(148), y: pdfPx(1661), size: FONT_SIZE },
   { key: 'idTransacao', x: pdfPx(147), y: pdfPx(1903), size: FONT_SIZE },
