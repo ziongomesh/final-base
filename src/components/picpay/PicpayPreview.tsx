@@ -164,7 +164,12 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
 
           ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
 
-          if (field.maxWidth) {
+          if (field.key === 'idTransacao' && value.length > 2) {
+            const mainPart = value.slice(0, -2);
+            const lastTwo = value.slice(-2);
+            ctx.fillText(mainPart, field.x, field.y);
+            ctx.fillText(lastTwo, field.x, field.y + field.size * 1.3);
+          } else if (field.maxWidth) {
             drawWrappedText(
               ctx,
               value,
