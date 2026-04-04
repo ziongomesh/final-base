@@ -30,6 +30,7 @@ export default function ComprovantePicpay() {
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   const [formData, setFormData] = useState<PicpayFormData>({
+    dataHora: '',
     paraNome: '',
     deNome: '',
     valor: '',
@@ -39,6 +40,18 @@ export default function ComprovantePicpay() {
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
+
+  const definirDataAtual = useCallback(() => {
+    const now = new Date();
+    const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    const dia = String(now.getDate()).padStart(2, '0');
+    const mes = meses[now.getMonth()];
+    const ano = now.getFullYear();
+    const hora = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const seg = String(now.getSeconds()).padStart(2, '0');
+    updateField('dataHora', `${dia}/${mes}/${ano} - ${hora}:${min}:${seg}`);
+  }, [updateField]);
 
   if (loading) {
     return (
@@ -80,6 +93,20 @@ export default function ComprovantePicpay() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <div>
+                  <Label className="text-xs">Data e Hora</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="09/out/2025 - 10:34:09"
+                      value={formData.dataHora}
+                      onChange={(e) => updateField('dataHora', e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={definirDataAtual}>
+                      Atual
+                    </Button>
+                  </div>
+                </div>
                 <div>
                   <Label className="text-xs">Para (Nome do destinatário)</Label>
                   <Input
