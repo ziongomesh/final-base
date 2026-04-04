@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import baseBradesco from '@/assets/base-bradesco.png';
 
 export interface BradescoFormData {
+  numeroControle: string;
   dataHora: string;
   valor: string;
   nomePagador: string;
@@ -39,10 +40,14 @@ interface FieldDef {
   maxWidth?: number;
   lineHeight?: number;
   maxLines?: number;
+  labelBold?: boolean;
+  label?: string;
 }
 
 // Field positions mapped to the Bradesco base image (2180x3208)
 const FIELDS: FieldDef[] = [
+  // Número de Controle - label bold, value regular
+  { key: 'numeroControle', x: pdfPx(79), y: pdfPx(510), size: pdfPx(20 / PDF_SCALE), bold: false, label: 'Número de Controle:   ', labelBold: true },
   // Dados de quem pagou - Nome
   { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false },
   // Dados de quem pagou - CPF
@@ -111,12 +116,22 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormDat
       value = `R$ ${value}`;
     }
 
-    ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
-
-    if (field.maxWidth) {
-      drawWrappedText(ctx, value, field.x, field.y, field.maxWidth, field.lineHeight || field.size * 1.2, field.maxLines || 2);
+    // If field has a label with bold label + regular value
+    if (field.label) {
+      const labelText = field.label;
+      ctx.font = `bold ${field.size}px Arial, sans-serif`;
+      ctx.fillText(labelText, field.x, field.y);
+      const labelWidth = ctx.measureText(labelText).width;
+      ctx.font = `${field.size}px Arial, sans-serif`;
+      ctx.fillText(value, field.x + labelWidth, field.y);
     } else {
-      ctx.fillText(value, field.x, field.y);
+      ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, sans-serif`;
+
+      if (field.maxWidth) {
+        drawWrappedText(ctx, value, field.x, field.y, field.maxWidth, field.lineHeight || field.size * 1.2, field.maxLines || 2);
+      } else {
+        ctx.fillText(value, field.x, field.y);
+      }
     }
   }
 }
