@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
+  dataHora: string;
   paraNome: string;
   deNome: string;
   valor: string;
