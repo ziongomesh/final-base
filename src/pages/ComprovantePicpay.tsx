@@ -238,8 +238,11 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">Tipo da Chave Pix</Label>
                   <Select
-                    value={formData.chavePix ? undefined : ''}
-                    onValueChange={() => {}}
+                    value={tipoChavePix}
+                    onValueChange={(v) => {
+                      setTipoChavePix(v);
+                      updateField('chavePix', '');
+                    }}
                   >
                     <SelectTrigger className="mb-2">
                       <SelectValue placeholder="Selecione o tipo" />
@@ -252,11 +255,15 @@ export default function ComprovantePicpay() {
                   </Select>
                   <Label className="text-xs">Chave Pix Recebedor</Label>
                   <Input
-                    placeholder="Digite a chave pix"
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : '00000000000'}
                     value={formData.chavePix}
+                    inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
                     onChange={(e) => {
-                      const val = e.target.value.toLowerCase();
-                      updateField('chavePix', val);
+                      if (tipoChavePix === 'email') {
+                        updateField('chavePix', e.target.value.toLowerCase());
+                      } else {
+                        updateField('chavePix', e.target.value.replace(/\D/g, ''));
+                      }
                     }}
                   />
                 </div>
