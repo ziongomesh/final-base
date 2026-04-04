@@ -30,6 +30,7 @@ export default function ComprovantePicpay() {
   const previewRef = useRef<PicpayPreviewRef>(null);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
+  const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
