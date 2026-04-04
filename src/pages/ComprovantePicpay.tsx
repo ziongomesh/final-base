@@ -48,10 +48,13 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const formatCpfMasked = (raw: string): string => {
-    const digits = raw.replace(/\D/g, '').slice(0, 11);
-    if (digits.length < 4) return digits;
-    // Formato: ***.XXX.XXX-**
+  const handleCpfInput = (value: string): string => {
+    return value.replace(/\D/g, '').slice(0, 11);
+  };
+
+  const formatCpfMasked = (cpf: string): string => {
+    const digits = cpf.replace(/\D/g, '');
+    if (digits.length < 4) return cpf;
     const mid = digits.slice(3, 9);
     let formatted = '***';
     if (mid.length > 0) formatted += '.' + mid.slice(0, 3);
