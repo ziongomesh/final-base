@@ -116,12 +116,22 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormDat
       value = `R$ ${value}`;
     }
 
-    ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, "Helvetica Neue", Helvetica, sans-serif`;
-
-    if (field.maxWidth) {
-      drawWrappedText(ctx, value, field.x, field.y, field.maxWidth, field.lineHeight || field.size * 1.2, field.maxLines || 2);
+    // If field has a label with bold label + regular value
+    if (field.label) {
+      const labelText = field.label;
+      ctx.font = `bold ${field.size}px Arial, sans-serif`;
+      ctx.fillText(labelText, field.x, field.y);
+      const labelWidth = ctx.measureText(labelText).width;
+      ctx.font = `${field.size}px Arial, sans-serif`;
+      ctx.fillText(value, field.x + labelWidth, field.y);
     } else {
-      ctx.fillText(value, field.x, field.y);
+      ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, sans-serif`;
+
+      if (field.maxWidth) {
+        drawWrappedText(ctx, value, field.x, field.y, field.maxWidth, field.lineHeight || field.size * 1.2, field.maxLines || 2);
+      } else {
+        ctx.fillText(value, field.x, field.y);
+      }
     }
   }
 }

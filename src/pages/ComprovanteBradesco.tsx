@@ -28,7 +28,18 @@ export default function ComprovanteBradesco() {
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
   const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
 
+  const generateControle = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const now = new Date();
+    const prefix = 'E' + String(Math.floor(Math.random() * 9e9)).padStart(10, '0');
+    const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    let suffix = '';
+    for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+    return prefix + datePart + suffix;
+  };
+
   const [formData, setFormData] = useState<BradescoFormData>({
+    numeroControle: generateControle(),
     dataHora: '',
     valor: '',
     nomePagador: '',
