@@ -162,9 +162,9 @@ export default function ComprovantePicpay() {
                 <div>
                   <Label className="text-xs">CPF Destinatário (Para)</Label>
                   <Input
-                    placeholder="Digite o CPF (somente números)"
+                    placeholder="00000000000"
                     value={formData.cpfPara}
-                    onChange={(e) => updateField('cpfPara', formatCpfMasked(e.target.value))}
+                    onChange={(e) => updateField('cpfPara', handleCpfInput(e.target.value))}
                   />
                 </div>
 
