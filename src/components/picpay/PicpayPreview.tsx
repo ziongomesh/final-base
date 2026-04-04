@@ -28,7 +28,7 @@ const pdfPx = (value: number) => value * PDF_SCALE;
 const PAGE_W = Math.round(pdfPx(IMG_W));
 const PAGE_H = Math.round(pdfPx(IMG_H));
 const FONT_SIZE = Math.round(pdfPx(90) * 0.52);
-const TEXT_COLOR = '#1a1a1a';
+const TEXT_COLOR = '#333333';
 
 interface FieldDef {
   key: keyof PicpayFormData;
