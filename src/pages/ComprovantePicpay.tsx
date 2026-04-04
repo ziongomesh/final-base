@@ -215,14 +215,33 @@ export default function ComprovantePicpay() {
                   />
                 </div>
 
-                {/* 11. Agência Recebedor */}
+                {/* 11. Agência e Conta Recebedor */}
                 <div>
-                  <Label className="text-xs">Agência Recebedor</Label>
-                  <Input
-                    placeholder="AG 9651 | CC 46733"
-                    value={formData.agencia}
-                    onChange={(e) => updateField('agencia', e.target.value)}
-                  />
+                  <Label className="text-xs">Agência e Conta Recebedor</Label>
+                  <div className="flex gap-2 items-center">
+                    <span className="text-xs font-medium text-muted-foreground">AG</span>
+                    <Input
+                      placeholder="9651"
+                      className="flex-1"
+                      onChange={(e) => {
+                        const ag = e.target.value.replace(/\D/g, '');
+                        const ccMatch = formData.agencia.match(/CC\s*(\d*)/);
+                        const cc = ccMatch ? ccMatch[1] : '';
+                        updateField('agencia', `AG ${ag}${cc ? ` | CC ${cc}` : ''}`);
+                      }}
+                    />
+                    <span className="text-xs font-medium text-muted-foreground">CC</span>
+                    <Input
+                      placeholder="46733"
+                      className="flex-1"
+                      onChange={(e) => {
+                        const cc = e.target.value.replace(/\D/g, '');
+                        const agMatch = formData.agencia.match(/AG\s*(\d*)/);
+                        const ag = agMatch ? agMatch[1] : '';
+                        updateField('agencia', `AG ${ag} | CC ${cc}`);
+                      }}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
