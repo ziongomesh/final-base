@@ -120,8 +120,7 @@ export default function HistoricoServicos() {
   const [rgRegistros, setRgRegistros] = useState<RgRecord[]>([]);
   const [estudanteRegistros, setEstudanteRegistros] = useState<EstudanteRecord[]>([]);
   const [nauticaRegistros, setNauticaRegistros] = useState<NauticaRecord[]>([]);
-  const [crlvRegistros, setCrlvRegistros] = useState<CrlvRecord[]>([]);
-  const [hapvidaRegistros, setHapvidaRegistros] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
