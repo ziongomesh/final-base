@@ -36,8 +36,8 @@ const FIELDS: FieldDef[] = [
   // De - nome (word-wrap) - Arial Bold 16.07pt
   { key: 'deNome', x: 148, y: 880, size: 33, bold: true, color: '#1a1a1a', maxWidth: 480, lineHeight: 40 },
 
-  // Valor - X:148, Y:430 - Arial Bold 16.07pt
-  { key: 'valor', x: 148, y: 430, size: 33, bold: true, color: '#1a1a1a' },
+  // Valor - X:148, Y:664 - Arial Bold 16.07pt
+  { key: 'valor', x: 148, y: 664, size: 33, bold: true, color: '#1a1a1a' },
 ];
 
 interface PicpayPreviewProps {
