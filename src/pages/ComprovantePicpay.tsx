@@ -249,13 +249,14 @@ export default function ComprovantePicpay() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="cnpj">CNPJ</SelectItem>
                       <SelectItem value="telefone">Telefone</SelectItem>
                       <SelectItem value="email">E-mail</SelectItem>
                     </SelectContent>
                   </Select>
                   <Label className="text-xs">Chave Pix Recebedor</Label>
                   <Input
-                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : '00000000000'}
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
                     value={formData.chavePix}
                     inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
                     onChange={(e) => {
@@ -270,6 +271,14 @@ export default function ComprovantePicpay() {
                         if (digits.length > 7) {
                           formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
                         }
+                        updateField('chavePix', formatted);
+                      } else if (tipoChavePix === 'cnpj') {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 14);
+                        let formatted = digits;
+                        if (digits.length > 2) formatted = digits.slice(0, 2) + '.' + digits.slice(2);
+                        if (digits.length > 5) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5);
+                        if (digits.length > 8) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8);
+                        if (digits.length > 12) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8, 12) + '-' + digits.slice(12);
                         updateField('chavePix', formatted);
                       } else {
                         const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
