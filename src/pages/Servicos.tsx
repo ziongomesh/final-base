@@ -504,8 +504,9 @@ export default function Servicos() {
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
-            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold">
+            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold" disabled>
               <Crown className="h-4 w-4" /> VIP
+              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 ml-1">Em Breve</Badge>
             </TabsTrigger>
           </TabsList>
 
