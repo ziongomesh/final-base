@@ -82,7 +82,7 @@ export default function CnhMesa() {
     return () => clearTimeout(timer);
   }, [updatePreview]);
 
-  return (
+  if (!admin) return <Navigate to="/login" />;
     <DashboardLayout>
       <div className="p-4 md:p-6 space-y-4">
         {/* Header */}
