@@ -116,14 +116,6 @@ const mesaServices: Service[] = [
 const vipFotoServices: Service[] = [
   { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 4, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
 ];
 
 // ─── VIP tier helpers ───
