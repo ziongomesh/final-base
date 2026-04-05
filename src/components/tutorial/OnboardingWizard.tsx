@@ -145,9 +145,9 @@ export default function OnboardingWizard({ userName, adminId, onClose }: Onboard
     setAudioEnabled(!audioEnabled);
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     onClose();
   };
 
