@@ -219,15 +219,17 @@ export function LoginForm() {
         </div>
 
         {TURNSTILE_ENABLED && (
-          <TurnstileWidget
-            key={turnstileKey}
-            onVerify={handleTurnstileVerify}
-            onExpire={handleTurnstileExpire}
-          />
+          <div className="mt-6">
+            <TurnstileWidget
+              key={turnstileKey}
+              onVerify={handleTurnstileVerify}
+              onExpire={handleTurnstileExpire}
+            />
+          </div>
         )}
 
         {/* Play button */}
-        <div className="pt-16 flex flex-col items-center gap-6">
+        <div className="pt-10 flex flex-col items-center gap-6">
           <div className="relative">
             {!isDisabled && (
               <div className="absolute -inset-3 rounded-[28px] bg-sky-300/20 blur-xl pointer-events-none animate-pulse" />
