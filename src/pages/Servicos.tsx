@@ -521,47 +521,41 @@ export default function Servicos() {
 
           <TabsContent value="vip" className="space-y-5 mt-0">
             {/* ── Banner Exclusivo com Preview ── */}
-            <div
-              className="rounded-2xl p-5 flex items-center gap-6"
-              style={{
-                background: 'linear-gradient(135deg, hsl(43, 60%, 12%) 0%, hsl(38, 50%, 18%) 40%, hsl(48, 70%, 25%) 100%)',
-                border: '1px solid hsl(43, 60%, 30%)',
-              }}
-            >
+            <div className="flex items-stretch gap-4">
               {/* Left - Text */}
-              <div className="flex-1 min-w-0">
+              <div
+                className="flex-1 rounded-2xl p-5 flex flex-col justify-center"
+                style={{
+                  background: 'hsl(220, 20%, 10%)',
+                  border: '1px solid hsl(220, 15%, 18%)',
+                }}
+              >
                 <div className="flex items-center gap-3 mb-3">
-                  <Crown className="h-6 w-6 shrink-0" style={{ color: 'hsl(43, 90%, 70%)' }} />
-                  <div>
-                    <h2 className="text-base font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
-                      Área Exclusiva
-                    </h2>
-                    <p className="text-[11px]" style={{ color: 'hsl(43, 40%, 55%)' }}>
-                      Para os vendedores mais fiéis da base
-                    </p>
-                  </div>
+                  <Crown className="h-5 w-5 shrink-0 text-primary" />
+                  <h2 className="text-sm font-bold text-foreground">Área Exclusiva</h2>
                 </div>
-                <p className="text-[11px] leading-relaxed mb-1.5" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
-                  Esta aba é <strong style={{ color: 'hsl(43, 90%, 75%)' }}>exclusiva</strong> para quem faz parte da nossa base.
-                  Ninguém da internet possui esse material ou vende nessa qualidade.
+                <p className="text-[11px] leading-relaxed text-muted-foreground mb-2">
+                  Conteúdo reservado para os vendedores mais ativos da base. Aqui você encontra materiais que <strong className="text-foreground">ninguém na internet possui</strong> ou vende nessa qualidade.
                 </p>
-                <p className="text-[11px] leading-relaxed" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
-                  Em breve, <strong style={{ color: 'hsl(43, 90%, 75%)' }}>mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — imagens e fotos em <strong style={{ color: 'hsl(43, 90%, 75%)' }}>altíssima qualidade</strong>.
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Em breve, <strong className="text-foreground">mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — com altíssima resolução. Bata metas semanais para desbloquear preços menores.
                 </p>
               </div>
               {/* Right - Circle Image */}
-              <div
-                className="shrink-0 h-28 w-28 md:h-36 md:w-36 rounded-full overflow-hidden"
-                style={{
-                  border: '3px solid hsla(43, 60%, 40%, 0.5)',
-                  boxShadow: '0 8px 24px hsla(43, 80%, 50%, 0.3)',
-                }}
-              >
-                <img
-                  src={vipBanner}
-                  alt="Preview Área Exclusiva"
-                  className="w-full h-full object-cover"
-                />
+              <div className="shrink-0 flex items-center">
+                <div
+                  className="h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden"
+                  style={{
+                    border: '2px solid hsl(220, 15%, 20%)',
+                    boxShadow: '0 8px 24px hsla(220, 30%, 10%, 0.5)',
+                  }}
+                >
+                  <img
+                    src={vipBanner}
+                    alt="Preview Área Exclusiva"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
 
