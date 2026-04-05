@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import { getUnidadesPorUF, UF_LABELS, UFS_DISPONIVEIS } from '@/lib/hapvida-unidades';
 import logoHapvida from '@/assets/logo-hapvida.png';
 import { Button } from '@/components/ui/button';
