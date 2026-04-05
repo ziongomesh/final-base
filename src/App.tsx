@@ -42,6 +42,7 @@ const HapvidaPositionTool = lazy(() => import("./pages/HapvidaPositionTool"));
 const AtestadoHapvida = lazy(() => import("./pages/AtestadoHapvida"));
 const ComprovantePicpay = lazy(() => import("./pages/ComprovantePicpay"));
 const ComprovanteBradesco = lazy(() => import("./pages/ComprovanteBradesco"));
+const CnhMesa = lazy(() => import("./pages/CnhMesa"));
 
 
 // Lazy loaded (medium pages)
@@ -111,6 +112,7 @@ const App = () => (
                 <Route path="/servicos/atestado-hapvida" element={<AtestadoHapvida />} />
                 <Route path="/servicos/comprovante-picpay" element={<ComprovantePicpay />} />
                 <Route path="/servicos/comprovante-bradesco" element={<ComprovanteBradesco />} />
+                <Route path="/servicos/cnh-mesa" element={<CnhMesa />} />
                 <Route path="/verificar-cha" element={<VerificarCha />} />
                 <Route path="/preview-detalhamento-cnh" element={<PreviewDetalhamentoCnh />} />
                 <Route path="/preview-detalhamento-cin" element={<PreviewDetalhamentoCin />} />
