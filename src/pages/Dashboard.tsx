@@ -79,10 +79,16 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       {showOnboarding && admin && (
-        <OnboardingWizard userName={firstName} adminId={admin.id} onClose={() => setShowOnboarding(false)} />
+        <OnboardingWizard userName={firstName} adminId={admin.id} onClose={() => {
+          setShowOnboarding(false);
+          if (admin) updateAdmin({ ...admin, tutorial_completed: true });
+        }} />
       )}
       {showMasterOnboarding && admin && (
-        <MasterOnboardingWizard userName={firstName} adminId={admin.id} onClose={() => setShowMasterOnboarding(false)} />
+        <MasterOnboardingWizard userName={firstName} adminId={admin.id} onClose={() => {
+          setShowMasterOnboarding(false);
+          if (admin) updateAdmin({ ...admin, tutorial_completed: true });
+        }} />
       )}
 
       <AlertNotification adminId={admin.id} />
