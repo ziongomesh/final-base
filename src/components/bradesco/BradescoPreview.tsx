@@ -7,12 +7,13 @@ export interface BradescoFormData {
   valor: string;
   nomePagador: string;
   cpfPagador: string;
-  agenciaConta: string;
+  instituicaoPagador: string;
+  debitarDa: string;
   nomeRecebedor: string;
   cpfRecebedor: string;
   instituicaoRecebedor: string;
   chavePix: string;
-  idTransacao: string;
+  transacaoCelular: string;
   autenticacao: string;
 }
 
@@ -22,14 +23,15 @@ export interface BradescoPreviewRef {
 
 const IMG_W = 2180;
 const IMG_H = 3208;
-const DPI = 96;
-const PDF_SCALE = 72 / DPI;
-const pdfPx = (value: number) => value * PDF_SCALE;
+const DPI = 300;
+const px = (n: number) => n * (72 / DPI);
 
-const PAGE_W = Math.round(pdfPx(IMG_W));
-const PAGE_H = Math.round(pdfPx(IMG_H));
-const FONT_SIZE = Math.round(pdfPx(90) * 0.52);
-const TEXT_COLOR = '#333333';
+const PAGE_W = px(IMG_W);
+const PAGE_H = px(IMG_H);
+const FONT_SIZE = Math.round(px(90) * 0.52);
+const SIZE_AUTH = px(44);
+const TEXT_COLOR = '#1a1a1a';
+const MAX_W = px(1900);
 
 interface FieldDef {
   key: keyof BradescoFormData;
@@ -37,85 +39,36 @@ interface FieldDef {
   y: number;
   size: number;
   bold?: boolean;
-  maxWidth?: number;
-  lineHeight?: number;
-  maxLines?: number;
-  labelBold?: boolean;
   label?: string;
+  labelBold?: boolean;
+  prefix?: string;
 }
 
-// Field positions mapped to the Bradesco base image (2180x3208)
 const FIELDS: FieldDef[] = [
-  // Número de Controle - label bold, value regular
-  { key: 'numeroControle', x: pdfPx(79), y: pdfPx(510), size: FONT_SIZE, bold: false, label: 'Número de Controle:   ', labelBold: true },
-  // Dados de quem pagou - Nome
-  { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false, label: 'Nome:   ', labelBold: true },
-  // Dados de quem pagou - CPF
-  { key: 'cpfPagador', x: pdfPx(95), y: pdfPx(690), size: FONT_SIZE, bold: false, label: 'CPF:   ', labelBold: true },
-  // Dados de quem pagou - Ag/CC
-  { key: 'agenciaConta', x: pdfPx(95), y: pdfPx(760), size: FONT_SIZE, bold: false },
-  // Dados da Transação - Valor
-  { key: 'valor', x: pdfPx(95), y: pdfPx(1071), size: FONT_SIZE, bold: false, label: 'Valor:    ', labelBold: true },
-  // Dados da Transação - Data
-  { key: 'dataHora', x: pdfPx(79), y: pdfPx(1151), size: FONT_SIZE, bold: false, label: 'Data e Hora:   ', labelBold: true },
-  // Dados da Transação - ID
-  { key: 'idTransacao', x: pdfPx(95), y: pdfPx(1100), size: FONT_SIZE - 2, bold: false },
-  // Dados de quem recebeu - Nome
-  { key: 'nomeRecebedor', x: pdfPx(95), y: pdfPx(1310), size: FONT_SIZE, bold: false, maxWidth: pdfPx(1100), lineHeight: pdfPx(52), maxLines: 2 },
-  // Dados de quem recebeu - CPF
-  { key: 'cpfRecebedor', x: pdfPx(95), y: pdfPx(1380), size: FONT_SIZE, bold: false },
-  // Dados de quem recebeu - Instituição
-  { key: 'instituicaoRecebedor', x: pdfPx(95), y: pdfPx(1450), size: FONT_SIZE, bold: false },
-  // Dados de quem recebeu - Chave Pix
-  { key: 'chavePix', x: pdfPx(95), y: pdfPx(1520), size: FONT_SIZE, bold: false },
-  // Autenticação
-  { key: 'autenticacao', x: pdfPx(95), y: pdfPx(1830), size: FONT_SIZE - 2, bold: false },
+  { key: 'dataHora',             x: px(78),  y: px(435),  size: FONT_SIZE, label: 'Data e Hora:',        labelBold: true },
+  { key: 'numeroControle',      x: px(79),  y: px(510),  size: FONT_SIZE, label: 'Número de Controle:', labelBold: true },
+  { key: 'nomePagador',         x: px(79),  y: px(715),  size: FONT_SIZE, label: 'Nome:',               labelBold: true },
+  { key: 'cpfPagador',          x: px(78),  y: px(791),  size: FONT_SIZE, label: 'CPF:',                labelBold: true },
+  { key: 'instituicaoPagador',  x: px(79),  y: px(869),  size: FONT_SIZE, label: 'Instituição:',        labelBold: true },
+  { key: 'valor',               x: px(78),  y: px(1071), size: FONT_SIZE, label: 'Valor:',              labelBold: true, prefix: 'R$ ' },
+  { key: 'debitarDa',           x: px(79),  y: px(1227), size: FONT_SIZE, label: 'Debitar da:',         labelBold: true },
+  { key: 'nomeRecebedor',       x: px(78),  y: px(1431), size: FONT_SIZE, label: 'Nome:',               labelBold: true },
+  { key: 'cpfRecebedor',        x: px(78),  y: px(1507), size: FONT_SIZE, label: 'CPF:',                labelBold: true },
+  { key: 'instituicaoRecebedor',x: px(79),  y: px(1585), size: FONT_SIZE, label: 'Instituição:',        labelBold: true },
+  { key: 'chavePix',            x: px(79),  y: px(1663), size: FONT_SIZE, label: 'Chave:',              labelBold: true },
+  { key: 'transacaoCelular',    x: px(80),  y: px(1766), size: FONT_SIZE, bold: false },
 ];
 
-function drawWrappedText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines = 2,
-): void {
-  const words = text.split(' ');
-  let line = '';
-  let yOffset = 0;
-  let lineCount = 0;
-
-  for (const word of words) {
-    const testLine = line ? `${line} ${word}` : word;
-    if (ctx.measureText(testLine).width > maxWidth && line) {
-      lineCount++;
-      if (lineCount >= maxLines) {
-        ctx.fillText(line, x, y + yOffset);
-        return;
-      }
-      ctx.fillText(line, x, y + yOffset);
-      line = word;
-      yOffset += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  if (line) ctx.fillText(line, x, y + yOffset);
-}
-
-// Section titles drawn as static text on the canvas
 interface SectionTitle {
   text: string;
   x: number;
   y: number;
-  size: number;
-  bold: boolean;
 }
 
 const SECTION_TITLES: SectionTitle[] = [
-  { text: 'Dados de quem pagou', x: pdfPx(79), y: pdfPx(570), size: FONT_SIZE, bold: true },
-  { text: 'Dados da Transação', x: pdfPx(79), y: pdfPx(1020), size: FONT_SIZE, bold: true },
+  { text: 'Dados de quem pagou',    x: px(78), y: px(639)  },
+  { text: 'Dados da Transação',     x: px(79), y: px(995)  },
+  { text: 'Dados de quem recebeu',  x: px(79), y: px(1355) },
 ];
 
 function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormData) {
@@ -123,36 +76,53 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormDat
   ctx.textBaseline = 'top';
   ctx.textAlign = 'left';
 
-  // Draw section titles
+  // Section titles
   for (const title of SECTION_TITLES) {
-    ctx.font = `${title.bold ? 'bold ' : ''}${title.size}px Arial, sans-serif`;
+    ctx.font = `bold ${FONT_SIZE}px Arial, sans-serif`;
     ctx.fillText(title.text, title.x, title.y);
   }
 
+  // Fields with label bold + value regular
   for (const field of FIELDS) {
     let value = formData[field.key] || '';
     if (!value.trim()) continue;
-    if (field.key === 'valor' && !value.trim().startsWith('R$')) {
-      value = `R$ ${value}`;
+
+    if (field.prefix && !value.trim().startsWith(field.prefix.trim())) {
+      value = field.prefix + value;
     }
 
-    // If field has a label with bold label + regular value
     if (field.label) {
       const labelText = field.label;
       ctx.font = `bold ${field.size}px Arial, sans-serif`;
       ctx.fillText(labelText, field.x, field.y);
-      const labelWidth = ctx.measureText(labelText).width;
+      const lw = ctx.measureText(labelText).width + 4;
       ctx.font = `${field.size}px Arial, sans-serif`;
-      ctx.fillText(value, field.x + labelWidth, field.y);
+      ctx.fillText(value, field.x + lw, field.y);
     } else {
       ctx.font = `${field.bold ? 'bold ' : ''}${field.size}px Arial, sans-serif`;
-
-      if (field.maxWidth) {
-        drawWrappedText(ctx, value, field.x, field.y, field.maxWidth, field.lineHeight || field.size * 1.2, field.maxLines || 2);
-      } else {
-        ctx.fillText(value, field.x, field.y);
-      }
+      ctx.fillText(value, field.x, field.y);
     }
+  }
+
+  // Autenticação - special: centered, multi-line, semi-transparent, monospace
+  const auth = formData.autenticacao || '';
+  if (auth.trim()) {
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = TEXT_COLOR;
+    ctx.font = `${SIZE_AUTH}px "Courier New", monospace`;
+    ctx.textAlign = 'center';
+    const authX = px(22);
+    const authW = px(2141);
+    const centerX = authX + authW / 2;
+    const lines = auth.split('\n');
+    let yPos = px(1966);
+    const lineH = SIZE_AUTH * 1.4;
+    for (const line of lines) {
+      ctx.fillText(line, centerX, yPos);
+      yPos += lineH;
+    }
+    ctx.restore();
   }
 }
 
