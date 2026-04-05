@@ -286,9 +286,6 @@ export function LoginForm() {
             style={{ background: 'hsl(220 25% 8%)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-center">
-              <span className="text-2xl text-white">✦</span>
-            </div>
             <h2 className="text-xl font-bold text-white text-center">Criar uma Conta</h2>
             <p className="text-white/50 text-sm text-center leading-relaxed">
               O acesso à plataforma é feito exclusivamente por um administrador.<br />
