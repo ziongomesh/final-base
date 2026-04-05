@@ -1244,7 +1244,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
             </CardHeader>
             <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-3">
               <div className="grid grid-cols-2 gap-2">
-                {RESELLER_PACKAGES.map((pkg) => {
+                {(customPlans.length > 0 ? customPlans : RESELLER_PACKAGES).map((pkg) => {
                   const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
                   const isSelected = selectedPkg?.name === pkg.name;
                   return (
