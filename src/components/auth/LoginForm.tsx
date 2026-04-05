@@ -278,7 +278,7 @@ export function LoginForm() {
 
       {/* Create Account Modal */}
       {showCreateAccount && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md"
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl"
           onClick={() => setShowCreateAccount(false)}
         >
           <div
@@ -303,7 +303,7 @@ export function LoginForm() {
 
       {/* Recover Account Modal */}
       {showRecoverAccount && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md"
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl"
           onClick={() => setShowRecoverAccount(false)}
         >
           <div
