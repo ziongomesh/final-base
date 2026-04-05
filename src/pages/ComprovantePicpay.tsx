@@ -39,6 +39,14 @@ export default function ComprovantePicpay() {
   const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
   const [tipoDocRemetente, setTipoDocRemetente] = useState<string>('cpf');
   const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
+  const [hasTouched, setHasTouched] = useState(false);
+
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    if (hasTouched) setFormDirty(true);
+    return () => setFormDirty(false);
+  }, [hasTouched, setFormDirty]);
+
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
