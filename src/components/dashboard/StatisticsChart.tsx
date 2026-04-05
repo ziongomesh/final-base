@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Edit2, Check, X } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { TrendingUp, Edit2, Check, X, Crown, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
@@ -8,25 +8,57 @@ interface Props {
   docStats: { today: number; week: number; month: number };
 }
 
-interface ServiceData {
+interface ServiceCount {
   name: string;
-  value: number;
+  count: number;
   color: string;
 }
 
-const SERVICE_COLORS = [
-  'hsl(340 75% 55%)',
-  'hsl(280 65% 55%)',
-  'hsl(201 55% 59%)',
-  'hsl(40 75% 55%)',
-  'hsl(160 60% 45%)',
-  'hsl(210 20% 35%)',
-];
+interface DailyData {
+  date: string;
+  label: string;
+  count: number;
+}
+
+type Period = 'week' | 'month' | '3months';
+
+const SERVICE_COLORS: Record<string, string> = {
+  'CNH Digital': 'hsl(340 75% 55%)',
+  'RG / CIN': 'hsl(280 65% 55%)',
+  'CRLV': 'hsl(201 55% 59%)',
+  'Hapvida': 'hsl(40 75% 55%)',
+  'Náutica': 'hsl(160 60% 45%)',
+  'Estudante': 'hsl(210 20% 50%)',
+};
 
 const GOALS_KEY = (adminId: number) => `dashboard_goals_${adminId}`;
 
+function getDateRange(period: Period): { start: Date; end: Date } {
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  if (period === 'week') start.setDate(start.getDate() - 6);
+  else if (period === 'month') start.setDate(start.getDate() - 29);
+  else start.setDate(start.getDate() - 89);
+  return { start, end };
+}
+
+function formatLabel(dateStr: string, period: Period): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  if (period === 'week') return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  if (period === 'month') return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  // 3 months: show week ranges
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
 export default function StatisticsChart({ adminId, docStats }: Props) {
-  const [serviceData, setServiceData] = useState<ServiceData[]>([]);
+  const [period, setPeriod] = useState<Period>('week');
+  const [dailyData, setDailyData] = useState<DailyData[]>([]);
+  const [serviceCounts, setServiceCounts] = useState<ServiceCount[]>([]);
+  const [loadingChart, setLoadingChart] = useState(true);
+
+  // Goals
   const [weekGoal, setWeekGoal] = useState(50);
   const [monthGoal, setMonthGoal] = useState(200);
   const [editingWeek, setEditingWeek] = useState(false);
@@ -34,7 +66,6 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
   const [weekInput, setWeekInput] = useState('50');
   const [monthInput, setMonthInput] = useState('200');
 
-  // Load saved goals
   useEffect(() => {
     try {
       const saved = localStorage.getItem(GOALS_KEY(adminId));
@@ -66,126 +97,252 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
     setEditingMonth(false);
   };
 
+  // Fetch daily activity data + service counts
   useEffect(() => {
-    async function fetchServiceCounts() {
+    async function fetchData() {
+      setLoadingChart(true);
+      const { start } = getDateRange(period);
+      const startISO = start.toISOString();
+
       try {
-        const [cnh, rg, crlv, hapvida, cha, estudante] = await Promise.all([
-          supabase.from('usuarios').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-          supabase.from('usuarios_rg').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-          supabase.from('usuarios_crlv').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-          supabase.from('hapvida_atestados').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-          supabase.from('chas').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-          supabase.from('carteira_estudante').select('id', { count: 'exact', head: true }).eq('admin_id', adminId),
-        ]);
+        // Fetch all records with created_at for the admin in parallel
+        const tables = [
+          { name: 'CNH Digital', table: 'usuarios' as const },
+          { name: 'RG / CIN', table: 'usuarios_rg' as const },
+          { name: 'CRLV', table: 'usuarios_crlv' as const },
+          { name: 'Hapvida', table: 'hapvida_atestados' as const },
+          { name: 'Náutica', table: 'chas' as const },
+          { name: 'Estudante', table: 'carteira_estudante' as const },
+        ];
 
-        const raw = [
-          { name: 'CNH Digital', value: cnh.count || 0, color: SERVICE_COLORS[0] },
-          { name: 'RG / CIN', value: rg.count || 0, color: SERVICE_COLORS[1] },
-          { name: 'CRLV', value: crlv.count || 0, color: SERVICE_COLORS[2] },
-          { name: 'Hapvida', value: hapvida.count || 0, color: SERVICE_COLORS[3] },
-          { name: 'Náutica', value: cha.count || 0, color: SERVICE_COLORS[4] },
-          { name: 'Estudante', value: estudante.count || 0, color: SERVICE_COLORS[5] },
-        ].sort((a, b) => b.value - a.value);
+        const results = await Promise.all(
+          tables.map(async (t) => {
+            const { data } = await supabase
+              .from(t.table)
+              .select('created_at')
+              .eq('admin_id', adminId)
+              .gte('created_at', startISO)
+              .order('created_at', { ascending: true });
+            return { name: t.name, records: data || [] };
+          })
+        );
 
-        const total = raw.reduce((s, r) => s + r.value, 0);
-        if (total === 0) {
-          setServiceData([
-            { name: 'CNH Digital', value: 45, color: SERVICE_COLORS[0] },
-            { name: 'RG / CIN', value: 30, color: SERVICE_COLORS[1] },
-            { name: 'CRLV', value: 25, color: SERVICE_COLORS[2] },
-          ]);
-        } else {
-          setServiceData(raw);
+        // Build daily counts
+        const dayMap: Record<string, number> = {};
+        const svcMap: Record<string, number> = {};
+
+        results.forEach((r) => {
+          svcMap[r.name] = (svcMap[r.name] || 0) + r.records.length;
+          r.records.forEach((rec) => {
+            if (!rec.created_at) return;
+            const day = rec.created_at.slice(0, 10);
+            dayMap[day] = (dayMap[day] || 0) + 1;
+          });
+        });
+
+        // Fill empty days
+        const { start: s, end: e } = getDateRange(period);
+        const days: DailyData[] = [];
+        const cur = new Date(s);
+        while (cur <= e) {
+          const key = cur.toISOString().slice(0, 10);
+          days.push({
+            date: key,
+            label: formatLabel(key, period),
+            count: dayMap[key] || 0,
+          });
+          cur.setDate(cur.getDate() + 1);
         }
-      } catch {
-        setServiceData([
-          { name: 'CNH Digital', value: 45, color: SERVICE_COLORS[0] },
-          { name: 'RG / CIN', value: 30, color: SERVICE_COLORS[1] },
-          { name: 'CRLV', value: 25, color: SERVICE_COLORS[2] },
-        ]);
+
+        // For 3months period, aggregate by week
+        if (period === '3months') {
+          const weeklyData: DailyData[] = [];
+          for (let i = 0; i < days.length; i += 7) {
+            const chunk = days.slice(i, i + 7);
+            const total = chunk.reduce((s, d) => s + d.count, 0);
+            weeklyData.push({
+              date: chunk[0].date,
+              label: chunk[0].label,
+              count: total,
+            });
+          }
+          setDailyData(weeklyData);
+        } else {
+          setDailyData(days);
+        }
+
+        // Service counts sorted
+        const svcArr = Object.entries(svcMap)
+          .map(([name, count]) => ({ name, count, color: SERVICE_COLORS[name] || 'hsl(210 20% 50%)' }))
+          .sort((a, b) => b.count - a.count);
+        setServiceCounts(svcArr);
+
+        // Also fetch total counts for "top service" (all-time)
+        if (period === 'week') {
+          const allTimeCounts = await Promise.all(
+            tables.map(async (t) => {
+              const { count } = await supabase
+                .from(t.table)
+                .select('id', { count: 'exact', head: true })
+                .eq('admin_id', adminId);
+              return { name: t.name, count: count || 0, color: SERVICE_COLORS[t.name] || 'hsl(210 20% 50%)' };
+            })
+          );
+          // Only use all-time if period counts are empty
+          if (svcArr.every(s => s.count === 0)) {
+            setServiceCounts(allTimeCounts.sort((a, b) => b.count - a.count));
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching chart data:', e);
+      } finally {
+        setLoadingChart(false);
       }
     }
-    fetchServiceCounts();
-  }, [adminId]);
+    fetchData();
+  }, [adminId, period]);
 
-  const total = serviceData.reduce((s, d) => s + d.value, 0);
+  const totalPeriod = dailyData.reduce((s, d) => s + d.count, 0);
+  const maxCount = Math.max(...dailyData.map(d => d.count), 1);
   const weekProgress = Math.min((docStats.week / weekGoal) * 100, 100);
   const monthProgress = Math.min((docStats.month / monthGoal) * 100, 100);
+  const topService = serviceCounts.length > 0 ? serviceCounts[0] : null;
+  const totalServices = serviceCounts.reduce((s, c) => s + c.count, 0);
 
   const cardStyle = {
     background: 'hsl(215 30% 10%)',
     border: '1px solid hsl(210 40% 16%)',
-    borderRadius: '16px',
+    borderRadius: '12px',
+  };
+
+  const periodLabels: Record<Period, string> = {
+    week: 'Última semana',
+    month: 'Último mês',
+    '3months': 'Últimos 3 meses',
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex items-center gap-2">
         <TrendingUp className="h-4 w-4" style={{ color: 'hsl(201 55% 59%)' }} />
         <h2 className="text-base font-bold text-white">Estatísticas</h2>
       </div>
 
-      {/* Donut chart + ALL services breakdown */}
-      <div className="p-5" style={cardStyle}>
-        <div className="flex items-center gap-8">
-          <div className="relative w-[180px] h-[180px] shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={serviceData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  dataKey="value"
-                  stroke="hsl(215 30% 10%)"
-                  strokeWidth={3}
-                  startAngle={90}
-                  endAngle={-270}
+      {/* Bar Chart + Top Service */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Bar Chart */}
+        <div className="lg:col-span-2 p-4" style={cardStyle}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm font-semibold text-white">Produção</p>
+              <p className="text-[10px] text-white/30">{totalPeriod} serviços no período</p>
+            </div>
+            <div className="flex items-center gap-1 bg-white/5 rounded-lg border border-white/10 p-0.5">
+              {(['week', 'month', '3months'] as Period[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
+                    period === p
+                      ? 'bg-white/10 text-white'
+                      : 'text-white/40 hover:text-white/60'
+                  }`}
                 >
-                  {serviceData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-white">{total}</span>
-              <span className="text-[10px]" style={{ color: 'hsl(210 20% 40%)' }}>Total</span>
+                  {p === 'week' ? '7 dias' : p === 'month' ? '30 dias' : '3 meses'}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="flex-1 space-y-2.5">
-            <h3 className="text-sm font-semibold text-white mb-3">Serviços por Módulo</h3>
-            {serviceData.map((item) => {
-              const pct = total > 0 ? Math.round((item.value / total) * 100) : 0;
-              return (
-                <div key={item.name} className="flex items-center gap-3">
-                  <div className="h-3 w-3 rounded-full shrink-0" style={{ background: item.color }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-white/70 truncate">{item.name}</span>
-                      <div className="flex items-center gap-2 ml-2">
-                        <span className="text-[10px] text-white/40">{item.value}</span>
-                        <span className="text-sm font-bold text-white">{pct}%</span>
-                      </div>
-                    </div>
-                  </div>
+          {loadingChart ? (
+            <div className="h-[200px] flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2" style={{ borderColor: 'hsl(201 55% 59%)' }} />
+            </div>
+          ) : (
+            <div className="h-[200px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dailyData} barCategoryGap="15%">
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 10, fill: 'hsl(210 20% 35%)' }}
+                    axisLine={{ stroke: 'hsl(210 25% 18%)' }}
+                    tickLine={false}
+                    interval={period === 'month' ? 2 : 0}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10, fill: 'hsl(210 20% 35%)' }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={30}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'hsl(215 30% 12%)',
+                      border: '1px solid hsl(210 40% 20%)',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      color: 'white',
+                    }}
+                    formatter={(value: number) => [`${value} serviços`, 'Total']}
+                    labelFormatter={(label) => `Período: ${label}`}
+                    cursor={{ fill: 'hsla(201, 55%, 59%, 0.08)' }}
+                  />
+                  <Bar
+                    dataKey="count"
+                    fill="hsl(142 71% 45%)"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+
+        {/* Top Service + Service Breakdown */}
+        <div className="p-4 space-y-4" style={cardStyle}>
+          {/* Top service highlight */}
+          {topService && (
+            <div className="text-center pb-3 border-b border-white/5">
+              <p className="text-[10px] text-white/30 uppercase tracking-wide mb-1">Mais usado</p>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Crown className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm font-bold text-white">{topService.name}</span>
+              </div>
+              <p className="text-2xl font-bold" style={{ color: topService.color }}>{topService.count}</p>
+              <p className="text-[10px] text-white/30">
+                {totalServices > 0 ? `${Math.round((topService.count / totalServices) * 100)}% do total` : 'no período'}
+              </p>
+            </div>
+          )}
+
+          {/* All services breakdown */}
+          <div className="space-y-2">
+            <p className="text-[10px] text-white/30 uppercase tracking-wide">Por módulo</p>
+            {serviceCounts.length === 0 ? (
+              <p className="text-[10px] text-white/20 text-center py-4">Nenhum serviço no período</p>
+            ) : (
+              serviceCounts.map((svc) => (
+                <div key={svc.name} className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: svc.color }} />
+                  <span className="text-[11px] text-white/60 flex-1 truncate">{svc.name}</span>
+                  <span className="text-[11px] font-bold text-white">{svc.count}</span>
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
       </div>
 
-      {/* Editable Progress bars */}
+      {/* Goals + Daily stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Week goal */}
-        <div className="p-5" style={cardStyle}>
+        <div className="p-4" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
             {editingWeek ? (
               <div className="flex items-center gap-2 flex-1">
-                <span className="text-sm font-semibold text-white shrink-0">Meta:</span>
+                <span className="text-xs font-semibold text-white shrink-0">Meta:</span>
                 <input
                   type="number"
                   value={weekInput}
@@ -222,16 +379,16 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
             />
           </div>
           <p className="text-[10px] mt-2" style={{ color: 'hsl(210 20% 30%)' }}>
-            {weekProgress >= 100 ? 'Meta atingida!' : `Faltam ${weekGoal - docStats.week} para completar`}
+            {weekProgress >= 100 ? '🎯 Meta atingida!' : `Faltam ${weekGoal - docStats.week} para completar`}
           </p>
         </div>
 
         {/* Month goal */}
-        <div className="p-5" style={cardStyle}>
+        <div className="p-4" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
             {editingMonth ? (
               <div className="flex items-center gap-2 flex-1">
-                <span className="text-sm font-semibold text-white shrink-0">Meta:</span>
+                <span className="text-xs font-semibold text-white shrink-0">Meta:</span>
                 <input
                   type="number"
                   value={monthInput}
@@ -268,21 +425,21 @@ export default function StatisticsChart({ adminId, docStats }: Props) {
             />
           </div>
           <p className="text-[10px] mt-2" style={{ color: 'hsl(210 20% 30%)' }}>
-            {monthProgress >= 100 ? 'Meta atingida!' : `Faltam ${monthGoal - docStats.month} para completar`}
+            {monthProgress >= 100 ? '🎯 Meta atingida!' : `Faltam ${monthGoal - docStats.month} para completar`}
           </p>
         </div>
       </div>
 
-      {/* Daily stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Daily stats counters */}
+      <div className="grid grid-cols-3 gap-3">
         {[
-          { value: docStats.today, label: 'Hoje', color: 'hsl(201 55% 59%)' },
-          { value: docStats.week, label: 'Esta semana', color: 'hsl(210 20% 80%)' },
-          { value: docStats.month, label: 'Este mês', color: 'hsl(40 75% 55%)' },
+          { value: docStats.today, label: 'Hoje', color: 'hsl(142 71% 45%)' },
+          { value: docStats.week, label: 'Semana', color: 'hsl(201 55% 59%)' },
+          { value: docStats.month, label: 'Mês', color: 'hsl(40 75% 55%)' },
         ].map((stat) => (
-          <div key={stat.label} className="p-4 text-center" style={cardStyle}>
-            <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'hsl(210 20% 35%)' }}>{stat.label}</p>
+          <div key={stat.label} className="p-3 text-center" style={cardStyle}>
+            <p className="text-xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'hsl(210 20% 35%)' }}>{stat.label}</p>
           </div>
         ))}
       </div>
