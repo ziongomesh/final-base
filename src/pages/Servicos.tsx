@@ -240,6 +240,8 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
   const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
+  const receitas = cat.services.filter(s => s.atestadoGroup === 'receita');
+  const laudos = cat.services.filter(s => s.atestadoGroup === 'laudo');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
