@@ -40,7 +40,7 @@ export default function Login() {
 
       {/* Form container with fade-in */}
       <div
-        className="relative z-10 w-full max-w-[400px] px-8 animate-fade-in"
+        className="relative w-full max-w-[400px] px-8 animate-fade-in"
       >
         <LoginForm />
       </div>
