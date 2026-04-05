@@ -168,212 +168,152 @@ export default function ComprovantePicpay() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 animate-fade-in">
+      <div className="space-y-3 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Comprovante PIX PicPay</h1>
-            <p className="text-muted-foreground text-sm">Preencha os dados e gere o comprovante</p>
+            <h1 className="text-xl font-bold text-foreground">Comprovante PIX PicPay</h1>
+            <p className="text-muted-foreground text-xs">Preencha os dados e gere o comprovante</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setShowMobilePreview(true)}
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            Preview
+          <Button variant="outline" size="sm" className="lg:hidden" onClick={() => setShowMobilePreview(true)}>
+            <Eye className="h-4 w-4 mr-1" /> Preview
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Form */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Receipt className="h-4 w-4 text-primary" />
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs flex items-center gap-2">
+                  <Receipt className="h-3.5 w-3.5 text-primary" />
                   Dados do Comprovante
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {/* 1. Data e Hora */}
-                <div>
-                  <Label className="text-xs">Data e Hora</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="09/out/2025 - 10:34:09"
-                      value={formData.dataHora}
-                      onChange={(e) => updateField('dataHora', e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button type="button" variant="outline" size="sm" onClick={definirDataAtual}>
-                      Atual
-                    </Button>
+              <CardContent className="space-y-2 px-3 pb-3">
+                {/* Row: Data + Valor */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Data e Hora</Label>
+                    <div className="flex gap-1">
+                      <Input placeholder="09/out/2025 - 10:34:09" value={formData.dataHora} onChange={(e) => updateField('dataHora', e.target.value)} className="text-xs h-8" />
+                      <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={definirDataAtual}>Agora</Button>
+                    </div>
                   </div>
-                </div>
-
-                {/* 2. Valor */}
-                <div>
-                  <Label className="text-xs">Valor (R$)</Label>
-                  <Input
-                    placeholder="1.000,00"
-                    value={formData.valor}
-                    onChange={(e) => {
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Valor (R$)</Label>
+                    <Input placeholder="1.000,00" value={formData.valor} className="text-xs h-8" onChange={(e) => {
                       const digits = e.target.value.replace(/\D/g, '');
                       if (!digits) { updateField('valor', ''); return; }
                       const num = parseInt(digits, 10);
                       const formatted = (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                       updateField('valor', formatted);
-                    }}
-                  />
-                </div>
-
-                {/* 3. Nome Remetente (De) */}
-                <div>
-                  <Label className="text-xs">Nome Remetente (De)</Label>
-                  <Input
-                    placeholder="FRANCISCO WANDERLEY G BONATES"
-                    value={formData.nomeRemetente}
-                    onChange={(e) => updateField('nomeRemetente', e.target.value.toUpperCase())}
-                    className="uppercase"
-                  />
-                </div>
-
-                {/* 4. CPF Para (destinatário) */}
-                <div>
-                  <Label className="text-xs">CPF Destinatário (Para)</Label>
-                  <Input
-                    placeholder="00000000000"
-                    value={formData.cpfPara}
-                    onChange={(e) => updateField('cpfPara', handleCpfInput(e.target.value))}
-                  />
-                </div>
-
-                {/* 5. Banco Recebedor */}
-                <div>
-                  <Label className="text-xs">Banco Recebedor</Label>
-                  <Select value={formData.bancoRecebedor} onValueChange={(v) => updateField('bancoRecebedor', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o banco" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BANCOS.map((banco) => (
-                        <SelectItem key={banco} value={banco}>{banco}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* 6. Nome Recebedor (Para) */}
-                <div>
-                  <Label className="text-xs">Nome Recebedor (Para)</Label>
-                  <Input
-                    placeholder="MARILENA PEDROSO DE OLIVEIRA"
-                    value={formData.nomeRecebedor}
-                    onChange={(e) => updateField('nomeRecebedor', e.target.value.toUpperCase())}
-                    className="uppercase"
-                  />
-                </div>
-
-                {/* 7. CPF De (remetente) */}
-                <div>
-                  <Label className="text-xs">CPF Remetente (De)</Label>
-                  <Input
-                    placeholder="00000000000"
-                    value={formData.cpfDe}
-                    onChange={(e) => updateField('cpfDe', handleCpfInput(e.target.value))}
-                  />
-                </div>
-
-                {/* 8. Banco Remetente (fixo PICPAY) */}
-                <div>
-                  <Label className="text-xs">Banco Remetente</Label>
-                  <Input value="PICPAY" disabled className="bg-muted" />
-                </div>
-
-                {/* 9. ID Transação */}
-                <div>
-                  <Label className="text-xs">ID da Transação</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="E228964312025100913340GFB93BF3 3U"
-                      value={formData.idTransacao}
-                      onChange={(e) => updateField('idTransacao', e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button type="button" variant="outline" size="sm" onClick={gerarIdTransacao}>
-                      Gerar
-                    </Button>
+                    }} />
                   </div>
                 </div>
 
-                {/* 10. Chave Pix */}
-                <div>
-                  <Label className="text-xs">Tipo da Chave Pix</Label>
-                  <Select
-                    value={tipoChavePix}
-                    onValueChange={(v) => {
-                      setTipoChavePix(v);
-                      updateField('chavePix', '');
-                    }}
-                  >
-                    <SelectTrigger className="mb-2">
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cpf">CPF</SelectItem>
-                      <SelectItem value="cnpj">CNPJ</SelectItem>
-                      <SelectItem value="telefone">Telefone</SelectItem>
-                      <SelectItem value="email">E-mail</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Label className="text-xs">Chave Pix Recebedor</Label>
-                  <Input
-                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
-                    value={formData.chavePix}
-                    inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
-                    onChange={(e) => {
-                      if (tipoChavePix === 'email') {
-                        updateField('chavePix', e.target.value.toLowerCase());
-                      } else if (tipoChavePix === 'telefone') {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
-                        let formatted = digits;
-                        if (digits.length > 2) {
-                          formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-                        }
-                        if (digits.length > 7) {
-                          formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-                        }
-                        updateField('chavePix', formatted);
-                      } else if (tipoChavePix === 'cnpj') {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 14);
-                        let formatted = digits;
-                        if (digits.length > 2) formatted = digits.slice(0, 2) + '.' + digits.slice(2);
-                        if (digits.length > 5) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5);
-                        if (digits.length > 8) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8);
-                        if (digits.length > 12) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8, 12) + '-' + digits.slice(12);
-                        updateField('chavePix', formatted);
-                      } else {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
-                        let formatted = digits;
-                        if (digits.length > 3) formatted = digits.slice(0, 3) + '.' + digits.slice(3);
-                        if (digits.length > 6) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
-                        if (digits.length > 9) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6, 9) + '-' + digits.slice(9);
-                        updateField('chavePix', formatted);
-                      }
-                    }}
-                  />
+                {/* Remetente */}
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Nome Remetente (De)</Label>
+                  <Input placeholder="NOME COMPLETO" value={formData.nomeRemetente} onChange={(e) => updateField('nomeRemetente', e.target.value.toUpperCase())} className="text-xs h-8 uppercase" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">CPF Remetente (De)</Label>
+                    <Input placeholder="00000000000" value={formData.cpfDe} onChange={(e) => updateField('cpfDe', handleCpfInput(e.target.value))} className="text-xs h-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Banco Remetente</Label>
+                    <Input value="PICPAY" disabled className="bg-muted text-xs h-8" />
+                  </div>
                 </div>
 
-                {/* 11. Agência e Conta Recebedor */}
-                <div>
-                  <Label className="text-xs">Agência e Conta Recebedor</Label>
-                  <div className="flex gap-2 items-center">
-                    <span className="text-xs font-medium text-muted-foreground">AG</span>
+                {/* Recebedor */}
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Nome Recebedor (Para)</Label>
+                  <Input placeholder="NOME COMPLETO" value={formData.nomeRecebedor} onChange={(e) => updateField('nomeRecebedor', e.target.value.toUpperCase())} className="text-xs h-8 uppercase" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">CPF Destinatário (Para)</Label>
+                    <Input placeholder="00000000000" value={formData.cpfPara} onChange={(e) => updateField('cpfPara', handleCpfInput(e.target.value))} className="text-xs h-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Banco Recebedor</Label>
+                    <Select value={formData.bancoRecebedor} onValueChange={(v) => updateField('bancoRecebedor', v)}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>
+                        {BANCOS.map((banco) => (<SelectItem key={banco} value={banco} className="text-xs">{banco}</SelectItem>))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* ID Transação */}
+                <div className="space-y-1">
+                  <Label className="text-[10px]">ID da Transação</Label>
+                  <div className="flex gap-1">
+                    <Input placeholder="E228964312025100913340..." value={formData.idTransacao} onChange={(e) => updateField('idTransacao', e.target.value)} className="text-xs h-8" />
+                    <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={gerarIdTransacao}>Gerar</Button>
+                  </div>
+                </div>
+
+                {/* Chave Pix */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Tipo Chave Pix</Label>
+                    <Select value={tipoChavePix} onValueChange={(v) => { setTipoChavePix(v); updateField('chavePix', ''); }}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf">CPF</SelectItem>
+                        <SelectItem value="cnpj">CNPJ</SelectItem>
+                        <SelectItem value="telefone">Telefone</SelectItem>
+                        <SelectItem value="email">E-mail</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Chave Pix</Label>
                     <Input
-                      placeholder="9651"
-                      className="flex-1"
-                      inputMode="numeric"
+                      placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '11999999999' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
+                      value={formData.chavePix}
+                      inputMode={tipoChavePix === 'email' ? 'email' : 'numeric'}
+                      className="text-xs h-8"
+                      onChange={(e) => {
+                        if (tipoChavePix === 'email') {
+                          updateField('chavePix', e.target.value.toLowerCase());
+                        } else if (tipoChavePix === 'telefone') {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                          let formatted = digits;
+                          if (digits.length > 2) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                          if (digits.length > 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+                          updateField('chavePix', formatted);
+                        } else if (tipoChavePix === 'cnpj') {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 14);
+                          let formatted = digits;
+                          if (digits.length > 2) formatted = digits.slice(0, 2) + '.' + digits.slice(2);
+                          if (digits.length > 5) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5);
+                          if (digits.length > 8) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8);
+                          if (digits.length > 12) formatted = digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8, 12) + '-' + digits.slice(12);
+                          updateField('chavePix', formatted);
+                        } else {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                          let formatted = digits;
+                          if (digits.length > 3) formatted = digits.slice(0, 3) + '.' + digits.slice(3);
+                          if (digits.length > 6) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
+                          if (digits.length > 9) formatted = digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6, 9) + '-' + digits.slice(9);
+                          updateField('chavePix', formatted);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Agência/Conta */}
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Agência e Conta Recebedor</Label>
+                  <div className="flex gap-1 items-center">
+                    <span className="text-[10px] font-medium text-muted-foreground">AG</span>
+                    <Input placeholder="9651" className="text-xs h-8" inputMode="numeric"
                       value={(formData.agencia.match(/AG\s*(\d*)/)?.[1]) || ''}
                       onChange={(e) => {
                         const ag = e.target.value.replace(/\D/g, '');
@@ -382,11 +322,8 @@ export default function ComprovantePicpay() {
                         updateField('agencia', `AG ${ag}${cc ? ` | CC ${cc}` : ''}`);
                       }}
                     />
-                    <span className="text-xs font-medium text-muted-foreground">CC</span>
-                    <Input
-                      placeholder="46733"
-                      className="flex-1"
-                      inputMode="numeric"
+                    <span className="text-[10px] font-medium text-muted-foreground">CC</span>
+                    <Input placeholder="46733" className="text-xs h-8" inputMode="numeric"
                       value={(formData.agencia.match(/CC\s*(\d*)/)?.[1]) || ''}
                       onChange={(e) => {
                         const cc = e.target.value.replace(/\D/g, '');
@@ -398,19 +335,9 @@ export default function ComprovantePicpay() {
                   </div>
                 </div>
 
-                {/* Gerar PDF Button */}
-                <div className="pt-3 border-t border-border">
-                  <Button
-                    onClick={handleGerarPdf}
-                    disabled={generating}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {generating ? (
-                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                    ) : (
-                      <FileDown className="h-5 w-5 mr-2" />
-                    )}
+                <div className="pt-2 border-t border-border">
+                  <Button onClick={handleGerarPdf} disabled={generating} className="w-full" size="default">
+                    {generating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileDown className="h-4 w-4 mr-2" />}
                     {generating ? 'Gerando PDF...' : 'Gerar PDF (1 crédito)'}
                   </Button>
                 </div>
