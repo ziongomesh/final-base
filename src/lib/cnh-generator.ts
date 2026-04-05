@@ -225,17 +225,19 @@ function drawEspelho(ctx: CanvasRenderingContext2D, text?: string, s: number = 1
 export async function generateCNH(
   canvas: HTMLCanvasElement,
   data: CnhData,
-  cnhDefinitiva: string = 'sim'
+  cnhDefinitiva: string = 'sim',
+  scale: number = 1
 ): Promise<void> {
   await loadFonts();
-  canvas.width = CNH_CONFIG.width;
-  canvas.height = CNH_CONFIG.height;
+  const s = scale;
+  canvas.width = CNH_BASE_W * s;
+  canvas.height = CNH_BASE_H * s;
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  await drawTemplate(ctx, cnhDefinitiva);
-  await drawTexts(ctx, data);
-  await drawImages(ctx, data);
-  drawEspelho(ctx, data.espelho);
+  await drawTemplate(ctx, cnhDefinitiva, s);
+  await drawTexts(ctx, data, s);
+  await drawImages(ctx, data, s);
+  drawEspelho(ctx, data.espelho, s);
 }
 
 /**
