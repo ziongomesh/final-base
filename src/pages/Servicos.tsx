@@ -664,16 +664,6 @@ export default function Servicos() {
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    Cartões de Crédito
-                  </h4>
-                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(43 30% 25%) transparent' }}>
-                    {vipFotoServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
-                      <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
