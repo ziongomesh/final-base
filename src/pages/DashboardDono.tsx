@@ -1110,6 +1110,11 @@ export default function DashboardDono() {
               </TabsContent>
               )}
 
+              {/* ===== ANÚNCIOS ===== */}
+              <TabsContent value="anuncios" className="mt-4">
+                <AnnouncementsManager adminId={admin?.id || 0} />
+              </TabsContent>
+
               {/* ===== GERENCIAR ===== */}
               <TabsContent value="manage" className="space-y-4 mt-4">
                 {/* Create Account */}
