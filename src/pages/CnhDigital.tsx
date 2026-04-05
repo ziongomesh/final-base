@@ -156,7 +156,7 @@ export default function CnhDigital() {
   const [demoStep, setDemoStep] = useState(0);
   const [demoFilling, setDemoFilling] = useState(false);
   const [galleryType, setGalleryType] = useState<'foto' | 'assinatura' | null>(null);
-  const { audioActive, speakField, toggleAudio } = useTutorialAudio(isDemo);
+  const { audioActive, speakField, toggleAudio, currentDemoField, demoRunning, demoFieldOrder, demoValues } = useTutorialAudio(isDemo);
 
   // Live preview state
   const canvasFrenteRef = useRef<HTMLCanvasElement>(null);
