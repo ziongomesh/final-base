@@ -51,7 +51,7 @@ const FIELDS: FieldDef[] = [
   // Dados de quem pagou - Nome
   { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false, label: 'Nome:   ', labelBold: true },
   // Dados de quem pagou - CPF
-  { key: 'cpfPagador', x: pdfPx(95), y: pdfPx(690), size: FONT_SIZE, bold: false },
+  { key: 'cpfPagador', x: pdfPx(95), y: pdfPx(690), size: FONT_SIZE, bold: false, label: 'CPF:   ', labelBold: true },
   // Dados de quem pagou - Ag/CC
   { key: 'agenciaConta', x: pdfPx(95), y: pdfPx(760), size: FONT_SIZE, bold: false },
   // Dados da Transação - Valor
