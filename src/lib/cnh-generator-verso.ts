@@ -41,20 +41,16 @@ async function drawTemplate(ctx: CanvasRenderingContext2D, s: number = 1): Promi
   }
 }
 
-function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData): void {
-  ctx.font = '23px "OCR-B", "CourierNewBold", monospace';
+function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData, s: number = 1): void {
+  ctx.font = `${23 * s}px "OCR-B", "CourierNewBold", monospace`;
   ctx.fillStyle = '#373435';
   ctx.textAlign = 'left';
 
-  // Linha 1 (fixa)
-  ctx.fillText('I<BRA069082717<432<<<<<<<<<', 200.49, 446.02);
+  ctx.fillText('I<BRA069082717<432<<<<<<<<<', 200.49 * s, 446.02 * s);
+  ctx.fillText('9405253M1206157BRA<<<<<<<<4', 200.49 * s, 493.26 * s);
 
-  // Linha 2 (fixa)
-  ctx.fillText('9405253M1206157BRA<<<<<<<<4', 200.49, 493.26);
-
-  // Linha 3 (variável - MRZ do nome)
   const mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<';
-  ctx.fillText(mrzText, 201.49, 538.84);
+  ctx.fillText(mrzText, 201.49 * s, 538.84 * s);
 }
 
 export async function generateCNHVerso(
