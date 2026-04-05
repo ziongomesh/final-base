@@ -27,6 +27,8 @@ export default function ComprovanteBradesco() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
   const [tipoChavePix, setTipoChavePix] = useState<string>('email');
+  const [tipoDocPagador, setTipoDocPagador] = useState<string>('cpf');
+  const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
 
   const generateControle = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -43,8 +45,7 @@ export default function ComprovanteBradesco() {
     const groups: string[] = [];
     for (let g = 0; g < 25; g++) {
       let word = '';
-      const len = g >= 22 ? 8 : 8;
-      for (let i = 0; i < len; i++) word += chars[Math.floor(Math.random() * chars.length)];
+      for (let i = 0; i < 8; i++) word += chars[Math.floor(Math.random() * chars.length)];
       groups.push(word);
     }
     const line1 = groups.slice(0, 9).join(' ');
@@ -73,12 +74,25 @@ export default function ComprovanteBradesco() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const handleCpfInput = (value: string): string => {
+  const handleCpfMasked = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length === 11) {
-      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      return `***.${digits.slice(3, 6)}.${digits.slice(6, 9)}-**`;
     }
     return digits;
+  };
+
+  const handleCnpjMasked = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 14);
+    if (digits.length === 14) {
+      return `**.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-**`;
+    }
+    return digits;
+  };
+
+  const handleDocInput = (value: string, tipo: string): string => {
+    if (tipo === 'cnpj') return handleCnpjMasked(value);
+    return handleCpfMasked(value);
   };
 
   const definirDataAtual = useCallback(() => {
@@ -211,12 +225,24 @@ export default function ComprovanteBradesco() {
                   <Input value={formData.nomePagador} onChange={e => updateField('nomePagador', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">CPF</Label>
-                  <Input value={formData.cpfPagador} onChange={e => updateField('cpfPagador', handleCpfInput(e.target.value))} placeholder="***.000.000-**" className="text-xs" maxLength={14} />
+                  <Label className="text-xs">Tipo de Documento</Label>
+                  <Select value={tipoDocPagador} onValueChange={(v) => { setTipoDocPagador(v); updateField('cpfPagador', ''); }}>
+                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="cnpj">CNPJ</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Instituição</Label>
-                  <Input value={formData.instituicaoPagador} onChange={e => updateField('instituicaoPagador', e.target.value)} placeholder="Bradesco S/A" className="text-xs" />
+                  <Label className="text-xs">{tipoDocPagador === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
+                  <Input
+                    value={formData.cpfPagador}
+                    onChange={e => updateField('cpfPagador', handleDocInput(e.target.value, tipoDocPagador))}
+                    placeholder={tipoDocPagador === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
+                    className="text-xs"
+                    maxLength={tipoDocPagador === 'cnpj' ? 18 : 14}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -230,10 +256,6 @@ export default function ComprovanteBradesco() {
                 <div className="space-y-1.5">
                   <Label className="text-xs">Valor</Label>
                   <Input value={formData.valor} onChange={e => updateField('valor', e.target.value)} placeholder="6000,00" className="text-xs" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Debitar da</Label>
-                  <Input value={formData.debitarDa} onChange={e => updateField('debitarDa', e.target.value)} placeholder="Conta-Corrente" className="text-xs" />
                 </div>
               </CardContent>
             </Card>
@@ -249,8 +271,24 @@ export default function ComprovanteBradesco() {
                   <Input value={formData.nomeRecebedor} onChange={e => updateField('nomeRecebedor', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">CPF</Label>
-                  <Input value={formData.cpfRecebedor} onChange={e => updateField('cpfRecebedor', handleCpfInput(e.target.value))} placeholder="***.000.000-**" className="text-xs" maxLength={14} />
+                  <Label className="text-xs">Tipo de Documento</Label>
+                  <Select value={tipoDocRecebedor} onValueChange={(v) => { setTipoDocRecebedor(v); updateField('cpfRecebedor', ''); }}>
+                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="cnpj">CNPJ</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">{tipoDocRecebedor === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
+                  <Input
+                    value={formData.cpfRecebedor}
+                    onChange={e => updateField('cpfRecebedor', handleDocInput(e.target.value, tipoDocRecebedor))}
+                    placeholder={tipoDocRecebedor === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
+                    className="text-xs"
+                    maxLength={tipoDocRecebedor === 'cnpj' ? 18 : 14}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Instituição</Label>
@@ -293,8 +331,14 @@ export default function ComprovanteBradesco() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Mensagem de transação</Label>
-                  <Input value={formData.transacaoCelular} onChange={e => updateField('transacaoCelular', e.target.value)} className="text-xs" />
+                  <Label className="text-xs">Tipo de Transação</Label>
+                  <Select value={formData.transacaoCelular} onValueChange={v => updateField('transacaoCelular', v)}>
+                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Transação concluída pelo BRADESCO CELULAR">BRADESCO CELULAR</SelectItem>
+                      <SelectItem value="Transação concluída pelo INTERNET BANKING">INTERNET BANKING</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Autenticação</Label>
