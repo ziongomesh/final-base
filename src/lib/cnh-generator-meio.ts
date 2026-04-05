@@ -68,13 +68,13 @@ async function drawTemplate(ctx: CanvasRenderingContext2D, s: number = 1): Promi
   }
 }
 
-function drawTexts(ctx: CanvasRenderingContext2D, data: CnhMeioData): void {
+function drawTexts(ctx: CanvasRenderingContext2D, data: CnhMeioData, s: number = 1): void {
   const font = 'Asul, Arial, sans-serif';
   const dataFormatada = formatDateToBrazilian(data.dataValidade || '');
   const categoria = data.categoria;
 
   ctx.fillStyle = '#373435';
-  ctx.font = `bold 14px ${font}`;
+  ctx.font = `bold ${14 * s}px ${font}`;
 
   // Categorias - posições baseadas no template original
   const catPositions: Record<string, Array<{ x: number; y: number }>> = {
@@ -90,47 +90,47 @@ function drawTexts(ctx: CanvasRenderingContext2D, data: CnhMeioData): void {
   };
 
   const positions = catPositions[categoria || ''] || [];
-  positions.forEach(pos => ctx.fillText(dataFormatada, pos.x, pos.y));
+  positions.forEach(pos => ctx.fillText(dataFormatada, pos.x * s, pos.y * s));
 
   // Observações
   ctx.fillStyle = '#373435';
-  ctx.font = `bold 15px ${font}`;
-  ctx.fillText(data.obs || '', 185, 340);
+  ctx.font = `bold ${15 * s}px ${font}`;
+  ctx.fillText(data.obs || '', 185 * s, 340 * s);
 
   // Local de emissão
-  ctx.font = `bold 16px ${font}`;
-  ctx.fillText(data.localEmissao || '', 190, 575);
+  ctx.font = `bold ${16 * s}px ${font}`;
+  ctx.fillText(data.localEmissao || '', 190 * s, 575 * s);
 
-  // Espelho (rotacionado) - Courier Prime Bold
+  // Espelho (rotacionado)
   ctx.save();
-  ctx.translate(130, 690);
+  ctx.translate(130 * s, 690 * s);
   ctx.rotate(-Math.PI / 2);
-  ctx.font = '39px "CourierNewBold", "OCR-B", monospace';
+  ctx.font = `${39 * s}px "CourierNewBold", "OCR-B", monospace`;
   ctx.fillStyle = '#373435';
   ctx.fillText(data.espelho || '', 0, 0);
   ctx.restore();
 
-  // Código de segurança e RENACH — auto-fit para não ultrapassar a área
-  const maxWidth = 180;
+  // Código de segurança e RENACH — auto-fit
+  const maxWidth = 180 * s;
   ctx.fillStyle = '#373435';
 
   const drawFittedText = (text: string, x: number, y: number) => {
     if (!text) return;
-    let fontSize = 13;
+    let fontSize = 13 * s;
     ctx.font = `bold ${fontSize}px ${font}`;
-    while (ctx.measureText(text).width > maxWidth && fontSize > 7) {
-      fontSize -= 0.5;
+    while (ctx.measureText(text).width > maxWidth && fontSize > 7 * s) {
+      fontSize -= 0.5 * s;
       ctx.font = `bold ${fontSize}px ${font}`;
     }
     ctx.fillText(text, x, y);
   };
 
-  drawFittedText(data.codigo_seguranca || '', 787, 555);
-  drawFittedText(data.renach || '', 787, 588);
+  drawFittedText(data.codigo_seguranca || '', 787 * s, 555 * s);
+  drawFittedText(data.renach || '', 787 * s, 588 * s);
 
   // Estado por extenso
-  ctx.font = `bold 40px ${font}`;
-  ctx.fillText(data.estadoExtenso || '', 346, 675);
+  ctx.font = `bold ${40 * s}px ${font}`;
+  ctx.fillText(data.estadoExtenso || '', 346 * s, 675 * s);
 }
 
 export async function generateCNHMeio(canvas: HTMLCanvasElement, data: CnhMeioData): Promise<void> {
