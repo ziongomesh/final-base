@@ -187,6 +187,21 @@ export default function ComprovanteBradesco() {
       }
 
       await refreshCredits();
+      setFormData({
+        numeroControle: generateControle(),
+        dataHora: '',
+        valor: '',
+        nomePagador: '',
+        cpfPagador: '',
+        instituicaoPagador: 'Bradesco S/A',
+        debitarDa: 'Conta-Corrente',
+        nomeRecebedor: '',
+        cpfRecebedor: '',
+        instituicaoRecebedor: '',
+        chavePix: '',
+        transacaoCelular: 'Transação concluída pelo BRADESCO CELULAR',
+        autenticacao: generateAutenticacao(),
+      });
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Erro ao gerar PDF:', err);
