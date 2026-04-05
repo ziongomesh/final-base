@@ -12,6 +12,7 @@ import NewModuleNotification from '@/components/dashboard/NewModuleNotification'
 import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
 import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import LastRecords from '@/components/dashboard/LastRecords';
+import AnnouncementsFeed from '@/components/dashboard/AnnouncementsFeed';
 
 export default function Dashboard() {
   const { admin, role: rawRole, credits, creditsTransf, loading, updateAdmin } = useAuth();
