@@ -105,10 +105,10 @@ const categories: ServiceCategory[] = [
 
 // ─── Mesa (Foto Documento) services — VIP Exclusivo ───
 const mesaServices: Service[] = [
-  { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-id-card', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
@@ -120,8 +120,8 @@ const mesaServices: Service[] = [
 
 // ─── VIP Services ───
 const vipFotoServices: Service[] = [
-  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-id-card', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
 ];
 
 // ─── VIP tier helpers ───
