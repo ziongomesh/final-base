@@ -36,6 +36,8 @@ export default function ComprovantePicpay() {
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
 
   const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
+  const [tipoDocRemetente, setTipoDocRemetente] = useState<string>('cpf');
+  const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
@@ -54,13 +56,25 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const handleCpfInput = (value: string): string => {
+  const handleCpfMasked = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length === 11) {
-      const mid = digits.slice(3, 9);
-      return `***.${mid.slice(0, 3)}.${mid.slice(3)}-**`;
+      return `***.${digits.slice(3, 6)}.${digits.slice(6, 9)}-**`;
     }
     return digits;
+  };
+
+  const handleCnpjMasked = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 14);
+    if (digits.length === 14) {
+      return `**.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-**`;
+    }
+    return digits;
+  };
+
+  const handleDocInput = (value: string, tipo: string): string => {
+    if (tipo === 'cnpj') return handleCnpjMasked(value);
+    return handleCpfMasked(value);
   };
 
   const definirDataAtual = useCallback(() => {
@@ -211,15 +225,28 @@ export default function ComprovantePicpay() {
                   </div>
                 </div>
 
-                {/* Remetente */}
+                {/* Separator: Remetente */}
+                <div className="pt-2 border-t border-border">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Quem enviou</p>
+                </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Nome Remetente (De)</Label>
                   <Input placeholder="NOME COMPLETO" value={formData.nomeRemetente} onChange={(e) => updateField('nomeRemetente', e.target.value.toUpperCase())} className="text-xs h-8 uppercase" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <Label className="text-[10px]">CPF Remetente (De)</Label>
-                    <Input placeholder="00000000000" value={formData.cpfDe} onChange={(e) => updateField('cpfDe', handleCpfInput(e.target.value))} className="text-xs h-8" />
+                    <Label className="text-[10px]">Tipo Doc</Label>
+                    <Select value={tipoDocRemetente} onValueChange={(v) => { setTipoDocRemetente(v); updateField('cpfDe', ''); }}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf" className="text-xs">CPF</SelectItem>
+                        <SelectItem value="cnpj" className="text-xs">CNPJ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">{tipoDocRemetente === 'cnpj' ? 'CNPJ' : 'CPF'} Remetente</Label>
+                    <Input placeholder={tipoDocRemetente === 'cnpj' ? '00000000000000' : '00000000000'} value={formData.cpfDe} onChange={(e) => updateField('cpfDe', handleDocInput(e.target.value, tipoDocRemetente))} className="text-xs h-8" />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">Banco Remetente</Label>
@@ -227,15 +254,28 @@ export default function ComprovantePicpay() {
                   </div>
                 </div>
 
-                {/* Recebedor */}
+                {/* Separator: Recebedor */}
+                <div className="pt-2 border-t border-border">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Quem recebeu</p>
+                </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Nome Recebedor (Para)</Label>
                   <Input placeholder="NOME COMPLETO" value={formData.nomeRecebedor} onChange={(e) => updateField('nomeRecebedor', e.target.value.toUpperCase())} className="text-xs h-8 uppercase" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <Label className="text-[10px]">CPF Destinatário (Para)</Label>
-                    <Input placeholder="00000000000" value={formData.cpfPara} onChange={(e) => updateField('cpfPara', handleCpfInput(e.target.value))} className="text-xs h-8" />
+                    <Label className="text-[10px]">Tipo Doc</Label>
+                    <Select value={tipoDocRecebedor} onValueChange={(v) => { setTipoDocRecebedor(v); updateField('cpfPara', ''); }}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf" className="text-xs">CPF</SelectItem>
+                        <SelectItem value="cnpj" className="text-xs">CNPJ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">{tipoDocRecebedor === 'cnpj' ? 'CNPJ' : 'CPF'} Recebedor</Label>
+                    <Input placeholder={tipoDocRecebedor === 'cnpj' ? '00000000000000' : '00000000000'} value={formData.cpfPara} onChange={(e) => updateField('cpfPara', handleDocInput(e.target.value, tipoDocRecebedor))} className="text-xs h-8" />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">Banco Recebedor</Label>
