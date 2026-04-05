@@ -150,6 +150,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     const nome = admin?.nome;
+    
+    // Play goodbye audio BEFORE clearing state
+    if (nome) {
+      try {
+        const firstName = nome.split(' ')[0];
+        await speakText(`Até mais, ${firstName}! Volte sempre, chefe!`);
+      } catch {}
+    }
+    
     if (admin) {
       try {
         await api.auth.logout(admin.id);
