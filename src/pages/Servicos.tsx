@@ -159,10 +159,8 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
         className={`bg-white/5 border border-white/10 rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
         onClick={() => !isMaintenance && canAccess && navigate(service.route)}
       >
-        <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
-          {service.iconImage
-            ? <img src={service.iconImage} alt={service.name} className={`object-center ${service.id === 'cnh-arrais-nautica' ? 'h-full w-full object-contain' : service.id === 'atestado-upa24h' ? 'h-[75%] w-[75%] object-contain' : 'h-[140%] w-[140%] object-cover'}`} />
-            : <Icon className="h-7 w-7 text-primary" />}
+        <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
+          <Icon className="h-7 w-7 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm text-white truncate">{service.name}</h3>
