@@ -5,6 +5,7 @@ import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
 import exemploAbafe from '@/assets/exemplo-abafe.png';
+import vipBanner from '@/assets/vip-banner.png';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useNavigate, Navigate } from 'react-router-dom';
