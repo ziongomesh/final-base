@@ -101,6 +101,7 @@ export default function ComprovanteBradesco() {
   });
 
   const updateField = useCallback((key: keyof BradescoFormData, value: string) => {
+    setHasTouched(true);
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
