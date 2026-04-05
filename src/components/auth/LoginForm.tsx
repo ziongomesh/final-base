@@ -32,6 +32,7 @@ export function LoginForm() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0);
   const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [showRecoverAccount, setShowRecoverAccount] = useState(false);
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
