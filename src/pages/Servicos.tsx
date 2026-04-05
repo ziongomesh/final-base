@@ -41,10 +41,10 @@ const categories: ServiceCategory[] = [
     title: 'Documentos Digitais',
     icon: FileText,
     services: [
-      { id: 'cnh-digital-2026', name: 'CNH DIGITAL (2026)', description: 'Carteira Nacional de Habilitação', credits: 1, available: true, route: '/servicos/cnh-digital', icon: FileText, exampleImage: exemploCnh, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'cnh-digital-2026', name: 'CNH DIGITAL (2026)', description: 'Carteira Nacional de Habilitação', credits: 1, available: true, route: '/servicos/cnh-digital', icon: FileText, faIcon: 'fa-solid fa-id-card', exampleImage: exemploCnh, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-id-card', specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, faIcon: 'fa-solid fa-user', exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, faIcon: 'fa-solid fa-anchor', exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
     ],
   },
   {
