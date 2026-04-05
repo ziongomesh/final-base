@@ -37,7 +37,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <SuggestionButton />
       
       {/* Main Content */}
-      <main className="lg:ml-[64px] p-4 sm:p-5 lg:p-6 pt-20 lg:pt-4 flex-1">
+      <main className="lg:ml-[72px] p-4 sm:p-5 lg:p-6 pt-20 lg:pt-4 flex-1">
         {children}
       </main>
 
