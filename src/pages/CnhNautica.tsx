@@ -194,8 +194,8 @@ export default function CnhNautica() {
 
       // Generate PDF in background
       try {
-        const frenteB64 = liveChaPreviewRef.current?.getFrenteBase64() || '';
-        const versoB64 = liveChaPreviewRef.current?.getVersoBase64() || '';
+        const frenteB64 = await liveChaPreviewRef.current?.getFrenteHDBase64() || '';
+        const versoB64 = await liveChaPreviewRef.current?.getVersoHDBase64() || '';
         const qrB64 = result.qrcode || '';
         const pdf = await generateChaPdf(
           '/images/cha-pdf-base.png',
