@@ -5,28 +5,6 @@ import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
 import exemploAbafe from '@/assets/exemplo-abafe.png';
-import iconCnh from '@/assets/icon-cnh.png';
-import iconGovbr from '@/assets/icon-govbr.png';
-import iconAbafe from '@/assets/icon-abafe.png';
-import iconHapvida from '@/assets/icon-hapvida.png';
-import iconCnh2022 from '@/assets/icon-cnh-2022.jpg';
-import iconMarinha from '@/assets/icon-marinha-new.png';
-import iconDne from '@/assets/icon-dne.png';
-import iconCie from '@/assets/icon-cie.png';
-import iconPagmeia from '@/assets/icon-pagmeia.png';
-import iconUpa24h from '@/assets/icon-upa24h.png';
-import iconUnimed from '@/assets/icon-unimed.png';
-import iconBradesco from '@/assets/icon-bradesco.png';
-import iconPicpay from '@/assets/icon-picpay.png';
-import iconItau from '@/assets/icon-itau.png';
-import iconNubank from '@/assets/icon-nubank.png';
-import iconC6bank from '@/assets/icon-c6bank.png';
-import iconInter from '@/assets/icon-inter.png';
-import iconSantander from '@/assets/icon-santander.png';
-import icon99pay from '@/assets/icon-99pay.png';
-import iconDetran from '@/assets/icon-detran.png';
-import iconOab from '@/assets/icon-oab.png';
-import iconCrm from '@/assets/icon-crm.png';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -62,27 +40,27 @@ const categories: ServiceCategory[] = [
     title: 'Documentos Digitais',
     icon: FileText,
     services: [
-      { id: 'cnh-digital-2026', name: 'CNH DIGITAL (2026)', description: 'Carteira Nacional de Habilitação', credits: 1, available: true, route: '/servicos/cnh-digital', icon: FileText, iconImage: iconCnh, exampleImage: exemploCnh, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, iconImage: iconCnh2022, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, iconImage: iconGovbr, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
-      { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, iconImage: iconMarinha, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'cnh-digital-2026', name: 'CNH DIGITAL (2026)', description: 'Carteira Nacional de Habilitação', credits: 1, available: true, route: '/servicos/cnh-digital', icon: FileText, exampleImage: exemploCnh, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
+      { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
     ],
   },
   {
     title: 'Carteira Estudantil',
     icon: IdCard,
     services: [
-      { id: 'carteira-abafe', name: 'ABAFE', description: 'Carteira de Estudante', credits: 1, available: true, route: '/servicos/carteira-estudante', icon: IdCard, iconImage: iconAbafe, exampleImage: exemploAbafe, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'dne-digital', name: 'DNE', description: 'Documento Nacional do Estudante', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconDne, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'cie-estudante', name: 'CIE', description: 'Carteira de Identidade Estudantil', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconCie, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'pagmeia-estudante', name: 'PAGMEIA', description: 'Carteira de Estudante PagMeia', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconPagmeia, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'carteira-abafe', name: 'ABAFE', description: 'Carteira de Estudante', credits: 1, available: true, route: '/servicos/carteira-estudante', icon: IdCard, exampleImage: exemploAbafe, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'dne-digital', name: 'DNE', description: 'Documento Nacional do Estudante', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'cie-estudante', name: 'CIE', description: 'Carteira de Identidade Estudantil', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'pagmeia-estudante', name: 'PAGMEIA', description: 'Carteira de Estudante PagMeia', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
     ],
   },
   {
     title: 'Veículos',
     icon: Car,
     services: [
-      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, iconImage: iconDetran, hasQr: true },
+      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true },
     ],
   },
   {
@@ -100,22 +78,22 @@ const categories: ServiceCategory[] = [
     title: 'Comprovantes',
     icon: Receipt,
     services: [
-      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt, iconImage: iconBradesco },
-      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt, iconImage: iconPicpay },
-      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconItau },
-      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconNubank },
-      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconC6bank },
-      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt, iconImage: icon99pay },
-      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconInter },
+      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt },
+      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt },
+      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt },
     ],
   },
   {
     title: 'Atestados',
     icon: Stethoscope,
     services: [
-      { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, iconImage: iconHapvida, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
-      { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, iconImage: iconUnimed, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
-      { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, iconImage: iconUpa24h, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-umpa', name: 'UMPA', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-ubs', name: 'UBS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
@@ -125,16 +103,16 @@ const categories: ServiceCategory[] = [
 
 // ─── VIP Services ───
 const vipFotoServices: Service[] = [
-  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, iconImage: iconCrm, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, iconImage: iconOab, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 4, available: false, route: '#', icon: FileText, iconImage: iconCnh, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconItau, fotoGroup: 'cartoes' },
-  { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconBradesco, fotoGroup: 'cartoes' },
-  { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconNubank, fotoGroup: 'cartoes' },
-  { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconPicpay, fotoGroup: 'cartoes' },
-  { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconSantander, fotoGroup: 'cartoes' },
+  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 4, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconC6bank, fotoGroup: 'cartoes' },
+  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
 ];
 
 // ─── VIP tier helpers ───
@@ -181,10 +159,8 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
         className={`bg-white/5 border border-white/10 rounded-lg p-3 flex items-center gap-3 transition-shadow ${isMaintenance ? 'opacity-50 cursor-not-allowed' : service.available ? (canAccess ? 'hover:shadow-md hover:border-primary/30 cursor-pointer' : 'cursor-default') : 'opacity-50 cursor-default'}`}
         onClick={() => !isMaintenance && canAccess && navigate(service.route)}
       >
-        <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden" style={{ clipPath: 'circle(50%)' }}>
-          {service.iconImage
-            ? <img src={service.iconImage} alt={service.name} className={`object-center ${service.id === 'cnh-arrais-nautica' ? 'h-full w-full object-contain' : service.id === 'atestado-upa24h' ? 'h-[75%] w-[75%] object-contain' : 'h-[140%] w-[140%] object-cover'}`} />
-            : <Icon className="h-7 w-7 text-primary" />}
+        <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
+          <Icon className="h-7 w-7 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm text-white truncate">{service.name}</h3>
