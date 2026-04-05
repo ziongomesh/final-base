@@ -79,6 +79,42 @@ export type Database = {
           },
         ]
       }
+      announcements: {
+        Row: {
+          admin_id: number
+          content: string | null
+          created_at: string
+          id: number
+          is_active: boolean
+          is_highlight: boolean
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: number
+          content?: string | null
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          is_highlight?: boolean
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: number
+          content?: string | null
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          is_highlight?: boolean
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       carteira_estudante: {
         Row: {
           admin_id: number

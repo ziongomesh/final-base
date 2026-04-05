@@ -19,6 +19,7 @@ import api from '@/lib/api';
 import { mysqlApi } from '@/lib/api-mysql';
 import { isUsingMySQL } from '@/lib/db-config';
 import { supabase } from '@/integrations/supabase/client';
+import AnnouncementsManager from '@/components/dashboard/AnnouncementsManager';
 import {
   Crown, Users, CreditCard, FileText, Shield, Eye, KeyRound, Send,
   Car, IdCard, GraduationCap, Truck, Ship, Trophy, Medal, Award,
@@ -550,6 +551,7 @@ export default function DashboardDono() {
             <TabsTrigger value="audit" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
             {!isSub && <TabsTrigger value="ranking" className="text-[10px] px-2.5 shrink-0 h-7">Ranking</TabsTrigger>}
             <TabsTrigger value="noticias" className="text-[10px] px-2.5 shrink-0 h-7">Notícias</TabsTrigger>
+            <TabsTrigger value="anuncios" className="text-[10px] px-2.5 shrink-0 h-7">Anúncios</TabsTrigger>
             {isSub && <TabsTrigger value="plans" className="text-[10px] px-2.5 shrink-0 h-7" onClick={() => { if (subPlans.length === 0) fetchSubPlans(); }}>Planos</TabsTrigger>}
             <TabsTrigger value="manage" className="text-[10px] px-2.5 shrink-0 h-7">Gerenciar</TabsTrigger>
           </TabsList>
@@ -1108,6 +1110,11 @@ export default function DashboardDono() {
                 </div>
               </TabsContent>
               )}
+
+              {/* ===== ANÚNCIOS ===== */}
+              <TabsContent value="anuncios" className="mt-4">
+                <AnnouncementsManager adminId={admin?.id || 0} />
+              </TabsContent>
 
               {/* ===== GERENCIAR ===== */}
               <TabsContent value="manage" className="space-y-4 mt-4">

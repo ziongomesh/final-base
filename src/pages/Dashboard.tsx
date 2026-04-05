@@ -12,6 +12,7 @@ import NewModuleNotification from '@/components/dashboard/NewModuleNotification'
 import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
 import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import LastRecords from '@/components/dashboard/LastRecords';
+import AnnouncementsFeed from '@/components/dashboard/AnnouncementsFeed';
 
 export default function Dashboard() {
   const { admin, role: rawRole, credits, creditsTransf, loading, updateAdmin } = useAuth();
@@ -100,6 +101,7 @@ export default function Dashboard() {
         <LauncherTopBar />
 
         <div className="space-y-6">
+          <AnnouncementsFeed />
           <StatisticsChart adminId={admin.id} docStats={myDocStats} />
           <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
         </div>
