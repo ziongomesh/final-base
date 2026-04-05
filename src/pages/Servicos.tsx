@@ -5,6 +5,7 @@ import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
 import exemploAbafe from '@/assets/exemplo-abafe.png';
+import vipBanner from '@/assets/vip-banner.png';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -519,35 +520,48 @@ export default function Servicos() {
           </TabsContent>
 
           <TabsContent value="vip" className="space-y-5 mt-0">
-            {/* ── Banner Exclusivo ── */}
+            {/* ── Banner Exclusivo com Preview ── */}
             <div
-              className="rounded-2xl p-5 relative overflow-hidden"
+              className="rounded-2xl relative overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, hsl(43, 60%, 12%) 0%, hsl(38, 50%, 18%) 40%, hsl(48, 70%, 25%) 100%)',
                 border: '1px solid hsl(43, 60%, 30%)',
               }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
-                <Crown className="w-full h-full" />
-              </div>
-              <div className="flex items-center gap-3 mb-3">
-                <Crown className="h-7 w-7" style={{ color: 'hsl(43, 90%, 70%)' }} />
-                <div>
-                  <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
-                    Área Exclusiva
-                  </h2>
-                  <p className="text-xs" style={{ color: 'hsl(43, 40%, 55%)' }}>
-                    Para os vendedores mais fiéis da base
+              {/* Banner Image */}
+              <div className="relative w-full h-48 md:h-64 overflow-hidden">
+                <img
+                  src={vipBanner}
+                  alt="Preview Área Exclusiva"
+                  className="w-full h-full object-cover object-center opacity-60"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to top, hsl(43, 60%, 12%) 0%, transparent 60%), linear-gradient(135deg, hsla(43, 60%, 12%, 0.7) 0%, transparent 100%)',
+                  }}
+                />
+                {/* Content overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Crown className="h-7 w-7" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                    <div>
+                      <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                        Área Exclusiva
+                      </h2>
+                      <p className="text-xs" style={{ color: 'hsl(43, 40%, 55%)' }}>
+                        Para os vendedores mais fiéis da base
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-[12px] leading-relaxed mb-1" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
+                    Esta aba é <strong style={{ color: 'hsl(43, 90%, 75%)' }}>exclusiva</strong> para quem faz parte da nossa base.
+                    Ninguém da internet possui esse material ou vende nessa qualidade.
+                  </p>
+                  <p className="text-[12px] leading-relaxed" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
+                    Em breve, <strong style={{ color: 'hsl(43, 90%, 75%)' }}>mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — imagens e fotos em <strong style={{ color: 'hsl(43, 90%, 75%)' }}>altíssima qualidade</strong>.
                   </p>
                 </div>
               </div>
-              <p className="text-[12px] leading-relaxed mb-3" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
-                Esta aba é <strong style={{ color: 'hsl(43, 90%, 75%)' }}>exclusiva</strong> para quem faz parte da nossa base.
-                Ninguém da internet possui esse material ou vende nessa qualidade.
-              </p>
-              <p className="text-[12px] leading-relaxed" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
-                Em breve, <strong style={{ color: 'hsl(43, 90%, 75%)' }}>mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — imagens e fotos em <strong style={{ color: 'hsl(43, 90%, 75%)' }}>altíssima qualidade</strong>.
-              </p>
             </div>
 
             {/* ── Como funciona ── */}
