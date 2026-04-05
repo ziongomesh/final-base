@@ -58,12 +58,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // All other actions require sub rank
+    // All other actions require sub or dono rank
     const { data: rankData, error: rankError } = await supabase.rpc("get_admin_rank", { p_admin_id: admin_id });
     console.log("Rank check:", { rankData, rankError, admin_id });
-    if (rankData !== "sub") {
+    if (rankData !== "sub" && rankData !== "dono") {
       return new Response(
-        JSON.stringify({ error: "Apenas Sub-Donos podem gerenciar planos", rank: rankData }),
+        JSON.stringify({ error: "Apenas Sub-Donos/Donos podem gerenciar planos", rank: rankData }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
