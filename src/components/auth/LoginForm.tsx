@@ -255,6 +255,14 @@ export function LoginForm() {
             </Button>
           </div>
 
+          <button
+            type="button"
+            onClick={() => setShowRecoverAccount(true)}
+            className="text-xs text-white/35 hover:text-white/60 transition-colors"
+          >
+            Esqueceu o acesso?
+          </button>
+
           <p className="text-sm text-white/55 text-center">
             Não tem uma conta?{' '}
             <button
@@ -283,10 +291,40 @@ export function LoginForm() {
             </div>
             <h2 className="text-xl font-bold text-white text-center">Criar uma Conta</h2>
             <p className="text-white/50 text-sm text-center leading-relaxed">
-              Para criar sua conta, entre em contato com um administrador para liberar seu acesso.
+              O acesso à plataforma é feito exclusivamente por um administrador.<br />
+              Entre em contato com seu admin para solicitar a criação da sua conta.
             </p>
             <Button
               onClick={() => setShowCreateAccount(false)}
+              className="w-full h-11 border-white/15 text-white hover:bg-white/10"
+              variant="outline"
+            >
+              Voltar ao Login
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Recover Account Modal */}
+      {showRecoverAccount && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md"
+          onClick={() => setShowRecoverAccount(false)}
+        >
+          <div
+            className="border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 space-y-6 shadow-2xl"
+            style={{ background: 'hsl(220 25% 8%)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-center">
+              <span className="text-2xl text-white">🔑</span>
+            </div>
+            <h2 className="text-xl font-bold text-white text-center">Recuperar Acesso</h2>
+            <p className="text-white/50 text-sm text-center leading-relaxed">
+              Para recuperar seu acesso, entre em contato com um administrador da plataforma.<br />
+              Ele poderá redefinir sua senha e restaurar o acesso à sua conta.
+            </p>
+            <Button
+              onClick={() => setShowRecoverAccount(false)}
               className="w-full h-11 border-white/15 text-white hover:bg-white/10"
               variant="outline"
             >
