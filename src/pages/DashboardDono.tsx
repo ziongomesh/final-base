@@ -179,9 +179,11 @@ export default function DashboardDono() {
   const [savingNoticia, setSavingNoticia] = useState(false);
 
   // Sub recharge plans state
-  interface SubPlan { id?: number; admin_id?: number; name: string; credits: number; base_credits: number; bonus: number; total: number; badge: string; badge_color: string; sort_order: number; is_active: boolean; }
+  interface SubPlan { id?: number; admin_id?: number; name: string; credits: number; base_credits: number; bonus: number; total: number; badge: string; badge_color: string; sort_order: number; is_active: boolean; qr_code_image: string; pix_copy_paste: string; whatsapp_number: string; }
+  const emptySubPlan: SubPlan = { name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true, qr_code_image: '', pix_copy_paste: '', whatsapp_number: '' };
   const [subPlans, setSubPlans] = useState<SubPlan[]>([]);
-  const [subPlanForm, setSubPlanForm] = useState<SubPlan>({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+  const [subPlanForm, setSubPlanForm] = useState<SubPlan>(emptySubPlan);
+  const [showSubPreview, setShowSubPreview] = useState(false);
   const [editingSubPlan, setEditingSubPlan] = useState<SubPlan | null>(null);
   const [savingSubPlan, setSavingSubPlan] = useState(false);
   const [loadingSubPlans, setLoadingSubPlans] = useState(false);
