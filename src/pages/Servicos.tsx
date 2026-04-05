@@ -93,15 +93,23 @@ const categories: ServiceCategory[] = [
     ],
   },
   {
-    title: 'Atestados',
+    title: 'Hospital',
     icon: Stethoscope,
     services: [
+      // Atestados - Privado
       { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
       { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      // Atestados - Público
       { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-umpa', name: 'UMPA', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-ubs', name: 'UBS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-clinic-medical', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-brain', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      // Receitas - Em Breve
+      { id: 'receita-simples', name: 'RECEITA SIMPLES', description: 'Receita médica simples', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-prescription', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'receita-controlada', name: 'RECEITA CONTROLADA', description: 'Receita médica controlada', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-prescription-bottle-medical', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      // Laudos - Em Breve
+      { id: 'laudo-medico', name: 'LAUDO MÉDICO', description: 'Laudo médico digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-medical', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'laudo-exame', name: 'LAUDO DE EXAME', description: 'Laudo de exame laboratorial', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-flask-vial', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
     ],
   },
 ];
