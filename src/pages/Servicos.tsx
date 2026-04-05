@@ -172,7 +172,11 @@ function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service;
         onClick={() => !isMaintenance && canAccess && navigate(service.route)}
       >
         <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-          <Icon className="h-7 w-7 text-primary" />
+          {service.faIcon ? (
+            <i className={`${service.faIcon} text-lg text-primary`} />
+          ) : (
+            <Icon className="h-7 w-7 text-primary" />
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm text-white truncate">{service.name}</h3>
