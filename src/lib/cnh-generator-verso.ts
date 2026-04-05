@@ -49,7 +49,7 @@ function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData, s: numbe
   ctx.fillText('I<BRA069082717<432<<<<<<<<<', 200.49 * s, 446.02 * s);
   ctx.fillText('9405253M1206157BRA<<<<<<<<4', 200.49 * s, 493.26 * s);
 
-  const mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<';
+  const mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<<<<<<';
   ctx.fillText(mrzText, 201.49 * s, 538.84 * s);
 }
 
