@@ -834,6 +834,8 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   const [activeTab, setActiveTab] = useState<'packages' | 'unit'>('packages');
   const [showHistory, setShowHistory] = useState(false);
   const [recargaDobro, setRecargaDobro] = useState(false);
+  const [customPlans, setCustomPlans] = useState<typeof RESELLER_PACKAGES>([]);
+  const [customPromoPlans, setCustomPromoPlans] = useState<typeof RESELLER_PROMO_PACKAGES>([]);
 
   const hasPlayedSound = useRef(false);
   const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -912,6 +914,30 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
             setCreatorName(data.creator_name);
             setCreatorPhone(data.creator_telefone || null);
             setCreatorId(data.creator_id || null);
+            
+            // Try to load custom sub plans for this creator
+            if (data.creator_id) {
+              try {
+                const { data: plansData } = await supabase.functions.invoke('manage-sub-plans', {
+                  body: { action: 'list_for_reseller', admin_id: adminId, session_token: sessionToken, creator_id: data.creator_id }
+                });
+                if (plansData?.plans?.length > 0) {
+                  const mapped = plansData.plans.map((p: any) => ({
+                    name: p.name,
+                    credits: p.credits,
+                    baseCredits: p.base_credits,
+                    bonus: p.bonus,
+                    total: Number(p.total),
+                    badge: p.badge || '',
+                    badgeColor: p.badge_color || 'bg-blue-500',
+                  }));
+                  // Split: first 4 as regular, rest as promo
+                  setCustomPlans(mapped.slice(0, 4));
+                  if (mapped.length > 4) setCustomPromoPlans(mapped.slice(4));
+                  else setCustomPromoPlans([]);
+                }
+              } catch (e) { console.log('[Recarregar] No custom plans'); }
+            }
           }
         } else {
           console.error('[Recarregar] Erro ao buscar criador, status:', resp.status);
@@ -1218,7 +1244,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
             </CardHeader>
             <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0 space-y-3">
               <div className="grid grid-cols-2 gap-2">
-                {RESELLER_PACKAGES.map((pkg) => {
+                {(customPlans.length > 0 ? customPlans : RESELLER_PACKAGES).map((pkg) => {
                   const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
                   const isSelected = selectedPkg?.name === pkg.name;
                   return (
@@ -1251,6 +1277,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
               </div>
 
               {/* Super Promoções */}
+              {(customPlans.length === 0 || customPromoPlans.length > 0) && (
               <div className="pt-2 border-t border-border/50">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Zap className="h-3.5 w-3.5 text-amber-500" />
@@ -1258,7 +1285,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] border-0 px-1.5 py-0">LIMITADO</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {RESELLER_PROMO_PACKAGES.map((pkg) => {
+                  {(customPromoPlans.length > 0 ? customPromoPlans : RESELLER_PROMO_PACKAGES).map((pkg) => {
                     const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
                     const isSelected = selectedPkg?.name === pkg.name;
                     const savingsPercent = Math.round((1 - pkg.total / (pkg.credits * RESELLER_UNIT_PRICE)) * 100);
@@ -1292,6 +1319,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   })}
                 </div>
               </div>
+              )}
 
               {selectedPkg && (
                 <Button
