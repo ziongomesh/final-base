@@ -1400,6 +1400,7 @@ export default function DashboardDono() {
                                         name: plan.name, credits: plan.credits, base_credits: plan.base_credits,
                                         bonus: plan.bonus, total: Number(plan.total), badge: plan.badge,
                                         badge_color: plan.badge_color, sort_order: plan.sort_order, is_active: plan.is_active,
+                                        qr_code_image: (plan as any).qr_code_image || '', pix_copy_paste: (plan as any).pix_copy_paste || '', whatsapp_number: (plan as any).whatsapp_number || '',
                                       });
                                     }}>
                                       <Pencil className="h-3 w-3" />
