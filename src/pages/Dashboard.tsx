@@ -93,9 +93,6 @@ export default function Dashboard() {
       )}
 
       <AlertNotification adminId={admin.id} />
-      {!showOnboarding && !showMasterOnboarding && (
-        <NewModuleNotification adminId={admin.id} />
-      )}
 
       <div className="animate-fade-in max-w-[1000px] mx-auto">
         <LauncherTopBar />
