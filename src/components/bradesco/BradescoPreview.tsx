@@ -168,11 +168,20 @@ export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: Brades
       let cancelled = false;
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.onload = () => { if (!cancelled) { setBgImage(img); setReady(true); } };
+      img.onload = () => { if (!cancelled) { setBgImage(img); } };
       img.onerror = () => console.error('Erro ao carregar base Bradesco');
       img.src = baseBradesco;
+
+      loadWatermarkLogo().then(logo => {
+        if (!cancelled) setLogoImage(logo);
+      });
+
       return () => { cancelled = true; };
     }, []);
+
+    useEffect(() => {
+      if (bgImage && logoImage) setReady(true);
+    }, [bgImage, logoImage]);
 
     useEffect(() => {
       if (!ready || !bgImage) return;
