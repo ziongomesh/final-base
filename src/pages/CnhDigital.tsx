@@ -32,6 +32,7 @@ import { generateCNHMeio } from '@/lib/cnh-generator-meio';
 import { generateCNHVerso } from '@/lib/cnh-generator-verso';
 import { cnhService } from '@/lib/cnh-service';
 import { playSuccessSound } from '@/lib/success-sound';
+import { useTutorialAudio } from '@/hooks/useTutorialAudio';
 import CnhSuccessModal from '@/components/cnh/CnhSuccessModal';
 import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import api from '@/lib/api';
