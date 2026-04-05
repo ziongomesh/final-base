@@ -522,14 +522,14 @@ export default function Servicos() {
           <TabsContent value="vip" className="space-y-5 mt-0">
             {/* ── Banner Exclusivo com Preview ── */}
             <div
-              className="rounded-2xl relative overflow-hidden flex flex-col md:flex-row"
+              className="rounded-2xl relative overflow-hidden grid grid-cols-1 md:grid-cols-[1fr_auto] gap-0"
               style={{
                 background: 'linear-gradient(135deg, hsl(43, 60%, 12%) 0%, hsl(38, 50%, 18%) 40%, hsl(48, 70%, 25%) 100%)',
                 border: '1px solid hsl(43, 60%, 30%)',
               }}
             >
               {/* Left - Text */}
-              <div className="flex-1 p-5 flex flex-col justify-center">
+              <div className="p-6 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-3">
                   <Crown className="h-7 w-7 shrink-0" style={{ color: 'hsl(43, 90%, 70%)' }} />
                   <div>
@@ -549,13 +549,28 @@ export default function Servicos() {
                   Em breve, <strong style={{ color: 'hsl(43, 90%, 75%)' }}>mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — imagens e fotos em <strong style={{ color: 'hsl(43, 90%, 75%)' }}>altíssima qualidade</strong>.
                 </p>
               </div>
-              {/* Right - Image Preview */}
-              <div className="md:w-[300px] w-full shrink-0 p-4 flex items-center justify-center">
+              {/* Right - Full Image */}
+              <div className="hidden md:flex items-center justify-center p-5">
                 <img
                   src={vipBanner}
                   alt="Preview Área Exclusiva"
-                  className="rounded-xl shadow-2xl max-h-[320px] w-auto"
-                  style={{ filter: 'drop-shadow(0 12px 32px hsla(43, 80%, 50%, 0.35))' }}
+                  className="rounded-xl h-[220px] w-auto object-contain"
+                  style={{
+                    filter: 'drop-shadow(0 12px 32px hsla(43, 80%, 50%, 0.4))',
+                    border: '2px solid hsla(43, 60%, 40%, 0.4)',
+                  }}
+                />
+              </div>
+              {/* Mobile - Full Image below text */}
+              <div className="md:hidden flex items-center justify-center px-5 pb-5">
+                <img
+                  src={vipBanner}
+                  alt="Preview Área Exclusiva"
+                  className="rounded-xl w-full max-w-[280px] object-contain"
+                  style={{
+                    filter: 'drop-shadow(0 12px 32px hsla(43, 80%, 50%, 0.4))',
+                    border: '2px solid hsla(43, 60%, 40%, 0.4)',
+                  }}
                 />
               </div>
             </div>
