@@ -545,12 +545,38 @@ export default function CnhDigital() {
     setCreationStep('Preparando dados da CNH...');
 
     try {
-      setCreationStep('Gerando imagens...');
-      await regenerateCanvases();
+      setCreationStep('Gerando imagens em alta resolução...');
+      
+      // Render at 1x for preview (already done), now render HD for PDF
+      const values = form.getValues();
+      const combinedDateNascimento = values.dataNascimentoData
+        ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
+        : '';
+      const cnhData = {
+        ...values,
+        dataNascimento: combinedDateNascimento,
+        foto: fotoPerfil,
+        assinatura: assinatura,
+      };
 
-      const cnhFrenteBase64 = canvasFrenteRef.current?.toDataURL('image/png') || '';
-      const cnhMeioBase64 = canvasMeioRef.current?.toDataURL('image/png') || '';
-      const cnhVersoBase64 = canvasVersoRef.current?.toDataURL('image/png') || '';
+      const HD_SCALE = 3;
+      const hdFronte = document.createElement('canvas');
+      const hdMeio = document.createElement('canvas');
+      const hdVerso = document.createElement('canvas');
+
+      await Promise.all([
+        generateCNH(hdFronte, cnhData, values.cnhDefinitiva || 'sim', HD_SCALE),
+        generateCNHMeio(hdMeio, {
+          ...cnhData,
+          obs: formatarObs(values.obs || ''),
+          estadoExtenso: values.estadoExtenso || getStateFullName(values.uf),
+        }, HD_SCALE),
+        generateCNHVerso(hdVerso, cnhData, HD_SCALE),
+      ]);
+
+      const cnhFrenteBase64 = hdFronte.toDataURL('image/png');
+      const cnhMeioBase64 = hdMeio.toDataURL('image/png');
+      const cnhVersoBase64 = hdVerso.toDataURL('image/png');
 
       setCreationStep('Montando PDF...');
       let pdfPageBase64 = '';

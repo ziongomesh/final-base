@@ -23,27 +23,27 @@ interface CnhData {
   cnhDefinitiva?: string;
 }
 
-const CNH_CONFIG = {
-  width: 1011,
-  height: 740,
-  fields: {
-    nome: { x: 190, y: 230, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    nascimento: { x: 470, y: 290, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    primeiraHab: { x: 830, y: 230, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    data_emissao: { x: 470, y: 350, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    data_validade: { x: 650, y: 350, font: 'bold 20px Asul, Arial, sans-serif', color: 'red' },
-    rg: { x: 470, y: 410, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    cpf: { x: 470, y: 470, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    registro: { x: 680, y: 470, font: 'bold 20px Asul, Arial, sans-serif', color: 'red' },
-    categoria: { x: 870, y: 470, font: 'bold 20px Asul, Arial, sans-serif', color: 'red' },
-    nacionalidade: { x: 470, y: 530, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    filiacaoPai: { x: 470, y: 590, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-    filiacaoMae: { x: 470, y: 650, font: 'bold 20px Asul, Arial, sans-serif', color: '#373435' },
-  },
-  images: {
-    foto: { x: 184, y: 275, width: 250, height: 345 },
-    assinatura: { x: 188, y: 630, width: 243, height: 64 },
-  },
+const CNH_BASE_W = 1011;
+const CNH_BASE_H = 740;
+
+const CNH_FIELDS = {
+  nome: { x: 190, y: 230, fontSize: 20, color: '#373435' },
+  nascimento: { x: 470, y: 290, fontSize: 20, color: '#373435' },
+  primeiraHab: { x: 830, y: 230, fontSize: 20, color: '#373435' },
+  data_emissao: { x: 470, y: 350, fontSize: 20, color: '#373435' },
+  data_validade: { x: 650, y: 350, fontSize: 20, color: 'red' },
+  rg: { x: 470, y: 410, fontSize: 20, color: '#373435' },
+  cpf: { x: 470, y: 470, fontSize: 20, color: '#373435' },
+  registro: { x: 680, y: 470, fontSize: 20, color: 'red' },
+  categoria: { x: 870, y: 470, fontSize: 20, color: 'red' },
+  nacionalidade: { x: 470, y: 530, fontSize: 20, color: '#373435' },
+  filiacaoPai: { x: 470, y: 590, fontSize: 20, color: '#373435' },
+  filiacaoMae: { x: 470, y: 650, fontSize: 20, color: '#373435' },
+};
+
+const CNH_IMAGES = {
+  foto: { x: 184, y: 275, width: 250, height: 345 },
+  assinatura: { x: 188, y: 630, width: 243, height: 64 },
 };
 
 function getNacionalidadePorGenero(nacionalidade: string = 'brasileiro', sexo: string = 'M'): string {
@@ -124,18 +124,18 @@ function formatDateToBrazilian(dateStr: string): string {
   return dateStr;
 }
 
-async function drawTemplate(ctx: CanvasRenderingContext2D, cnhDefinitiva: string = 'sim'): Promise<void> {
+async function drawTemplate(ctx: CanvasRenderingContext2D, cnhDefinitiva: string = 'sim', s: number = 1): Promise<void> {
   try {
     const templateName = cnhDefinitiva === 'sim' ? 'limpa1.png' : 'limpa-1.png';
     const bitmap = await loadTemplate(templateName);
-    ctx.drawImage(bitmap, 0, 0, CNH_CONFIG.width, CNH_CONFIG.height);
+    ctx.drawImage(bitmap, 0, 0, CNH_BASE_W * s, CNH_BASE_H * s);
   } catch {
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, CNH_CONFIG.width, CNH_CONFIG.height);
+    ctx.fillRect(0, 0, CNH_BASE_W * s, CNH_BASE_H * s);
   }
 }
 
-async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData): Promise<void> {
+async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData, s: number = 1): Promise<void> {
   ctx.textAlign = 'left';
 
   const formattedCpf = (data.cpf || '').replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -157,15 +157,15 @@ async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData): Promise<
 
   await document.fonts.ready;
 
-  Object.entries(CNH_CONFIG.fields).forEach(([field, config]) => {
-    ctx.font = config.font;
+  Object.entries(CNH_FIELDS).forEach(([field, config]) => {
+    ctx.font = `bold ${config.fontSize * s}px Asul, Arial, sans-serif`;
     ctx.fillStyle = config.color || '#373435';
     const text = displayData[field as keyof typeof displayData] || '';
-    ctx.fillText(text, config.x, config.y);
+    ctx.fillText(text, config.x * s, config.y * s);
   });
 }
 
-async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise<void> {
+async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData, s: number = 1): Promise<void> {
   if (data.foto) {
     try {
       let fotoDataUrl: string;
@@ -175,12 +175,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise
         fotoDataUrl = data.foto.startsWith('data:') ? data.foto : `/${data.foto}`;
       }
       const fotoImg = await loadImage(fotoDataUrl);
-      const { x, y, width, height } = CNH_CONFIG.images.foto;
+      const { x, y, width, height } = CNH_IMAGES.foto;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(x, 0, width, y + height);
+      ctx.rect(x * s, 0, width * s, (y + height) * s);
       ctx.clip();
-      ctx.drawImage(fotoImg, x, y, width, height);
+      ctx.drawImage(fotoImg, x * s, y * s, width * s, height * s);
       ctx.restore();
     } catch {
       // Silencioso
@@ -196,12 +196,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise
         assDataUrl = data.assinatura.startsWith('data:') ? data.assinatura : `/${data.assinatura}`;
       }
       const assImg = await loadImage(assDataUrl);
-      const { x, y, width, height } = CNH_CONFIG.images.assinatura;
+      const { x, y, width, height } = CNH_IMAGES.assinatura;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(x, y, width, height);
+      ctx.rect(x * s, y * s, width * s, height * s);
       ctx.clip();
-      ctx.drawImage(assImg, x, y, width, height);
+      ctx.drawImage(assImg, x * s, y * s, width * s, height * s);
       ctx.restore();
     } catch {
       // Silencioso
@@ -209,12 +209,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise
   }
 }
 
-function drawEspelho(ctx: CanvasRenderingContext2D, text?: string): void {
+function drawEspelho(ctx: CanvasRenderingContext2D, text?: string, s: number = 1): void {
   if (!text) return;
   ctx.save();
-  ctx.translate(130, 690);
+  ctx.translate(130 * s, 690 * s);
   ctx.rotate(-Math.PI / 2);
-  ctx.font = '39px "CourierNewBold", "OCR-B", monospace';
+  ctx.font = `${39 * s}px "CourierNewBold", "OCR-B", monospace`;
   ctx.fillStyle = '#373435';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
@@ -225,17 +225,19 @@ function drawEspelho(ctx: CanvasRenderingContext2D, text?: string): void {
 export async function generateCNH(
   canvas: HTMLCanvasElement,
   data: CnhData,
-  cnhDefinitiva: string = 'sim'
+  cnhDefinitiva: string = 'sim',
+  scale: number = 1
 ): Promise<void> {
   await loadFonts();
-  canvas.width = CNH_CONFIG.width;
-  canvas.height = CNH_CONFIG.height;
+  const s = scale;
+  canvas.width = CNH_BASE_W * s;
+  canvas.height = CNH_BASE_H * s;
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  await drawTemplate(ctx, cnhDefinitiva);
-  await drawTexts(ctx, data);
-  await drawImages(ctx, data);
-  drawEspelho(ctx, data.espelho);
+  await drawTemplate(ctx, cnhDefinitiva, s);
+  await drawTexts(ctx, data, s);
+  await drawImages(ctx, data, s);
+  drawEspelho(ctx, data.espelho, s);
 }
 
 /**

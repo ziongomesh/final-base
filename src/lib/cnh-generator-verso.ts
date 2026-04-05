@@ -31,45 +31,43 @@ async function loadFont(): Promise<void> {
   await document.fonts.ready;
 }
 
-async function drawTemplate(ctx: CanvasRenderingContext2D): Promise<void> {
+async function drawTemplate(ctx: CanvasRenderingContext2D, s: number = 1): Promise<void> {
   try {
     const bitmap = await loadTemplate('limpa3.png');
-    ctx.drawImage(bitmap, 0, 0, 1011, 740);
+    ctx.drawImage(bitmap, 0, 0, 1011 * s, 740 * s);
   } catch {
     ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, 1011, 740);
+    ctx.fillRect(0, 0, 1011 * s, 740 * s);
   }
 }
 
-function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData): void {
-  ctx.font = '23px "OCR-B", "CourierNewBold", monospace';
+function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData, s: number = 1): void {
+  ctx.font = `${23 * s}px "OCR-B", "CourierNewBold", monospace`;
   ctx.fillStyle = '#373435';
   ctx.textAlign = 'left';
 
-  // Linha 1 (fixa)
-  ctx.fillText('I<BRA069082717<432<<<<<<<<<', 200.49, 446.02);
+  ctx.fillText('I<BRA069082717<432<<<<<<<<<', 200.49 * s, 446.02 * s);
+  ctx.fillText('9405253M1206157BRA<<<<<<<<4', 200.49 * s, 493.26 * s);
 
-  // Linha 2 (fixa)
-  ctx.fillText('9405253M1206157BRA<<<<<<<<4', 200.49, 493.26);
-
-  // Linha 3 (variável - MRZ do nome)
   const mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<';
-  ctx.fillText(mrzText, 201.49, 538.84);
+  ctx.fillText(mrzText, 201.49 * s, 538.84 * s);
 }
 
 export async function generateCNHVerso(
   canvas: HTMLCanvasElement,
-  data: CnhVersoData
+  data: CnhVersoData,
+  scale: number = 1
 ): Promise<void> {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas context not available');
+  const s = scale;
 
-  canvas.width = 1011;
-  canvas.height = 740;
+  canvas.width = 1011 * s;
+  canvas.height = 740 * s;
 
   await loadFont();
-  await drawTemplate(ctx);
-  drawMrzText(ctx, data);
+  await drawTemplate(ctx, s);
+  drawMrzText(ctx, data, s);
 }
 
 export type { CnhVersoData };
