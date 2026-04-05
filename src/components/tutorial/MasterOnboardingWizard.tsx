@@ -53,9 +53,9 @@ export default function MasterOnboardingWizard({ userName, adminId, onClose }: M
     onClose();
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`master_tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     onClose();
   };
 
