@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile_photo: data.admin.profile_photo,
         session_token: data.admin.session_token,
         criado_por: data.admin.criado_por || null,
-        
+        tutorial_completed: data.admin.tutorial_completed ?? false,
       };
       
       setAdmin(adminData);
