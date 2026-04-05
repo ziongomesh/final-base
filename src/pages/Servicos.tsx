@@ -50,10 +50,10 @@ const categories: ServiceCategory[] = [
     title: 'Carteira Estudantil',
     icon: IdCard,
     services: [
-      { id: 'carteira-abafe', name: 'ABAFE', description: 'Carteira de Estudante', credits: 1, available: true, route: '/servicos/carteira-estudante', icon: IdCard, iconImage: iconAbafe, exampleImage: exemploAbafe, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'dne-digital', name: 'DNE', description: 'Documento Nacional do Estudante', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconDne, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'cie-estudante', name: 'CIE', description: 'Carteira de Identidade Estudantil', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconCie, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-      { id: 'pagmeia-estudante', name: 'PAGMEIA', description: 'Carteira de Estudante PagMeia', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconPagmeia, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'carteira-abafe', name: 'ABAFE', description: 'Carteira de Estudante', credits: 1, available: true, route: '/servicos/carteira-estudante', icon: IdCard, exampleImage: exemploAbafe, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'dne-digital', name: 'DNE', description: 'Documento Nacional do Estudante', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'cie-estudante', name: 'CIE', description: 'Carteira de Identidade Estudantil', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
+      { id: 'pagmeia-estudante', name: 'PAGMEIA', description: 'Carteira de Estudante PagMeia', credits: 1, available: false, route: '#', icon: IdCard, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
     ],
   },
   {
