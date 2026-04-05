@@ -31,13 +31,13 @@ async function loadFont(): Promise<void> {
   await document.fonts.ready;
 }
 
-async function drawTemplate(ctx: CanvasRenderingContext2D): Promise<void> {
+async function drawTemplate(ctx: CanvasRenderingContext2D, s: number = 1): Promise<void> {
   try {
     const bitmap = await loadTemplate('limpa3.png');
-    ctx.drawImage(bitmap, 0, 0, 1011, 740);
+    ctx.drawImage(bitmap, 0, 0, 1011 * s, 740 * s);
   } catch {
     ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, 1011, 740);
+    ctx.fillRect(0, 0, 1011 * s, 740 * s);
   }
 }
 
