@@ -211,6 +211,16 @@ export default function ComprovanteBradesco() {
                     className="text-xs"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">CPF do Pagador</Label>
+                  <Input
+                    value={formData.cpfPagador}
+                    onChange={e => updateField('cpfPagador', handleCpfInput(e.target.value))}
+                    placeholder="***.000.000-**"
+                    className="text-xs"
+                    maxLength={14}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
