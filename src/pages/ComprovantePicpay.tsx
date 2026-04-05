@@ -163,6 +163,22 @@ export default function ComprovantePicpay() {
       }
 
       await refreshCredits();
+
+      // Reset form
+      setFormData({
+        dataHora: '',
+        valor: '',
+        nomeRemetente: '',
+        cpfPara: '',
+        bancoRecebedor: '',
+        nomeRecebedor: '',
+        cpfDe: '',
+        bancoRemetente: 'PICPAY',
+        idTransacao: '',
+        chavePix: '',
+        agencia: '',
+      });
+      setHasTouched(false);
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Erro ao gerar PDF:', err);
