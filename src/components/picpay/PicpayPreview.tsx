@@ -131,31 +131,7 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: PicpayFormData)
   }
 }
 
-function drawWatermarks(ctx: CanvasRenderingContext2D) {
-  ctx.save();
-  ctx.globalAlpha = 0.08;
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 120px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // Draw multiple watermarks across the entire canvas in a grid pattern
-  const text = 'DATA SISTEMAS';
-  const spacingX = 350;
-  const spacingY = 250;
-
-  for (let y = -200; y < PAGE_H + 200; y += spacingY) {
-    for (let x = -200; x < PAGE_W + 200; x += spacingX) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(-Math.PI / 6);
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
-    }
-  }
-
-  ctx.restore();
-}
+// watermark is now drawn via logo image
 
 export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
   function PicpayPreview({ formData }, ref) {
