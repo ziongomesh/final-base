@@ -521,41 +521,35 @@ export default function Servicos() {
 
           <TabsContent value="vip" className="space-y-5 mt-0">
             {/* ── Banner Exclusivo com Preview ── */}
-            <div className="flex items-stretch gap-4">
-              {/* Left - Text */}
-              <div
-                className="flex-1 rounded-2xl p-5 flex flex-col justify-center"
-                style={{
-                  background: 'hsl(220, 20%, 10%)',
-                  border: '1px solid hsl(220, 15%, 18%)',
-                }}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <Crown className="h-5 w-5 shrink-0 text-primary" />
+            <div className="flex items-center gap-5 py-4">
+              {/* Left - Text (no box) */}
+              <div className="flex-1 min-w-0 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Crown className="h-4 w-4 shrink-0 text-primary" />
                   <h2 className="text-sm font-bold text-foreground">Área Exclusiva</h2>
                 </div>
-                <p className="text-[11px] leading-relaxed text-muted-foreground mb-2">
-                  Conteúdo reservado para os vendedores mais ativos da base. Aqui você encontra materiais que <strong className="text-foreground">ninguém na internet possui</strong> ou vende nessa qualidade.
+                <p className="text-[11px] leading-relaxed text-muted-foreground mb-1">
+                  Conteúdo reservado para os vendedores mais ativos da base.
+                </p>
+                <p className="text-[11px] leading-relaxed text-muted-foreground mb-1">
+                  Materiais que <strong className="text-foreground">ninguém na internet possui</strong> ou vende nessa qualidade.
                 </p>
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Em breve, <strong className="text-foreground">mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — com altíssima resolução. Bata metas semanais para desbloquear preços menores.
+                  Em breve, <strong className="text-foreground">+300 módulos</strong> em foto e PDF — nacional e internacional — com altíssima resolução.
                 </p>
               </div>
-              {/* Right - Circle Image */}
-              <div className="shrink-0 flex items-center">
-                <div
-                  className="h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden"
-                  style={{
-                    border: '2px solid hsl(220, 15%, 20%)',
-                    boxShadow: '0 8px 24px hsla(220, 30%, 10%, 0.5)',
-                  }}
-                >
-                  <img
-                    src={vipBanner}
-                    alt="Preview Área Exclusiva"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              {/* Right - Small Circle Image */}
+              <div
+                className="shrink-0 h-20 w-20 rounded-full overflow-hidden"
+                style={{
+                  border: '2px solid hsl(220, 15%, 20%)',
+                }}
+              >
+                <img
+                  src={vipBanner}
+                  alt="Preview Área Exclusiva"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
