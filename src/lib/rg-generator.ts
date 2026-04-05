@@ -260,7 +260,6 @@ function gerarMRZLinha2(dataNasc: string, genero: string): string {
   // nascMRZ(6) - use first 5 + sexo(1) + 10 random + BRA(3) + 10< + check(1) = 30
   return `${nascMRZ.slice(0, 5)}${randomDigits(1)}${sexoMRZ}${randomDigits(4)}${nascMRZ}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
 }
-}
 
 // =================== FULL PDF PAGE (single PNG) ===================
 // Matches the reference rgDigitalUtils layout: matrizpdf background + data drawn directly
