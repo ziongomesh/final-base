@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
 import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import {
-  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
+  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X, Volume2, VolumeX
 } from 'lucide-react';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import {
@@ -32,6 +32,7 @@ import { generateCNHMeio } from '@/lib/cnh-generator-meio';
 import { generateCNHVerso } from '@/lib/cnh-generator-verso';
 import { cnhService } from '@/lib/cnh-service';
 import { playSuccessSound } from '@/lib/success-sound';
+import { useTutorialAudio } from '@/hooks/useTutorialAudio';
 import CnhSuccessModal from '@/components/cnh/CnhSuccessModal';
 import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import api from '@/lib/api';
@@ -155,6 +156,7 @@ export default function CnhDigital() {
   const [demoStep, setDemoStep] = useState(0);
   const [demoFilling, setDemoFilling] = useState(false);
   const [galleryType, setGalleryType] = useState<'foto' | 'assinatura' | null>(null);
+  const { audioActive, speakField, toggleAudio } = useTutorialAudio(isDemo);
 
   // Live preview state
   const canvasFrenteRef = useRef<HTMLCanvasElement>(null);
@@ -699,9 +701,24 @@ export default function CnhDigital() {
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">CNH Digital 2026</h1>
             <p className="text-sm text-muted-foreground">Preencha os dados para gerar a CNH Digital</p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CreditCard className="h-4 w-4" />
-            <span>Saldo: <strong className="text-foreground">{admin?.creditos ?? 0}</strong> créditos</span>
+          <div className="flex items-center gap-3">
+            {/* Audio toggle for tutorial */}
+            <button
+              onClick={toggleAudio}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                audioActive 
+                  ? 'bg-primary/10 border-primary/30 text-primary' 
+                  : 'bg-muted border-border text-muted-foreground'
+              }`}
+              title={audioActive ? 'Desativar narração' : 'Ativar narração'}
+            >
+              {audioActive ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+              {audioActive ? 'Áudio ON' : 'Áudio OFF'}
+            </button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CreditCard className="h-4 w-4" />
+              <span>Saldo: <strong className="text-foreground">{admin?.creditos ?? 0}</strong> créditos</span>
+            </div>
           </div>
         </div>
 
@@ -723,6 +740,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">Nome Completo <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="PEDRO DA SILVA GOMES" className="h-8 text-sm"
+                          onFocus={() => speakField('nome')}
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
                         />
                       </FormControl>
@@ -735,6 +753,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">CPF <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="000.000.000-00" maxLength={14} className="h-8 text-sm"
+                          onFocus={() => speakField('cpf')}
                           onChange={(e) => {
                             const formatted = formatCPF(e.target.value);
                             field.onChange(formatted);
@@ -792,6 +811,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">Data de Nascimento <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
+                          onFocus={() => speakField('dataNascimentoData')}
                           onChange={(e) => field.onChange(formatDate(e.target.value))}
                         />
                       </FormControl>
@@ -889,6 +909,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="00397731618" maxLength={11} className="h-8 text-sm flex-1"
+                            onFocus={() => speakField('numeroRegistro')}
                             onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
                           <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('numeroRegistro', generateRegistroCNH())} className="shrink-0 h-8 text-xs px-2">
                             <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
@@ -917,7 +938,7 @@ export default function CnhDigital() {
                     <FormField control={form.control} name="categoria" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs">Categoria <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <Select onValueChange={(v) => { field.onChange(v); speakField('categoria'); }} value={field.value || undefined}>
                           <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger></FormControl>
                           <SelectContent>
                             {CNH_CATEGORIES.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
@@ -1053,6 +1074,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="SC975697214" maxLength={11} className="h-8 text-sm flex-1"
+                            onFocus={() => speakField('renach')}
                             onChange={(e) => {
                               let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                               if (v.length > 2) {
@@ -1092,6 +1114,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="32131277" maxLength={10} className="h-8 text-sm flex-1"
+                            onFocus={() => speakField('espelho')}
                             onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
                           <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('espelho', generateEspelhoNumber())} className="shrink-0 h-8 text-xs px-2">
                             <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar

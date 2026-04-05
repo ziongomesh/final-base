@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { playSuccessSound } from '@/lib/success-sound';
+import { playWelcomeAudio, clearTTSCache } from '@/lib/tts-service';
 
 type AppRole = 'dono' | 'sub' | 'master' | 'revendedor' | null;
 
@@ -134,6 +135,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       playSuccessSound();
       toast.success(`Bem-vindo, ${adminData.nome}!`, { description: 'Login realizado com sucesso' });
+      
+      // Play welcome audio via TTS
+      setTimeout(() => {
+        playWelcomeAudio(adminData.nome).catch(() => {});
+      }, 500);
 
       return { error: null, admin: adminData };
     } catch (e: any) {
@@ -155,6 +161,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
     setCredits(0);
     setCreditsTransf(0);
+    
+    // Limpar TTS cache
+    clearTTSCache();
     
     // Limpar todo o cache do navegador ao deslogar
     localStorage.clear();
