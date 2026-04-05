@@ -612,7 +612,7 @@ export default function HistoricoServicos() {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <IdCard className="h-5 w-5 text-primary" />
+                        <i className="fa-solid fa-id-card text-base text-primary" />
                       </div>
                       <div>
                         <span className="text-base">CNH Digital</span>
