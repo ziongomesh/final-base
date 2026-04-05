@@ -770,7 +770,10 @@ export default function CrlvDigital() {
               <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-4 w-4" /> Preview em tempo real
               </h3>
-              <CrlvPreview form={form} customQrPreview={customQrPreview} showDenseQr={useDenseQr} />
+              <div className="relative">
+                <CrlvPreview form={form} customQrPreview={customQrPreview} showDenseQr={useDenseQr} />
+                <WatermarkOverlay />
+              </div>
             </div>
           </div>
           </div>
