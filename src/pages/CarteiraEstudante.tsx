@@ -467,6 +467,13 @@ export default function CarteiraEstudante() {
           sessionToken={admin.session_token}
         />
       )}
+
+      <CpfDuplicateModal
+        open={cpfCheck.showDuplicateModal}
+        onClose={cpfCheck.dismissModal}
+        result={cpfCheck.cpfDuplicate}
+        serviceLabel="Carteira Estudante"
+      />
     </DashboardLayout>
   );
 }
