@@ -699,14 +699,7 @@ export default function Servicos() {
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    Cartões na Mesa
-                  </h4>
-                  {mesaServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
-                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
-                  ))}
-                </div>
+              </div>
               </div>
             </div>
 
