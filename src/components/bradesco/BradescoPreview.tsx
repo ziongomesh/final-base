@@ -55,7 +55,7 @@ const FIELDS: FieldDef[] = [
   // Dados de quem pagou - Ag/CC
   { key: 'agenciaConta', x: pdfPx(95), y: pdfPx(760), size: FONT_SIZE, bold: false },
   // Dados da Transação - Valor
-  { key: 'valor', x: pdfPx(95), y: pdfPx(940), size: FONT_SIZE + 12, bold: true },
+  { key: 'valor', x: pdfPx(95), y: pdfPx(1071), size: FONT_SIZE, bold: false, label: 'Valor:    ', labelBold: true },
   // Dados da Transação - Data
   { key: 'dataHora', x: pdfPx(95), y: pdfPx(1030), size: FONT_SIZE, bold: false },
   // Dados da Transação - ID
@@ -115,6 +115,7 @@ interface SectionTitle {
 
 const SECTION_TITLES: SectionTitle[] = [
   { text: 'Dados de quem pagou', x: pdfPx(79), y: pdfPx(570), size: FONT_SIZE, bold: true },
+  { text: 'Dados da Transação', x: pdfPx(79), y: pdfPx(1020), size: FONT_SIZE, bold: true },
 ];
 
 function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormData) {

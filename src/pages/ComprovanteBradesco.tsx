@@ -221,6 +221,15 @@ export default function ComprovanteBradesco() {
                     maxLength={14}
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Valor</Label>
+                  <Input
+                    value={formData.valor}
+                    onChange={e => updateField('valor', e.target.value)}
+                    placeholder="6000,00"
+                    className="text-xs"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
