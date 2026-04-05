@@ -1139,7 +1139,7 @@ function NauticaHistoryCard({
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{registro.nome}</h3>
               <Badge variant="outline" className="text-[10px]">
-                <Anchor className="h-3 w-3 mr-1" /> Náutica
+                <i className="fa-solid fa-anchor text-[10px] mr-1" /> Náutica
               </Badge>
               <ExpirationBadge dataExpiracao={registro.expires_at} />
             </div>
