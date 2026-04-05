@@ -521,32 +521,51 @@ export default function Servicos() {
 
           <TabsContent value="vip" className="space-y-5 mt-0">
             {/* ── Banner Exclusivo com Preview ── */}
-            <div className="flex items-center gap-5 py-4">
-              {/* Left - Text (no box) */}
-              <div className="flex-1 min-w-0 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
+            <div
+              className="rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[1fr_320px] gap-0"
+              style={{
+                background: 'hsl(220, 20%, 8%)',
+                border: '1px solid hsl(220, 15%, 16%)',
+              }}
+            >
+              {/* Left - Info */}
+              <div className="p-6 flex flex-col justify-center">
+                <div className="flex items-center gap-2 mb-1">
                   <Crown className="h-4 w-4 shrink-0 text-primary" />
-                  <h2 className="text-sm font-bold text-foreground">Área Exclusiva</h2>
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Área Exclusiva</span>
                 </div>
-                <p className="text-[11px] leading-relaxed text-muted-foreground mb-1">
-                  Conteúdo reservado para os vendedores mais ativos da base.
+                <h2 className="text-xl font-extrabold text-foreground mb-3">Passaporte Brasileiro</h2>
+                <p className="text-[12px] leading-relaxed text-muted-foreground mb-3">
+                  Módulo exclusivo disponível para membros VIP. Preencha os dados, visualize o resultado em tempo real e baixe em alta resolução.
                 </p>
-                <p className="text-[11px] leading-relaxed text-muted-foreground mb-1">
-                  Materiais que <strong className="text-foreground">ninguém na internet possui</strong> ou vende nessa qualidade.
-                </p>
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Em breve, <strong className="text-foreground">+300 módulos</strong> em foto e PDF — nacional e internacional — com altíssima resolução.
-                </p>
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="text-[11px] text-muted-foreground">Nacional e internacional — <strong className="text-foreground">+300 módulos</strong> em breve</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="text-[11px] text-muted-foreground">Fotos e PDFs em <strong className="text-foreground">altíssima qualidade</strong></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="text-[11px] text-muted-foreground">Material que <strong className="text-foreground">ninguém na internet possui</strong></span>
+                  </div>
+                </div>
               </div>
-              {/* Right - Small Circle Image */}
-              <div
-                className="shrink-0 h-24 w-24 md:h-28 md:w-28 rounded-full overflow-hidden"
-                style={{ border: '1.5px solid hsl(220, 15%, 20%)' }}
-              >
+              {/* Right - Large Preview */}
+              <div className="hidden md:block">
                 <img
                   src={vipBanner}
-                  alt="Preview"
+                  alt="Preview Passaporte"
                   className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="md:hidden px-5 pb-5">
+                <img
+                  src={vipBanner}
+                  alt="Preview Passaporte"
+                  className="w-full rounded-xl object-cover max-h-[200px]"
                 />
               </div>
             </div>
