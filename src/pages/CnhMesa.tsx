@@ -52,8 +52,6 @@ export default function CnhMesa() {
     },
   });
 
-  if (!admin) return <Navigate to="/login" />;
-
   const watchedValues = form.watch();
 
   const updatePreview = useCallback(async () => {

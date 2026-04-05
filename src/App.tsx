@@ -42,6 +42,7 @@ const HapvidaPositionTool = lazy(() => import("./pages/HapvidaPositionTool"));
 const AtestadoHapvida = lazy(() => import("./pages/AtestadoHapvida"));
 const ComprovantePicpay = lazy(() => import("./pages/ComprovantePicpay"));
 const ComprovanteBradesco = lazy(() => import("./pages/ComprovanteBradesco"));
+const CnhMesa = lazy(() => import("./pages/CnhMesa"));
 
 
 // Lazy loaded (medium pages)
