@@ -63,10 +63,10 @@ export async function generateCnhMesa(
 
   // ===== DADOS PESSOAIS =====
 
-  // 2 e 1 - NOME E SOBRENOME
+  // 2 e 1 - NOME E SOBRENOME (Photoshop: X=674 Y=553, 40px → canvas scaled)
   if (data.nome) {
-    ctx.font = font(18);
-    ctx.fillText(data.nome.toUpperCase(), 200 * s, 340 * s);
+    ctx.font = font(27);
+    ctx.fillText(data.nome.toUpperCase(), 456 * s, 470 * s);
   }
 
   // 1ª HABILITAÇÃO
