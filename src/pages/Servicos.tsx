@@ -109,7 +109,13 @@ const mesaServices: Service[] = [
   { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  
+  { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
 ];
 
 // ─── VIP Services ───
