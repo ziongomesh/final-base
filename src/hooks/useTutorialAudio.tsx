@@ -39,7 +39,8 @@ export function useTutorialAudio(isDemoMode: boolean) {
     if (isDemoMode && !hasPlayedIntro.current && audioActive) {
       hasPlayedIntro.current = true;
       setTimeout(() => {
-        speakAndTrack(CNH_DEMO_INTRO);
+        speakAndTrack(CNH_DEMO_INTRO, 'k3f7zOv6LF88v78QHCNh');
+      }, 1000);
       }, 1000);
     }
     return () => {
