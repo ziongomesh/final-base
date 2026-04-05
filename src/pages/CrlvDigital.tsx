@@ -17,6 +17,7 @@ import {
   Car, User, Loader2, ArrowLeft, Wrench, FileText, Eye, ClipboardList, QrCode, Upload, X, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { CrlvPreview, type CrlvPreviewRef } from '@/components/crlv/CrlvPreview';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import { CrlvPdfEditor } from '@/components/crlv/CrlvPdfEditor';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
