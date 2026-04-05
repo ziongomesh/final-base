@@ -109,14 +109,6 @@ const mesaServices: Service[] = [
   { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  
-];
-
-// ─── VIP Services ───
-const vipFotoServices: Service[] = [
-  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 4, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
@@ -124,6 +116,12 @@ const vipFotoServices: Service[] = [
   { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+];
+
+// ─── VIP Services ───
+const vipFotoServices: Service[] = [
+  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
 ];
 
 // ─── VIP tier helpers ───
@@ -666,16 +664,6 @@ export default function Servicos() {
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    Cartões de Crédito
-                  </h4>
-                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(43 30% 25%) transparent' }}>
-                    {vipFotoServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
-                      <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -696,6 +684,14 @@ export default function Servicos() {
                     Documentos na Mesa
                   </h4>
                   {mesaServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
+                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    Cartões de Crédito
+                  </h4>
+                  {mesaServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
