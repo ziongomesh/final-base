@@ -16,6 +16,15 @@ interface RecordItem {
   created_at: string;
 }
 
+const serviceColors: Record<string, { bg: string; text: string; icon: string }> = {
+  CNH: { bg: 'hsl(201 55% 59% / 0.15)', text: 'hsl(201 55% 65%)', icon: 'fa-solid fa-id-card' },
+  RG: { bg: 'hsl(280 60% 55% / 0.15)', text: 'hsl(280 60% 65%)', icon: 'fa-solid fa-user' },
+  CRLV: { bg: 'hsl(140 45% 45% / 0.15)', text: 'hsl(140 45% 55%)', icon: 'fa-solid fa-car' },
+  CHA: { bg: 'hsl(210 70% 50% / 0.15)', text: 'hsl(210 70% 60%)', icon: 'fa-solid fa-anchor' },
+  Estudante: { bg: 'hsl(35 80% 50% / 0.15)', text: 'hsl(35 80% 60%)', icon: 'fa-solid fa-graduation-cap' },
+  Hapvida: { bg: 'hsl(350 60% 50% / 0.15)', text: 'hsl(350 60% 60%)', icon: 'fa-solid fa-file-medical' },
+};
+
 function formatDate(dateStr: string) {
   if (!dateStr) return '';
   try {
@@ -104,17 +113,28 @@ export default function LastRecords({ adminId, sessionToken }: { adminId: number
             >
               <div
                 className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: 'hsl(201 55% 59% / 0.08)' }}
+                style={{ background: serviceColors[r.tipo]?.bg || 'hsl(201 55% 59% / 0.08)' }}
               >
-                <FileText className="h-3.5 w-3.5" style={{ color: 'hsl(201 55% 59%)' }} />
+                <i className={`${serviceColors[r.tipo]?.icon || 'fa-solid fa-file'} text-xs`} style={{ color: serviceColors[r.tipo]?.text || 'hsl(201 55% 59%)' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-white truncate">{r.nome}</p>
                 <p className="text-[10px]" style={{ color: 'hsl(210 20% 35%)' }}>
-                  {r.tipo} • {r.cpf} • {formatDate(r.created_at)}
+                  {r.cpf} • {formatDate(r.created_at)}
                 </p>
               </div>
-              <span className="text-[10px] flex-shrink-0" style={{ color: 'hsl(210 20% 30%)' }}>{timeAgo(r.created_at)}</span>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span
+                  className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+                  style={{
+                    background: serviceColors[r.tipo]?.bg || 'hsl(201 55% 59% / 0.1)',
+                    color: serviceColors[r.tipo]?.text || 'hsl(201 55% 59%)',
+                  }}
+                >
+                  {r.tipo}
+                </span>
+                <span className="text-[10px]" style={{ color: 'hsl(210 20% 30%)' }}>{timeAgo(r.created_at)}</span>
+              </div>
             </div>
           ))}
         </div>
