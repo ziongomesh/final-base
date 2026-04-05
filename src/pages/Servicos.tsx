@@ -540,7 +540,7 @@ export default function Servicos() {
               </div>
               {/* Right - Small Circle Image */}
               <div
-                className="shrink-0 h-12 w-12 rounded-full overflow-hidden"
+                className="shrink-0 h-24 w-24 md:h-28 md:w-28 rounded-full overflow-hidden"
                 style={{ border: '1.5px solid hsl(220, 15%, 20%)' }}
               >
                 <img
