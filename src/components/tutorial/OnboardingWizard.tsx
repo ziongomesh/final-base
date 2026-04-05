@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import api from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -144,9 +145,9 @@ export default function OnboardingWizard({ userName, adminId, onClose }: Onboard
     setAudioEnabled(!audioEnabled);
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     onClose();
   };
 
@@ -157,9 +158,9 @@ export default function OnboardingWizard({ userName, adminId, onClose }: Onboard
     }
   };
 
-  const handleStartDemo = () => {
+  const handleStartDemo = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     navigate('/servicos/cnh-digital?demo=true');
   };
 

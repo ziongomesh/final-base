@@ -14,7 +14,7 @@ import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import LastRecords from '@/components/dashboard/LastRecords';
 
 export default function Dashboard() {
-  const { admin, role: rawRole, credits, creditsTransf, loading } = useAuth();
+  const { admin, role: rawRole, credits, creditsTransf, loading, updateAdmin } = useAuth();
   const role = rawRole as string;
   const [totalResellers, setTotalResellers] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -23,12 +23,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (admin && !loading) {
-      if (admin.rank === 'revendedor') {
-        const tutorialKey = `tutorial_completed_${admin.id}`;
-        if (!localStorage.getItem(tutorialKey)) setShowOnboarding(true);
-      } else if (admin.rank === 'master') {
-        const masterKey = `master_tutorial_completed_${admin.id}`;
-        if (!localStorage.getItem(masterKey)) setShowMasterOnboarding(true);
+      if (!admin.tutorial_completed) {
+        if (admin.rank === 'revendedor') {
+          setShowOnboarding(true);
+        } else if (admin.rank === 'master') {
+          setShowMasterOnboarding(true);
+        }
       }
     }
   }, [admin, loading]);
@@ -79,10 +79,16 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       {showOnboarding && admin && (
-        <OnboardingWizard userName={firstName} adminId={admin.id} onClose={() => setShowOnboarding(false)} />
+        <OnboardingWizard userName={firstName} adminId={admin.id} onClose={() => {
+          setShowOnboarding(false);
+          if (admin) updateAdmin({ ...admin, tutorial_completed: true });
+        }} />
       )}
       {showMasterOnboarding && admin && (
-        <MasterOnboardingWizard userName={firstName} adminId={admin.id} onClose={() => setShowMasterOnboarding(false)} />
+        <MasterOnboardingWizard userName={firstName} adminId={admin.id} onClose={() => {
+          setShowMasterOnboarding(false);
+          if (admin) updateAdmin({ ...admin, tutorial_completed: true });
+        }} />
       )}
 
       <AlertNotification adminId={admin.id} />

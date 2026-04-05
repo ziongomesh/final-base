@@ -17,6 +17,7 @@ interface Admin {
   session_token: string | null;
   criado_por?: number | null;
   last_access?: string | null;
+  tutorial_completed?: boolean;
 }
 
 interface AuthContextType {
@@ -124,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile_photo: data.admin.profile_photo,
         session_token: data.admin.session_token,
         criado_por: data.admin.criado_por || null,
-        
+        tutorial_completed: (data.admin as any).tutorial_completed ?? false,
       };
       
       setAdmin(adminData);

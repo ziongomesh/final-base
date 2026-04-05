@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -46,15 +47,15 @@ export default function MasterOnboardingWizard({ userName, adminId, onClose }: M
     setAudioEnabled(!audioEnabled);
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`master_tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     onClose();
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`master_tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     onClose();
   };
 

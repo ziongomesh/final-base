@@ -31,6 +31,7 @@ export type Database = {
           rank: string | null
           session_token: string | null
           telefone: string | null
+          tutorial_completed: boolean
         }
         Insert: {
           created_at?: string | null
@@ -48,6 +49,7 @@ export type Database = {
           rank?: string | null
           session_token?: string | null
           telefone?: string | null
+          tutorial_completed?: boolean
         }
         Update: {
           created_at?: string | null
@@ -65,6 +67,7 @@ export type Database = {
           rank?: string | null
           session_token?: string | null
           telefone?: string | null
+          tutorial_completed?: boolean
         }
         Relationships: [
           {
@@ -980,6 +983,7 @@ export type Database = {
           profile_photo: string
           rank: string
           session_token: string
+          tutorial_completed: boolean
         }[]
       }
       validate_pin: {

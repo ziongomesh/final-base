@@ -105,6 +105,7 @@ export const supabaseApi = {
           session_token: adminData.session_token,
           criado_por: null,
           last_access: null,
+          tutorial_completed: adminData.tutorial_completed ?? false,
         }
       };
     },
@@ -289,6 +290,15 @@ export const supabaseApi = {
 
     getMyDocumentStats: async (_adminId: number) => {
       return { today: 0, week: 0, month: 0 };
+    },
+
+    completeTutorial: async (adminId: number) => {
+      const { error } = await supabase
+        .from('admins')
+        .update({ tutorial_completed: true } as any)
+        .eq('id', adminId);
+      if (error) throw new Error(error.message);
+      return { success: true };
     },
   },
 
