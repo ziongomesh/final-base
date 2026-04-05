@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useCpfCheck } from '@/hooks/useCpfCheck';
 import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import {
-  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X
+  IdCard, User, ClipboardList, CreditCard, Upload, Shuffle, Loader2, Eye, ArrowLeft, Sparkles, CalendarCheck, FolderOpen, ShieldCheck, X, Volume2, VolumeX
 } from 'lucide-react';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import {
