@@ -284,7 +284,13 @@ export default function ComprovanteBradesco() {
               <CardContent className="space-y-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs">Valor</Label>
-                  <Input value={formData.valor} onChange={e => updateField('valor', e.target.value)} placeholder="6000,00" className="text-xs" />
+                  <Input value={formData.valor} onChange={e => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    if (!raw) { updateField('valor', ''); return; }
+                    const num = parseInt(raw, 10);
+                    const formatted = (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    updateField('valor', formatted);
+                  }} placeholder="0,00" className="text-xs" />
                 </div>
               </CardContent>
             </Card>
