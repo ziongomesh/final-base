@@ -100,17 +100,15 @@ const categories: ServiceCategory[] = [
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-brain', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
     ],
   },
-  {
-    title: 'Mesa (Foto Documento)',
-    icon: Camera,
-    services: [
-      { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-id-card', specs: ['Foto: Sim'] },
-      { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'] },
-      { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'] },
-      { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'] },
-      { id: 'mesa-cartoes', name: 'CARTÕES NA MESA', description: 'Cartões de crédito em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: CreditCard, faIcon: 'fa-solid fa-credit-card', specs: ['Foto: Sim'] },
-    ],
-  },
+];
+
+// ─── Mesa (Foto Documento) services — VIP Exclusivo ───
+const mesaServices: Service[] = [
+  { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-id-card', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'mesa-cartoes', name: 'CARTÕES NA MESA', description: 'Cartões de crédito em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: CreditCard, faIcon: 'fa-solid fa-credit-card', specs: ['Foto: Sim'], fotoGroup: 'cartoes' },
 ];
 
 // ─── VIP Services ───
@@ -509,9 +507,8 @@ export default function Servicos() {
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
-            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold" disabled>
-              <Crown className="h-4 w-4" /> VIP
-              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 ml-1">Em Breve</Badge>
+            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold">
+              <Crown className="h-4 w-4" /> Exclusivo
             </TabsTrigger>
           </TabsList>
 
@@ -522,6 +519,37 @@ export default function Servicos() {
           </TabsContent>
 
           <TabsContent value="vip" className="space-y-5 mt-0">
+            {/* ── Banner Exclusivo ── */}
+            <div
+              className="rounded-2xl p-5 relative overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, hsl(43, 60%, 12%) 0%, hsl(38, 50%, 18%) 40%, hsl(48, 70%, 25%) 100%)',
+                border: '1px solid hsl(43, 60%, 30%)',
+              }}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+                <Crown className="w-full h-full" />
+              </div>
+              <div className="flex items-center gap-3 mb-3">
+                <Crown className="h-7 w-7" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                <div>
+                  <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                    Área Exclusiva
+                  </h2>
+                  <p className="text-xs" style={{ color: 'hsl(43, 40%, 55%)' }}>
+                    Para os vendedores mais fiéis da base
+                  </p>
+                </div>
+              </div>
+              <p className="text-[12px] leading-relaxed mb-3" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
+                Esta aba é <strong style={{ color: 'hsl(43, 90%, 75%)' }}>exclusiva</strong> para quem faz parte da nossa base.
+                Ninguém da internet possui esse material ou vende nessa qualidade.
+              </p>
+              <p className="text-[12px] leading-relaxed" style={{ color: 'hsla(43, 40%, 65%, 0.9)' }}>
+                Em breve, <strong style={{ color: 'hsl(43, 90%, 75%)' }}>mais de 300 módulos</strong> em foto e PDF — de nacional a internacional — imagens e fotos em <strong style={{ color: 'hsl(43, 90%, 75%)' }}>altíssima qualidade</strong>.
+              </p>
+            </div>
+
             {/* ── Como funciona ── */}
             <div
               className="rounded-2xl p-5"
@@ -531,15 +559,10 @@ export default function Servicos() {
               }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <Crown className="h-6 w-6" style={{ color: 'hsl(43, 90%, 70%)' }} />
-                <div>
-                  <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
-                    Como funciona o VIP?
-                  </h2>
-                  <p className="text-xs" style={{ color: 'hsl(43, 40%, 55%)' }}>
-                    Área exclusiva — não se compra, se conquista
-                  </p>
-                </div>
+                <Target className="h-5 w-5" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                <h3 className="text-sm font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                  Como funciona?
+                </h3>
                 {tier !== 'none' && (
                   <div
                     className="ml-auto px-3 py-1 rounded-full text-xs font-extrabold animate-pulse"
@@ -558,33 +581,12 @@ export default function Servicos() {
                 )}
               </div>
 
-              {/* Explicação passo a passo */}
-              <div className="space-y-3 mb-5">
-                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
-                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>1</div>
-                  <div>
-                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Faça serviços durante a semana</p>
-                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>Cada CNH, RG, CIN, Náutica ou qualquer serviço realizado conta para sua meta semanal.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
-                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>2</div>
-                  <div>
-                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Bata a meta e suba de nível</p>
-                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>50 serviços na semana = VIP. 100 serviços na semana = Super VIP. Simples assim.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
-                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>3</div>
-                  <div>
-                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Pague menos por cada serviço</p>
-                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>Quanto maior seu nível, menos créditos você gasta. Todos os serviços VIP ficam mais baratos.</p>
-                  </div>
-                </div>
-              </div>
+              <p className="text-[11px] mb-4" style={{ color: 'hsl(43, 30%, 55%)' }}>
+                Área exclusiva — não se compra, se conquista. Bata metas semanais e desbloqueie preços menores.
+              </p>
 
               {/* Tabela comparativa */}
-              <div className="rounded-xl overflow-hidden" style={{ border: '1px solid hsla(43, 50%, 35%, 0.4)' }}>
+              <div className="rounded-xl overflow-hidden mb-5" style={{ border: '1px solid hsla(43, 50%, 35%, 0.4)' }}>
                 <div className="grid grid-cols-4 text-center text-[11px] font-bold" style={{ background: 'hsla(43, 50%, 25%, 0.5)' }}>
                   <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Nível</div>
                   <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Meta Semanal</div>
@@ -617,19 +619,24 @@ export default function Servicos() {
               </div>
 
               {/* Progress bars */}
-              <div className="space-y-3 mt-5">
+              <div className="space-y-3">
                 <p className="text-[11px] font-bold" style={{ color: 'hsl(43, 70%, 65%)' }}>Seu progresso esta semana:</p>
                 <VipProgressBar current={weeklyServices} target={50} label="VIP — 50 serviços/semana" color="hsl(43, 70%, 55%)" />
                 <VipProgressBar current={weeklyServices} target={100} label="SUPER VIP — 100 serviços/semana" color="hsl(43, 90%, 65%)" />
               </div>
             </div>
 
-
-            {/* ── Docs em Foto ── */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                Documentos em Foto
-              </h3>
+            {/* ── VIP — Serviços (50/sem) ── */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4" style={{ color: 'hsl(43, 70%, 55%)' }} />
+                <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                  VIP — Documentos em Foto
+                </h3>
+                <Badge className="text-[9px] px-2 py-0 border-0 ml-auto" style={{ background: 'hsla(43, 50%, 30%, 0.4)', color: 'hsl(43, 70%, 60%)' }}>
+                  50 serv./semana
+                </Badge>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
@@ -648,6 +655,37 @@ export default function Servicos() {
                       <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── SUPER VIP — Mesa (100/sem) ── */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" style={{ color: 'hsl(43, 90%, 65%)' }} />
+                <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                  SUPER VIP — Mesa (Foto Documento)
+                </h3>
+                <Badge className="text-[9px] px-2 py-0 border-0 ml-auto" style={{ background: 'hsla(43, 70%, 40%, 0.4)', color: 'hsl(43, 90%, 70%)' }}>
+                  100 serv./semana
+                </Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    Documentos na Mesa
+                  </h4>
+                  {mesaServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
+                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    Cartões na Mesa
+                  </h4>
+                  {mesaServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
+                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                  ))}
                 </div>
               </div>
             </div>
@@ -692,12 +730,15 @@ export default function Servicos() {
                 border: '1px solid hsla(43, 40%, 30%, 0.3)',
               }}
             >
-              <h4 className="font-bold text-sm mb-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                Em breve, milhares de serviços adicionais
-              </h4>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                <h4 className="font-bold text-sm" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                  +300 módulos chegando em breve
+                </h4>
+              </div>
               <p className="text-[11px] leading-relaxed" style={{ color: 'hsla(43, 30%, 55%, 0.8)' }}>
-                Serviços super exclusivos estão chegando. Imagina fazer seus docs sem sentar no computador...
-                A área VIP é algo exclusivo da base. Não se compra — se conquista batendo metas.
+                Ninguém da internet possui esse material ou vende nessa qualidade. Nacional e internacional, em foto e PDF, com altíssima resolução.
+                A área Exclusiva é algo único da base — não se compra, se conquista batendo metas.
               </p>
             </div>
           </TabsContent>
