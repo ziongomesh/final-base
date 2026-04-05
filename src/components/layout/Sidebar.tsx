@@ -50,9 +50,12 @@ export function Sidebar() {
         borderRight: '1px solid hsl(210 40% 15% / 0.5)',
       }}
     >
-      {/* Logo */}
-      <div className="px-6 pt-6 pb-4">
+      {/* Logo + Beta */}
+      <div className="px-6 pt-6 pb-4 flex items-center gap-2">
         <Logo className="h-8 w-auto" />
+        <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+          Beta
+        </span>
       </div>
 
       {/* Section label */}
