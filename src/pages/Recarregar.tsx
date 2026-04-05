@@ -984,6 +984,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   }, []);
 
   const canRechargeDirectly = creatorId === 3;
+  const hasCustomPlans = customPlansRaw.length > 0;
 
   const startPaymentVerification = (transactionId: string) => {
     if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
