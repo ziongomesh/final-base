@@ -128,17 +128,24 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormDat
 
 function drawWatermarks(ctx: CanvasRenderingContext2D) {
   ctx.save();
-  ctx.globalAlpha = 0.3;
+  ctx.globalAlpha = 0.08;
   ctx.fillStyle = '#000000';
-  ctx.font = 'bold 60px Arial, sans-serif';
+  ctx.font = 'bold 120px Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  const text = 'AMOSTRA                    AMOSTRA                    AMOSTRA                    AMOSTRA                    AMOSTRA';
-  const spacingY = 120;
+  const text = 'DATA SISTEMAS';
+  const spacingX = 350;
+  const spacingY = 250;
 
-  for (let y = 0; y < PAGE_H; y += spacingY) {
-    ctx.fillText(text, PAGE_W / 2, y);
+  for (let y = -200; y < PAGE_H + 200; y += spacingY) {
+    for (let x = -200; x < PAGE_W + 200; x += spacingX) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-Math.PI / 6);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+    }
   }
   ctx.restore();
 }
