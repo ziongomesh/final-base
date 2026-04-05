@@ -257,8 +257,8 @@ function gerarMRZLinha2(dataNasc: string, genero: string): string {
   const nascMRZ = formatMRZDate(dataNasc);
   const sexoMRZ = genero?.toUpperCase() === 'FEMININO' || genero?.toUpperCase() === 'F' ? 'F' : 'M';
 
-  // nascMRZ(6) - use first 5 + sexo(1) + 10 random + BRA(3) + 10< + check(1) = 30
-  return `${nascMRZ.slice(0, 5)}${randomDigits(1)}${sexoMRZ}${randomDigits(4)}${nascMRZ}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
+  // 5d + sexo(1) + 10d + BRA(3) + 10< + check(1) = 30
+  return `${nascMRZ.slice(0, 5)}${sexoMRZ}${randomDigits(10)}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
 }
 
 // =================== FULL PDF PAGE (single PNG) ===================
