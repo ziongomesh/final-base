@@ -259,11 +259,11 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isAtestados ? (
+          {isHospital ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                  <Lock className="h-3 w-3" /> Privados
+                  <Lock className="h-3 w-3" /> Atestados Privados
                 </h4>
                 {sortGroup(atestadoPrivados).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
@@ -271,12 +271,32 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
               </div>
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                  <Globe className="h-3 w-3" /> Públicos
+                  <Globe className="h-3 w-3" /> Atestados Públicos
                 </h4>
                 {sortGroup(atestadoPublicos).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
               </div>
+              {receitas.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <i className="fa-solid fa-prescription text-[10px]" /> Receitas
+                  </h4>
+                  {sortGroup(receitas).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
+              {laudos.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <i className="fa-solid fa-file-medical text-[10px]" /> Laudos
+                  </h4>
+                  {sortGroup(laudos).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
             </div>
           ) : isPdfCategory && certidoes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
