@@ -205,7 +205,7 @@ export async function generateRGVerso(
   }
 }
 
-// MRZ
+// MRZ - Linha 3: nome completo com < entre cada parte, truncado/padded a 30 chars
 export function formatarNomeMRZ(nome: string): string {
   const MRZ_LEN = 30;
   const parts = nome.normalize("NFD")
@@ -216,34 +216,53 @@ export function formatarNomeMRZ(nome: string): string {
     .split(/\s+/)
     .filter(Boolean);
 
-  if (parts.length === 0) return `D<${'<'.repeat(MRZ_LEN - 2)}`;
+  if (parts.length === 0) return '<'.repeat(MRZ_LEN);
 
-  // Always: D<FIRST<INITIALS<...<LAST padded/truncated to MRZ_LEN
-  const first = parts[0];
-  const last = parts[parts.length - 1];
-  const middleParts = parts.slice(1, -1);
+  // Format: <NOME<PARTE<PARTE<...< (each word separated by <)
+  const content = '<' + parts.join('<') + '<';
 
-  let content: string;
-  if (parts.length === 1) {
-    content = `D<${first}`;
-  } else if (middleParts.length === 0) {
-    content = `D<${first}<${last}`;
-  } else {
-    // Use initials for middle names to keep it short
-    const middleInitials = middleParts.map(p => p[0]).join('<');
-    content = `D<${first}<${middleInitials}<${last}`;
-    
-    // If still too long, drop middle initials progressively
-    if (content.length > MRZ_LEN) {
-      content = `D<${first}<${last}`;
-    }
-  }
-
-  // Pad or truncate to exact MRZ_LEN
   if (content.length >= MRZ_LEN) {
     return content.slice(0, MRZ_LEN);
   }
   return content + '<'.repeat(MRZ_LEN - content.length);
+}
+
+// Gera número aleatório de N dígitos
+function randomDigits(n: number): string {
+  let s = '';
+  for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10).toString();
+  return s;
+}
+
+// MRZ Linha 1: IDBRA + 22 dígitos + <<< + check
+function gerarMRZLinha1(): string {
+  return `IDBRA${randomDigits(22)}<<<${Math.floor(Math.random() * 10)}`;
+}
+
+// MRZ Linha 2: data + sexo + data + BRA + <<< + check
+function gerarMRZLinha2(dataNasc: string, genero: string): string {
+  // Format date to YYMMDD
+  const formatMRZDate = (d: string): string => {
+    if (!d) return '000000';
+    const clean = d.replace(/\D/g, '');
+    // Try DD/MM/YYYY
+    if (d.includes('/')) {
+      const [dd, mm, yyyy] = d.split('/');
+      return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
+    }
+    // Try YYYY-MM-DD
+    if (d.includes('-')) {
+      const [yyyy, mm, dd] = d.split('-');
+      return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
+    }
+    return clean.slice(0, 6);
+  };
+
+  const nascMRZ = formatMRZDate(dataNasc);
+  const sexoMRZ = genero?.toUpperCase() === 'FEMININO' || genero?.toUpperCase() === 'F' ? 'F' : 'M';
+  const expDate = randomDigits(6);
+
+  return `${nascMRZ}${randomDigits(1)}${sexoMRZ}${expDate}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
 }
 
 // =================== FULL PDF PAGE (single PNG) ===================
