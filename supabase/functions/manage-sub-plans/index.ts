@@ -19,11 +19,15 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action, admin_id, session_token, plan } = body;
 
+    console.log("manage-sub-plans called:", { action, admin_id });
+
     // Validate session
-    const { data: valid } = await supabase.rpc("is_valid_admin", {
+    const { data: valid, error: validError } = await supabase.rpc("is_valid_admin", {
       p_admin_id: admin_id,
       p_session_token: session_token,
     });
+
+    console.log("Session validation:", { valid, validError });
 
     if (!valid) {
       return new Response(
