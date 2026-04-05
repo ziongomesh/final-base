@@ -62,6 +62,7 @@ export default function ComprovantePicpay() {
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
+    setHasTouched(true);
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
