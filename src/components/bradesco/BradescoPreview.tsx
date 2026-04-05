@@ -57,7 +57,7 @@ const FIELDS: FieldDef[] = [
   // Dados da Transação - Valor
   { key: 'valor', x: pdfPx(95), y: pdfPx(1071), size: FONT_SIZE, bold: false, label: 'Valor:    ', labelBold: true },
   // Dados da Transação - Data
-  { key: 'dataHora', x: pdfPx(95), y: pdfPx(1030), size: FONT_SIZE, bold: false },
+  { key: 'dataHora', x: pdfPx(79), y: pdfPx(1151), size: FONT_SIZE, bold: false, label: 'Data e Hora:   ', labelBold: true },
   // Dados da Transação - ID
   { key: 'idTransacao', x: pdfPx(95), y: pdfPx(1100), size: FONT_SIZE - 2, bold: false },
   // Dados de quem recebeu - Nome

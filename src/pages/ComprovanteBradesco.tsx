@@ -230,6 +230,15 @@ export default function ComprovanteBradesco() {
                     className="text-xs"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Data e Hora</Label>
+                  <Input
+                    value={formData.dataHora}
+                    onChange={e => updateField('dataHora', e.target.value)}
+                    placeholder="23/07/2025 18:25:05"
+                    className="text-xs"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
