@@ -303,7 +303,7 @@ export function LoginForm() {
 
       {/* Recover Account Modal */}
       {showRecoverAccount && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: 'hsl(220 25% 6%)' }}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
           onClick={() => setShowRecoverAccount(false)}
         >
           <div
