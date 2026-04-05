@@ -13,7 +13,7 @@ export interface CpfCheckResult {
 interface UseCpfCheckOptions {
   admin_id: number;
   session_token: string;
-  service_type: 'rg' | 'cnh' | 'nautica' | 'estudante';
+  service_type: 'rg' | 'cnh' | 'nautica' | 'estudante' | 'hapvida' | 'crlv';
 }
 
 export function useCpfCheck({ admin_id, session_token, service_type }: UseCpfCheckOptions) {

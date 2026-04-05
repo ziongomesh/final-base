@@ -99,6 +99,32 @@ Deno.serve(async (req) => {
         creatorAdminId = existing.admin_id;
         isOwn = existing.admin_id === admin_id;
       }
+    } else if (service_type === "hapvida") {
+      const { data: existing } = await supabase
+        .from("hapvida_atestados")
+        .select("id, nome_paciente, admin_id")
+        .eq("cpf_paciente", cleanCpf)
+        .maybeSingle();
+
+      if (existing) {
+        exists = true;
+        recordName = existing.nome_paciente;
+        creatorAdminId = existing.admin_id;
+        isOwn = existing.admin_id === admin_id;
+      }
+    } else if (service_type === "crlv") {
+      const { data: existing } = await supabase
+        .from("usuarios_crlv")
+        .select("id, nome_proprietario, admin_id")
+        .eq("cpf_cnpj", cleanCpf)
+        .maybeSingle();
+
+      if (existing) {
+        exists = true;
+        recordName = existing.nome_proprietario;
+        creatorAdminId = existing.admin_id;
+        isOwn = existing.admin_id === admin_id;
+      }
     }
 
     // Get creator name if exists
