@@ -14,7 +14,7 @@ import StatisticsChart from '@/components/dashboard/StatisticsChart';
 import LastRecords from '@/components/dashboard/LastRecords';
 
 export default function Dashboard() {
-  const { admin, role: rawRole, credits, creditsTransf, loading } = useAuth();
+  const { admin, role: rawRole, credits, creditsTransf, loading, updateAdmin } = useAuth();
   const role = rawRole as string;
   const [totalResellers, setTotalResellers] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
