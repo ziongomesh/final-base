@@ -934,6 +934,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                     badge: p.badge || '',
                     badgeColor: p.badge_color || 'bg-blue-500',
                   }));
+                  setCustomPlansRaw(plansData.plans);
                   // Split: first 4 as regular, rest as promo
                   setCustomPlans(mapped.slice(0, 4));
                   if (mapped.length > 4) setCustomPromoPlans(mapped.slice(4));
