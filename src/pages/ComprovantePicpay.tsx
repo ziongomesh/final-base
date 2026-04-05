@@ -56,13 +56,25 @@ export default function ComprovantePicpay() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  const handleCpfInput = (value: string): string => {
+  const handleCpfMasked = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length === 11) {
-      const mid = digits.slice(3, 9);
-      return `***.${mid.slice(0, 3)}.${mid.slice(3)}-**`;
+      return `***.${digits.slice(3, 6)}.${digits.slice(6, 9)}-**`;
     }
     return digits;
+  };
+
+  const handleCnpjMasked = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 14);
+    if (digits.length === 14) {
+      return `**.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-**`;
+    }
+    return digits;
+  };
+
+  const handleDocInput = (value: string, tipo: string): string => {
+    if (tipo === 'cnpj') return handleCnpjMasked(value);
+    return handleCpfMasked(value);
   };
 
   const definirDataAtual = useCallback(() => {
