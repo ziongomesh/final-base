@@ -263,9 +263,44 @@ const ChaPreview = forwardRef<ChaPreviewHandle, ChaPreviewProps>((props, ref) =>
   const H = 440;
   const STEP = 0.002; // Arrow key step size in fraction
 
+  const HD_SCALE = 3;
+  const HD_W = W * HD_SCALE;
+  const HD_H = H * HD_SCALE;
+
   useImperativeHandle(ref, () => ({
     getFrenteBase64: () => canvasFrontRef.current?.toDataURL('image/png') || '',
     getVersoBase64: () => canvasBackRef.current?.toDataURL('image/png') || '',
+    getFrenteHDBase64: async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = HD_W;
+      canvas.height = HD_H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return '';
+      try {
+        const bitmap = await loadTemplate('matrizcha.png');
+        let fotoImg: HTMLImageElement | null = null;
+        if (props.fotoPreview) {
+          fotoImg = new Image();
+          fotoImg.crossOrigin = 'anonymous';
+          fotoImg.src = props.fotoPreview;
+          await new Promise<void>((r) => { if (fotoImg!.complete) r(); else fotoImg!.onload = () => r(); });
+        }
+        drawChaFront(ctx, bitmap, fotoImg, props, HD_W, HD_H, frontPositions, null);
+      } catch { /* fallback */ }
+      return canvas.toDataURL('image/png');
+    },
+    getVersoHDBase64: async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = HD_W;
+      canvas.height = HD_H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return '';
+      try {
+        const bitmap = await loadTemplate('matrizcha2.png');
+        drawChaBack(ctx, bitmap, props, HD_W, HD_H, backPositions, null);
+      } catch { /* fallback */ }
+      return canvas.toDataURL('image/png');
+    },
   }));
 
   const drawFront = useCallback((highlight?: string | null) => {
