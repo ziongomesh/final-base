@@ -27,7 +27,7 @@ interface Service {
   specs?: string[];
   hasQr?: boolean;
   pdfGroup?: 'comprovante' | 'certidao';
-  atestadoGroup?: 'privado' | 'publico';
+  atestadoGroup?: 'privado' | 'publico' | 'receita' | 'laudo';
   fotoGroup?: 'documentos' | 'cartoes';
 }
 
