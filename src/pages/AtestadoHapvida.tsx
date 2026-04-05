@@ -195,18 +195,6 @@ export default function AtestadoHapvida() {
     return () => setFormDirty(false);
   }, [nomePaciente, cpfPaciente, setFormDirty]);
 
-  // CPF duplicate check
-  const cpfCheck = useCpfCheck({
-    admin_id: admin?.id || 0,
-    session_token: admin?.session_token || '',
-    service_type: 'hapvida',
-  });
-
-  useEffect(() => {
-    if (cpfPaciente.replace(/\D/g, '').length === 11) {
-      cpfCheck.checkCpf(cpfPaciente);
-    }
-  }, [cpfPaciente]);
 
   // Toast inicial ao entrar no módulo
   useEffect(() => {
