@@ -700,7 +700,6 @@ export default function Servicos() {
                   ))}
                 </div>
               </div>
-              </div>
             </div>
 
             {/* ── Internacional — Em Breve ── */}
