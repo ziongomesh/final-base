@@ -78,6 +78,15 @@ async function loadFonts(): Promise<void> {
       link.crossOrigin = 'anonymous';
       document.head.appendChild(link);
     }
+
+    // Load OCR-B font for MRZ
+    try {
+      const ocrBUrl = (await import('../assets/OCR-B_10_BT_Regular.ttf')).default;
+      const ocrBFont = new FontFace('OCR-B-RG', `url(${ocrBUrl})`);
+      const loaded = await ocrBFont.load();
+      document.fonts.add(loaded);
+    } catch { /* fallback */ }
+
     await document.fonts.ready;
   } catch {
     // fallback
