@@ -124,14 +124,14 @@ function formatDateToBrazilian(dateStr: string): string {
   return dateStr;
 }
 
-async function drawTemplate(ctx: CanvasRenderingContext2D, cnhDefinitiva: string = 'sim'): Promise<void> {
+async function drawTemplate(ctx: CanvasRenderingContext2D, cnhDefinitiva: string = 'sim', s: number = 1): Promise<void> {
   try {
     const templateName = cnhDefinitiva === 'sim' ? 'limpa1.png' : 'limpa-1.png';
     const bitmap = await loadTemplate(templateName);
-    ctx.drawImage(bitmap, 0, 0, CNH_CONFIG.width, CNH_CONFIG.height);
+    ctx.drawImage(bitmap, 0, 0, CNH_BASE_W * s, CNH_BASE_H * s);
   } catch {
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, CNH_CONFIG.width, CNH_CONFIG.height);
+    ctx.fillRect(0, 0, CNH_BASE_W * s, CNH_BASE_H * s);
   }
 }
 
