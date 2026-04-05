@@ -353,7 +353,7 @@ export default function ComprovantePicpay() {
                   <Label className="text-[10px]">Agência e Conta Recebedor</Label>
                   <div className="flex gap-1 items-center">
                     <span className="text-[10px] font-medium text-muted-foreground">AG</span>
-                    <Input placeholder="9651" className="text-xs h-8" inputMode="numeric"
+                    <Input placeholder="0001" className="text-xs h-8" inputMode="numeric"
                       value={(formData.agencia.match(/AG\s*(\d*)/)?.[1]) || ''}
                       onChange={(e) => {
                         const ag = e.target.value.replace(/\D/g, '');
@@ -372,7 +372,13 @@ export default function ComprovantePicpay() {
                         updateField('agencia', `AG ${ag} | CC ${cc}`);
                       }}
                     />
+                    <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[10px] shrink-0" onClick={() => {
+                      const ag = '0001';
+                      const cc = String(Math.floor(10000 + Math.random() * 90000));
+                      updateField('agencia', `AG ${ag} | CC ${cc}`);
+                    }}>Gerar</Button>
                   </div>
+                  <p className="text-[9px] text-muted-foreground italic">* Dados fictícios — Agência padrão 0001</p>
                 </div>
 
                 <div className="pt-2 border-t border-border">
