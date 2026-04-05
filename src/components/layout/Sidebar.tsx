@@ -1,5 +1,4 @@
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
 import { useFormGuard } from '@/hooks/useFormGuard';
 import { cn } from '@/lib/utils';
 import { 
@@ -33,20 +32,6 @@ export function Sidebar() {
   const { guardedNavigate } = useFormGuard();
   const location = useLocation();
 
-  const [adminName, setAdminName] = useState('');
-  const [adminPhoto, setAdminPhoto] = useState('');
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('admin');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setAdminName(parsed.nome || '');
-        setAdminPhoto(parsed.profile_photo || '');
-      }
-    } catch {}
-  }, []);
-
   const filteredItems = navItems.filter(item => 
     role && item.roles.includes(role)
   );
@@ -72,25 +57,6 @@ export function Sidebar() {
           Beta
         </span>
       </div>
-
-      {/* Profile */}
-      {adminName && (
-        <div className="px-5 pb-3 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full overflow-hidden shrink-0 bg-muted">
-            {adminPhoto ? (
-              <img src={adminPhoto} alt={adminName} className="h-full w-full object-cover" />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-xs font-bold text-muted-foreground">
-                {adminName.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground truncate">{adminName.split(' ')[0]}</p>
-            <p className="text-[10px] capitalize text-muted-foreground">{role}</p>
-          </div>
-        </div>
-      )}
 
       {/* Section label */}
       <div className="px-6 pb-3">
