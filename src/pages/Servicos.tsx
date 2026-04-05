@@ -109,7 +109,7 @@ const mesaServices: Service[] = [
   { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-scale-balanced', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
   { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, faIcon: 'fa-solid fa-user-doctor', specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-  { id: 'mesa-cartoes', name: 'CARTÕES NA MESA', description: 'Cartões de crédito em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: CreditCard, faIcon: 'fa-solid fa-credit-card', specs: ['Foto: Sim'], fotoGroup: 'cartoes' },
+  
 ];
 
 // ─── VIP Services ───
@@ -696,14 +696,6 @@ export default function Servicos() {
                     Documentos na Mesa
                   </h4>
                   {mesaServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
-                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    Cartões na Mesa
-                  </h4>
-                  {mesaServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
