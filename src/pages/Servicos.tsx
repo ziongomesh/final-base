@@ -540,125 +540,134 @@ export default function Servicos() {
             ))}
           </TabsContent>
 
-          <TabsContent value="vip" className="space-y-4 mt-0">
-            {/* ── VIP Hero Banner ── */}
+          <TabsContent value="vip" className="space-y-5 mt-0">
+            {/* ── Como funciona ── */}
             <div
-              className="relative overflow-hidden rounded-2xl p-5"
+              className="rounded-2xl p-5"
               style={{
                 background: 'linear-gradient(135deg, hsl(43, 60%, 15%) 0%, hsl(38, 50%, 22%) 40%, hsl(48, 70%, 30%) 100%)',
                 border: '1px solid hsl(43, 60%, 35%)',
               }}
             >
-              {/* Decorative glow */}
-              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.15), transparent)' }} />
-              <div className="absolute -left-4 -bottom-4 h-20 w-20 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.08), transparent)' }} />
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-4">
+                <Crown className="h-6 w-6" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                <div>
+                  <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                    Como funciona o VIP?
+                  </h2>
+                  <p className="text-xs" style={{ color: 'hsl(43, 40%, 55%)' }}>
+                    Área exclusiva — não se compra, se conquista
+                  </p>
+                </div>
+                {tier !== 'none' && (
                   <div
-                    className="h-12 w-12 rounded-xl flex items-center justify-center"
-                    style={{ background: 'hsla(43, 60%, 40%, 0.3)', border: '1px solid hsla(43, 60%, 50%, 0.3)' }}
+                    className="ml-auto px-3 py-1 rounded-full text-xs font-extrabold animate-pulse"
+                    style={{
+                      background: tier === 'super_vip'
+                        ? 'linear-gradient(135deg, hsl(43, 90%, 50%), hsl(38, 80%, 40%))'
+                        : 'linear-gradient(135deg, hsl(43, 60%, 40%), hsl(38, 50%, 30%))',
+                      color: 'hsl(43, 90%, 95%)',
+                      boxShadow: tier === 'super_vip'
+                        ? '0 0 20px hsla(43, 90%, 50%, 0.4)'
+                        : '0 0 12px hsla(43, 60%, 40%, 0.3)',
+                    }}
                   >
-                    <Crown className="h-6 w-6" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                    {tierLabel}
                   </div>
+                )}
+              </div>
+
+              {/* Explicação passo a passo */}
+              <div className="space-y-3 mb-5">
+                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
+                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>1</div>
                   <div>
-                    <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
-                      Área VIP
-                    </h2>
-                    <p className="text-[11px]" style={{ color: 'hsl(43, 40%, 55%)' }}>
-                      Exclusivo — não se compra, se conquista
-                    </p>
+                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Faça serviços durante a semana</p>
+                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>Cada CNH, RG, CIN, Náutica ou qualquer serviço realizado conta para sua meta semanal.</p>
                   </div>
-                  {tier !== 'none' && (
-                    <div
-                      className="ml-auto px-3 py-1 rounded-full text-xs font-extrabold animate-pulse"
-                      style={{
-                        background: tier === 'super_vip'
-                          ? 'linear-gradient(135deg, hsl(43, 90%, 50%), hsl(38, 80%, 40%))'
-                          : 'linear-gradient(135deg, hsl(43, 60%, 40%), hsl(38, 50%, 30%))',
-                        color: 'hsl(43, 90%, 95%)',
-                        boxShadow: tier === 'super_vip'
-                          ? '0 0 20px hsla(43, 90%, 50%, 0.4)'
-                          : '0 0 12px hsla(43, 60%, 40%, 0.3)',
-                      }}
-                    >
-                      {tierLabel}
+                </div>
+                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
+                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>2</div>
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Bata a meta e suba de nível</p>
+                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>50 serviços na semana = VIP. 100 serviços na semana = Super VIP. Simples assim.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-lg p-3" style={{ background: 'hsla(0, 0%, 100%, 0.04)' }}>
+                  <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-extrabold text-xs" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 90%, 70%)' }}>3</div>
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: 'hsl(43, 80%, 80%)' }}>Pague menos por cada serviço</p>
+                    <p className="text-[11px]" style={{ color: 'hsl(43, 30%, 55%)' }}>Quanto maior seu nível, menos créditos você gasta. Todos os serviços VIP ficam mais baratos.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabela comparativa */}
+              <div className="rounded-xl overflow-hidden" style={{ border: '1px solid hsla(43, 50%, 35%, 0.4)' }}>
+                <div className="grid grid-cols-4 text-center text-[11px] font-bold" style={{ background: 'hsla(43, 50%, 25%, 0.5)' }}>
+                  <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Nível</div>
+                  <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Meta Semanal</div>
+                  <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Custo/Serviço</div>
+                  <div className="p-2" style={{ color: 'hsl(43, 60%, 60%)' }}>Economia</div>
+                </div>
+                {[
+                  { label: 'Normal', meta: '—', cost: '4 cred.', save: '—', active: tier === 'none' },
+                  { label: 'VIP', meta: '50/sem', cost: '3 cred.', save: '-25%', active: tier === 'vip' },
+                  { label: 'Super VIP', meta: '100/sem', cost: '2 cred.', save: '-50%', active: tier === 'super_vip' },
+                ].map((row, i) => (
+                  <div
+                    key={row.label}
+                    className="grid grid-cols-4 text-center text-[11px]"
+                    style={{
+                      background: row.active
+                        ? 'linear-gradient(90deg, hsla(43, 70%, 45%, 0.25), hsla(43, 60%, 30%, 0.15))'
+                        : i % 2 === 0 ? 'hsla(0, 0%, 100%, 0.02)' : 'transparent',
+                      borderTop: '1px solid hsla(43, 40%, 30%, 0.2)',
+                    }}
+                  >
+                    <div className="p-2.5 font-bold" style={{ color: row.active ? 'hsl(43, 90%, 80%)' : 'hsl(0, 0%, 60%)' }}>
+                      {row.label} {row.active && '●'}
                     </div>
-                  )}
-                </div>
+                    <div className="p-2.5" style={{ color: row.active ? 'hsl(43, 70%, 70%)' : 'hsl(0, 0%, 50%)' }}>{row.meta}</div>
+                    <div className="p-2.5 font-bold" style={{ color: row.active ? 'hsl(43, 90%, 75%)' : 'hsl(0, 0%, 55%)' }}>{row.cost}</div>
+                    <div className="p-2.5 font-bold" style={{ color: row.save !== '—' ? 'hsl(120, 60%, 55%)' : 'hsl(0, 0%, 40%)' }}>{row.save}</div>
+                  </div>
+                ))}
+              </div>
 
-                {/* Progress bars */}
-                <div className="space-y-3 mt-4">
-                  <VipProgressBar current={weeklyServices} target={50} label="VIP — 50 serviços/semana" color="hsl(43, 70%, 55%)" />
-                  <VipProgressBar current={weeklyServices} target={100} label="SUPER VIP — 100 serviços/semana" color="hsl(43, 90%, 65%)" />
-                </div>
-
-                {/* Pricing breakdown */}
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  {[
-                    { label: 'Normal', credits: 4, active: tier === 'none' },
-                    { label: 'VIP', credits: 3, active: tier === 'vip' },
-                    { label: 'Super VIP', credits: 2, active: tier === 'super_vip' },
-                  ].map((t) => (
-                    <div
-                      key={t.label}
-                      className="rounded-lg p-2.5 text-center transition-all"
-                      style={{
-                        background: t.active
-                          ? 'linear-gradient(135deg, hsla(43, 70%, 45%, 0.4), hsla(43, 60%, 30%, 0.3))'
-                          : 'hsla(0, 0%, 100%, 0.04)',
-                        border: t.active
-                          ? '1px solid hsla(43, 70%, 50%, 0.5)'
-                          : '1px solid hsla(0, 0%, 100%, 0.06)',
-                        boxShadow: t.active ? '0 0 15px hsla(43, 80%, 50%, 0.15)' : 'none',
-                      }}
-                    >
-                      <div className="text-[10px] font-bold mb-0.5" style={{ color: t.active ? 'hsl(43, 90%, 75%)' : 'hsla(0, 0%, 100%, 0.4)' }}>
-                        {t.label}
-                      </div>
-                      <div className="text-lg font-extrabold" style={{ color: t.active ? 'hsl(43, 90%, 80%)' : 'hsla(0, 0%, 100%, 0.25)' }}>
-                        {t.credits}
-                      </div>
-                      <div className="text-[9px]" style={{ color: t.active ? 'hsl(43, 50%, 60%)' : 'hsla(0, 0%, 100%, 0.2)' }}>
-                        créditos/serviço
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="text-[10px] mt-3 text-center" style={{ color: 'hsl(43, 40%, 50%)' }}>
-                  Bata a meta semanal de serviços feitos para desbloquear seu nível VIP
-                </p>
+              {/* Progress bars */}
+              <div className="space-y-3 mt-5">
+                <p className="text-[11px] font-bold" style={{ color: 'hsl(43, 70%, 65%)' }}>Seu progresso esta semana:</p>
+                <VipProgressBar current={weeklyServices} target={50} label="VIP — 50 serviços/semana" color="hsl(43, 70%, 55%)" />
+                <VipProgressBar current={weeklyServices} target={100} label="SUPER VIP — 100 serviços/semana" color="hsl(43, 90%, 65%)" />
               </div>
             </div>
 
             {/* ── CNH NA MESA — Featured ── */}
             <div className="space-y-2">
-              <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                <Zap className="h-4 w-4" style={{ color: 'hsl(43, 90%, 65%)' }} />
+              <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
                 Serviços VIP Exclusivos
               </h3>
               <VipServiceCard service={cnhNaMesa} tier={tier} hasCredits={hasCredits} />
             </div>
 
-            {/* ── Docs em Foto (moved from Nacional) ── */}
+            {/* ── Docs em Foto ── */}
             <div className="space-y-2">
-              <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                <Camera className="h-4 w-4" style={{ color: 'hsl(43, 90%, 65%)' }} />
+              <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
                 Documentos em Foto
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1 flex items-center gap-1.5" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    <FileText className="h-3 w-3" /> Documentos
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    Documentos
                   </h4>
                   {vipFotoServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
                     <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1 flex items-center gap-1.5" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    <CreditCard className="h-3 w-3" /> Cartões de Crédito
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    Cartões de Crédito
                   </h4>
                   <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(43 30% 25%) transparent' }}>
                     {vipFotoServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
@@ -701,44 +710,21 @@ export default function Servicos() {
               </div>
             </div>
 
-            {/* ── Motivational Box ── */}
+            {/* ── Motivacional ── */}
             <div
-              className="relative overflow-hidden rounded-xl p-4"
+              className="rounded-xl p-4"
               style={{
                 background: 'linear-gradient(135deg, hsla(43, 50%, 15%, 0.5) 0%, hsla(260, 30%, 15%, 0.3) 100%)',
                 border: '1px solid hsla(43, 40%, 30%, 0.3)',
               }}
             >
-              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.06), transparent)' }} />
-
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'hsla(43, 50%, 30%, 0.3)' }}>
-                  <Sparkles className="h-5 w-5" style={{ color: 'hsl(43, 80%, 65%)' }} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-sm" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                    Em breve, milhares de serviços adicionais
-                  </h4>
-                  <p className="text-[11px] leading-relaxed mt-1" style={{ color: 'hsla(43, 30%, 55%, 0.8)' }}>
-                    Serviços super exclusivos estão chegando. Imagina fazer seus docs sem sentar no computador...
-                    A área VIP é algo exclusivo da base. Não se compra — se conquista batendo metas.
-                  </p>
-                  <div className="flex items-center gap-4 mt-3">
-                    <div className="flex items-center gap-1.5">
-                      <Target className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
-                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Bata metas</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Trophy className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
-                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Desbloqueie VIP</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
-                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Pague menos</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <h4 className="font-bold text-sm mb-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                Em breve, milhares de serviços adicionais
+              </h4>
+              <p className="text-[11px] leading-relaxed" style={{ color: 'hsla(43, 30%, 55%, 0.8)' }}>
+                Serviços super exclusivos estão chegando. Imagina fazer seus docs sem sentar no computador...
+                A área VIP é algo exclusivo da base. Não se compra — se conquista batendo metas.
+              </p>
             </div>
           </TabsContent>
         </Tabs>
