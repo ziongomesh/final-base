@@ -65,7 +65,12 @@ function LazyFallback() {
   return <LoadingScreen />;
 }
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    document.title = 'DataSistemas';
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
       <TooltipProvider>
