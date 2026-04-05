@@ -247,25 +247,27 @@ export default function ComprovanteBradesco() {
           <div className="space-y-2">
             {/* Dados Gerais */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Receipt className="h-4 w-4 text-primary" />
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs flex items-center gap-2">
+                  <Receipt className="h-3.5 w-3.5 text-primary" />
                   Dados Gerais
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Data e Hora</Label>
-                  <div className="flex gap-2">
-                    <Input value={formData.dataHora} onChange={e => updateField('dataHora', e.target.value)} placeholder="23/07/2025 - 18:25:11" className="text-xs" />
-                    <Button variant="outline" size="sm" onClick={definirDataAtual}>Agora</Button>
+              <CardContent className="space-y-2 px-3 pb-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Data e Hora</Label>
+                    <div className="flex gap-1">
+                      <Input value={formData.dataHora} onChange={e => updateField('dataHora', e.target.value)} placeholder="23/07/2025 - 18:25:11" className="text-xs h-8" />
+                      <Button variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={definirDataAtual}>Agora</Button>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Número de Controle</Label>
-                  <div className="flex gap-2">
-                    <Input value={formData.numeroControle} onChange={e => updateField('numeroControle', e.target.value)} className="text-xs font-mono" />
-                    <Button variant="outline" size="sm" onClick={() => updateField('numeroControle', generateControle())}>Gerar</Button>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Número de Controle</Label>
+                    <div className="flex gap-1">
+                      <Input value={formData.numeroControle} onChange={e => updateField('numeroControle', e.target.value)} className="text-xs font-mono h-8" />
+                      <Button variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={() => updateField('numeroControle', generateControle())}>Gerar</Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
