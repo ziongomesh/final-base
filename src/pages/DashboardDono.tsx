@@ -178,6 +178,58 @@ export default function DashboardDono() {
   const [editingNoticia, setEditingNoticia] = useState<Noticia | null>(null);
   const [savingNoticia, setSavingNoticia] = useState(false);
 
+  // Sub recharge plans state
+  interface SubPlan { id?: number; admin_id?: number; name: string; credits: number; base_credits: number; bonus: number; total: number; badge: string; badge_color: string; sort_order: number; is_active: boolean; }
+  const [subPlans, setSubPlans] = useState<SubPlan[]>([]);
+  const [subPlanForm, setSubPlanForm] = useState<SubPlan>({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+  const [editingSubPlan, setEditingSubPlan] = useState<SubPlan | null>(null);
+  const [savingSubPlan, setSavingSubPlan] = useState(false);
+  const [loadingSubPlans, setLoadingSubPlans] = useState(false);
+
+  const fetchSubPlans = async () => {
+    if (!admin) return;
+    setLoadingSubPlans(true);
+    try {
+      const { data } = await supabase.functions.invoke('manage-sub-plans', {
+        body: { action: 'list', admin_id: admin.id, session_token: admin.session_token }
+      });
+      if (data?.plans) setSubPlans(data.plans);
+    } catch (e) { console.error('Erro ao buscar planos:', e); }
+    finally { setLoadingSubPlans(false); }
+  };
+
+  const handleSaveSubPlan = async () => {
+    if (!admin || !subPlanForm.name || !subPlanForm.credits || !subPlanForm.total) {
+      toast.error('Preencha nome, créditos e valor');
+      return;
+    }
+    setSavingSubPlan(true);
+    try {
+      const action = editingSubPlan ? 'update' : 'create';
+      const plan = editingSubPlan ? { ...subPlanForm, id: editingSubPlan.id } : subPlanForm;
+      const { data, error } = await supabase.functions.invoke('manage-sub-plans', {
+        body: { action, admin_id: admin.id, session_token: admin.session_token, plan }
+      });
+      if (error) throw error;
+      toast.success(editingSubPlan ? 'Plano atualizado!' : 'Plano criado!');
+      setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+      setEditingSubPlan(null);
+      fetchSubPlans();
+    } catch (e: any) { toast.error(e.message || 'Erro ao salvar plano'); }
+    finally { setSavingSubPlan(false); }
+  };
+
+  const handleDeleteSubPlan = async (planId: number) => {
+    if (!admin) return;
+    try {
+      await supabase.functions.invoke('manage-sub-plans', {
+        body: { action: 'delete', admin_id: admin.id, session_token: admin.session_token, plan_id: planId }
+      });
+      toast.success('Plano removido!');
+      fetchSubPlans();
+    } catch (e: any) { toast.error('Erro ao remover plano'); }
+  };
+
   useEffect(() => {
     if (admin && (role === 'dono' || role === 'sub')) fetchAllData();
   }, [admin, role]);
