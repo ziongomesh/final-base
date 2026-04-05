@@ -155,7 +155,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
     setCredits(0);
     setCreditsTransf(0);
-    localStorage.removeItem('admin');
+    
+    // Limpar todo o cache do navegador ao deslogar
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Limpar caches do Service Worker / Cache API se existirem
+    if ('caches' in window) {
+      caches.keys().then(names => names.forEach(name => caches.delete(name)));
+    }
+    
     toast.info(`Até logo, ${nome || 'usuário'}!`, { description: 'Sessão encerrada' });
   };
 
