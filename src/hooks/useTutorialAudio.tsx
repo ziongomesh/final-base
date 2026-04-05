@@ -41,7 +41,6 @@ export function useTutorialAudio(isDemoMode: boolean) {
       setTimeout(() => {
         speakAndTrack(CNH_DEMO_INTRO, 'k3f7zOv6LF88v78QHCNh');
       }, 1000);
-      }, 1000);
     }
     return () => {
       stopCurrentAudio();
