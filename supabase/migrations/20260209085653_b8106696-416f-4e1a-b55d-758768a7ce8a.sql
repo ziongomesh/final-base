@@ -1,1 +1,0 @@
-ALTER TABLE public.admins ADD COLUMN telefone text DEFAULT NULL;

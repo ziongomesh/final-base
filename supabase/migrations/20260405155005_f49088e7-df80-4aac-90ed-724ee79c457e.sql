@@ -1,1 +1,0 @@
-ALTER TABLE public.admins ADD COLUMN tutorial_completed boolean NOT NULL DEFAULT false;
