@@ -701,9 +701,24 @@ export default function CnhDigital() {
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">CNH Digital 2026</h1>
             <p className="text-sm text-muted-foreground">Preencha os dados para gerar a CNH Digital</p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CreditCard className="h-4 w-4" />
-            <span>Saldo: <strong className="text-foreground">{admin?.creditos ?? 0}</strong> créditos</span>
+          <div className="flex items-center gap-3">
+            {/* Audio toggle for tutorial */}
+            <button
+              onClick={toggleAudio}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                audioActive 
+                  ? 'bg-primary/10 border-primary/30 text-primary' 
+                  : 'bg-muted border-border text-muted-foreground'
+              }`}
+              title={audioActive ? 'Desativar narração' : 'Ativar narração'}
+            >
+              {audioActive ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+              {audioActive ? 'Áudio ON' : 'Áudio OFF'}
+            </button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CreditCard className="h-4 w-4" />
+              <span>Saldo: <strong className="text-foreground">{admin?.creditos ?? 0}</strong> créditos</span>
+            </div>
           </div>
         </div>
 
