@@ -26,7 +26,7 @@ export default function ComprovanteBradesco() {
   const [generating, setGenerating] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
-  const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
+  const [tipoChavePix, setTipoChavePix] = useState<string>('email');
 
   const generateControle = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -38,19 +38,35 @@ export default function ComprovanteBradesco() {
     return prefix + datePart + suffix;
   };
 
+  const generateAutenticacao = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#*?@';
+    const groups: string[] = [];
+    for (let g = 0; g < 25; g++) {
+      let word = '';
+      const len = g >= 22 ? 8 : 8;
+      for (let i = 0; i < len; i++) word += chars[Math.floor(Math.random() * chars.length)];
+      groups.push(word);
+    }
+    const line1 = groups.slice(0, 9).join(' ');
+    const line2 = groups.slice(9, 18).join(' ');
+    const line3 = groups.slice(18, 23).join(' ') + ' ' + String(Math.floor(Math.random() * 99999999)).padStart(8, '0') + ' ' + String(Math.floor(Math.random() * 99999999)).padStart(8, '0') + ' 0';
+    return `${line1}\n${line2}\n${line3}`;
+  };
+
   const [formData, setFormData] = useState<BradescoFormData>({
     numeroControle: generateControle(),
     dataHora: '',
     valor: '',
     nomePagador: '',
     cpfPagador: '',
-    agenciaConta: '',
+    instituicaoPagador: 'Bradesco S/A',
+    debitarDa: 'Conta-Corrente',
     nomeRecebedor: '',
     cpfRecebedor: '',
     instituicaoRecebedor: '',
     chavePix: '',
-    idTransacao: '',
-    autenticacao: '',
+    transacaoCelular: 'Transação concluída pelo BRADESCO CELULAR',
+    autenticacao: generateAutenticacao(),
   });
 
   const updateField = useCallback((key: keyof BradescoFormData, value: string) => {
@@ -74,29 +90,6 @@ export default function ComprovanteBradesco() {
     const min = String(now.getMinutes()).padStart(2, '0');
     const seg = String(now.getSeconds()).padStart(2, '0');
     updateField('dataHora', `${dia}/${mes}/${ano} - ${hora}:${min}:${seg}`);
-  }, [updateField]);
-
-  const gerarIdTransacao = useCallback(() => {
-    const now = new Date();
-    const y = now.getFullYear();
-    const mo = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const h = String(now.getHours()).padStart(2, '0');
-    const mi = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    const hex = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-    const id = `E60746948${y}${mo}${d}${h}${mi}${s}${hex()}${hex()}`;
-    updateField('idTransacao', id.slice(0, 35));
-  }, [updateField]);
-
-  const gerarAutenticacao = useCallback(() => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 32; i++) {
-      if (i > 0 && i % 4 === 0) code += '.';
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    updateField('autenticacao', code);
   }, [updateField]);
 
   const handleGerarPdf = async () => {
@@ -181,66 +174,147 @@ export default function ComprovanteBradesco() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Form */}
           <div className="space-y-4">
+            {/* Dados Gerais */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Receipt className="h-4 w-4 text-primary" />
-                  Dados do Comprovante
+                  Dados Gerais
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Número de Controle</Label>
+                  <Label className="text-xs">Data e Hora</Label>
                   <div className="flex gap-2">
-                    <Input
-                      value={formData.numeroControle}
-                      onChange={e => updateField('numeroControle', e.target.value)}
-                      className="text-xs font-mono"
-                    />
-                    <Button variant="outline" size="sm" onClick={() => updateField('numeroControle', generateControle())}>
-                      Gerar
-                    </Button>
+                    <Input value={formData.dataHora} onChange={e => updateField('dataHora', e.target.value)} placeholder="23/07/2025 - 18:25:11" className="text-xs" />
+                    <Button variant="outline" size="sm" onClick={definirDataAtual}>Agora</Button>
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Nome do Pagador</Label>
-                  <Input
-                    value={formData.nomePagador}
-                    onChange={e => updateField('nomePagador', e.target.value.toUpperCase())}
-                    placeholder="NOME COMPLETO"
-                    className="text-xs"
-                  />
+                  <Label className="text-xs">Número de Controle</Label>
+                  <div className="flex gap-2">
+                    <Input value={formData.numeroControle} onChange={e => updateField('numeroControle', e.target.value)} className="text-xs font-mono" />
+                    <Button variant="outline" size="sm" onClick={() => updateField('numeroControle', generateControle())}>Gerar</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dados de quem pagou */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Dados de quem pagou</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Nome</Label>
+                  <Input value={formData.nomePagador} onChange={e => updateField('nomePagador', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">CPF do Pagador</Label>
-                  <Input
-                    value={formData.cpfPagador}
-                    onChange={e => updateField('cpfPagador', handleCpfInput(e.target.value))}
-                    placeholder="***.000.000-**"
-                    className="text-xs"
-                    maxLength={14}
-                  />
+                  <Label className="text-xs">CPF</Label>
+                  <Input value={formData.cpfPagador} onChange={e => updateField('cpfPagador', handleCpfInput(e.target.value))} placeholder="***.000.000-**" className="text-xs" maxLength={14} />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Instituição</Label>
+                  <Input value={formData.instituicaoPagador} onChange={e => updateField('instituicaoPagador', e.target.value)} placeholder="Bradesco S/A" className="text-xs" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dados da Transação */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Dados da Transação</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs">Valor</Label>
-                  <Input
-                    value={formData.valor}
-                    onChange={e => updateField('valor', e.target.value)}
-                    placeholder="6000,00"
-                    className="text-xs"
-                  />
+                  <Input value={formData.valor} onChange={e => updateField('valor', e.target.value)} placeholder="6000,00" className="text-xs" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Data e Hora</Label>
+                  <Label className="text-xs">Debitar da</Label>
+                  <Input value={formData.debitarDa} onChange={e => updateField('debitarDa', e.target.value)} placeholder="Conta-Corrente" className="text-xs" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dados de quem recebeu */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Dados de quem recebeu</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Nome</Label>
+                  <Input value={formData.nomeRecebedor} onChange={e => updateField('nomeRecebedor', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">CPF</Label>
+                  <Input value={formData.cpfRecebedor} onChange={e => updateField('cpfRecebedor', handleCpfInput(e.target.value))} placeholder="***.000.000-**" className="text-xs" maxLength={14} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Instituição</Label>
+                  <Select value={formData.instituicaoRecebedor} onValueChange={v => updateField('instituicaoRecebedor', v)}>
+                    <SelectTrigger className="text-xs"><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
+                    <SelectContent>
+                      {BANCOS.map(b => <SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Tipo da Chave Pix</Label>
+                  <Select value={tipoChavePix} onValueChange={setTipoChavePix}>
+                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpf">CPF</SelectItem>
+                      <SelectItem value="telefone">Telefone</SelectItem>
+                      <SelectItem value="email">E-mail</SelectItem>
+                      <SelectItem value="cnpj">CNPJ</SelectItem>
+                      <SelectItem value="aleatoria">Chave Aleatória</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Chave Pix</Label>
                   <Input
-                    value={formData.dataHora}
-                    onChange={e => updateField('dataHora', e.target.value)}
-                    placeholder="23/07/2025 18:25:05"
+                    value={formData.chavePix}
+                    onChange={e => updateField('chavePix', tipoChavePix === 'email' ? e.target.value.toLowerCase() : e.target.value)}
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '(00) 00000-0000' : 'Chave Pix'}
                     className="text-xs"
                   />
                 </div>
               </CardContent>
             </Card>
+
+            {/* Rodapé e Autenticação */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Rodapé</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Mensagem de transação</Label>
+                  <Input value={formData.transacaoCelular} onChange={e => updateField('transacaoCelular', e.target.value)} className="text-xs" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Autenticação</Label>
+                  <div className="flex gap-2">
+                    <textarea
+                      value={formData.autenticacao}
+                      onChange={e => updateField('autenticacao', e.target.value)}
+                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      rows={3}
+                    />
+                    <Button variant="outline" size="sm" onClick={() => updateField('autenticacao', generateAutenticacao())}>Gerar</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Botão Gerar */}
+            <Button onClick={handleGerarPdf} disabled={generating} className="w-full" size="lg">
+              {generating ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</> : <><FileDown className="h-4 w-4 mr-2" /> Gerar Comprovante (1 crédito)</>}
+            </Button>
           </div>
 
           {/* Desktop Preview */}
