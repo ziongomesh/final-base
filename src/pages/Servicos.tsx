@@ -550,12 +550,12 @@ export default function Servicos() {
                 </p>
               </div>
               {/* Right - Image Preview */}
-              <div className="md:w-[240px] w-full h-48 md:h-auto shrink-0 relative p-3">
+              <div className="md:w-[300px] w-full shrink-0 p-4 flex items-center justify-center">
                 <img
                   src={vipBanner}
                   alt="Preview Área Exclusiva"
-                  className="w-full h-full object-contain rounded-lg drop-shadow-2xl"
-                  style={{ filter: 'drop-shadow(0 8px 24px hsla(43, 80%, 50%, 0.3))' }}
+                  className="rounded-xl shadow-2xl max-h-[320px] w-auto"
+                  style={{ filter: 'drop-shadow(0 12px 32px hsla(43, 80%, 50%, 0.35))' }}
                 />
               </div>
             </div>
