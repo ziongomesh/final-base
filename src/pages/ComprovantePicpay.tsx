@@ -168,34 +168,28 @@ export default function ComprovantePicpay() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 animate-fade-in">
+      <div className="space-y-3 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Comprovante PIX PicPay</h1>
-            <p className="text-muted-foreground text-sm">Preencha os dados e gere o comprovante</p>
+            <h1 className="text-xl font-bold text-foreground">Comprovante PIX PicPay</h1>
+            <p className="text-muted-foreground text-xs">Preencha os dados e gere o comprovante</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setShowMobilePreview(true)}
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            Preview
+          <Button variant="outline" size="sm" className="lg:hidden" onClick={() => setShowMobilePreview(true)}>
+            <Eye className="h-4 w-4 mr-1" /> Preview
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Form */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Receipt className="h-4 w-4 text-primary" />
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs flex items-center gap-2">
+                  <Receipt className="h-3.5 w-3.5 text-primary" />
                   Dados do Comprovante
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2 px-3 pb-3">
                 {/* 1. Data e Hora */}
                 <div>
                   <Label className="text-xs">Data e Hora</Label>
