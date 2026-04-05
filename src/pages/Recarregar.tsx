@@ -1277,6 +1277,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
               </div>
 
               {/* Super Promoções */}
+              {(customPlans.length === 0 || customPromoPlans.length > 0) && (
               <div className="pt-2 border-t border-border/50">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Zap className="h-3.5 w-3.5 text-amber-500" />
@@ -1284,7 +1285,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] border-0 px-1.5 py-0">LIMITADO</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {RESELLER_PROMO_PACKAGES.map((pkg) => {
+                  {(customPromoPlans.length > 0 ? customPromoPlans : RESELLER_PROMO_PACKAGES).map((pkg) => {
                     const bonusValue = pkg.bonus * RESELLER_UNIT_PRICE;
                     const isSelected = selectedPkg?.name === pkg.name;
                     const savingsPercent = Math.round((1 - pkg.total / (pkg.credits * RESELLER_UNIT_PRICE)) * 100);
