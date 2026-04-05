@@ -408,6 +408,33 @@ export type Database = {
           },
         ]
       }
+      platform_settings: {
+        Row: {
+          credit_packages: Json
+          id: number
+          recarga_em_dobro: boolean
+          reseller_credits: number
+          reseller_price: number
+          updated_at: string
+        }
+        Insert: {
+          credit_packages?: Json
+          id?: number
+          recarga_em_dobro?: boolean
+          reseller_credits?: number
+          reseller_price?: number
+          updated_at?: string
+        }
+        Update: {
+          credit_packages?: Json
+          id?: number
+          recarga_em_dobro?: boolean
+          reseller_credits?: number
+          reseller_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       price_tiers: {
         Row: {
           created_at: string
