@@ -951,12 +951,6 @@ export default function AtestadoHapvida() {
         </DialogContent>
       </Dialog>
 
-      <CpfDuplicateModal
-        open={cpfCheck.showDuplicateModal}
-        onClose={cpfCheck.dismissModal}
-        result={cpfCheck.cpfDuplicate}
-        serviceLabel="Atestado Hapvida"
-      />
     </DashboardLayout>
   );
 }
