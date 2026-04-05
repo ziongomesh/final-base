@@ -135,7 +135,7 @@ async function drawTemplate(ctx: CanvasRenderingContext2D, cnhDefinitiva: string
   }
 }
 
-async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData): Promise<void> {
+async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData, s: number = 1): Promise<void> {
   ctx.textAlign = 'left';
 
   const formattedCpf = (data.cpf || '').replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -157,11 +157,11 @@ async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData): Promise<
 
   await document.fonts.ready;
 
-  Object.entries(CNH_CONFIG.fields).forEach(([field, config]) => {
-    ctx.font = config.font;
+  Object.entries(CNH_FIELDS).forEach(([field, config]) => {
+    ctx.font = `bold ${config.fontSize * s}px Asul, Arial, sans-serif`;
     ctx.fillStyle = config.color || '#373435';
     const text = displayData[field as keyof typeof displayData] || '';
-    ctx.fillText(text, config.x, config.y);
+    ctx.fillText(text, config.x * s, config.y * s);
   });
 }
 
