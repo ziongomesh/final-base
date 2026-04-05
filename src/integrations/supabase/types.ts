@@ -888,26 +888,50 @@ export type Database = {
         Args: { target_id: number; viewer_id: number }
         Returns: boolean
       }
-      create_master: {
-        Args: {
-          p_creator_id: number
-          p_email: string
-          p_key: string
-          p_nome: string
-          p_session_token: string
-        }
-        Returns: number
-      }
-      create_reseller: {
-        Args: {
-          p_creator_id: number
-          p_email: string
-          p_key: string
-          p_nome: string
-          p_session_token: string
-        }
-        Returns: number
-      }
+      create_master:
+        | {
+            Args: {
+              p_creator_id: number
+              p_email: string
+              p_key: string
+              p_nome: string
+              p_session_token: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_creator_id: number
+              p_creditos?: number
+              p_email: string
+              p_key: string
+              p_nome: string
+              p_session_token: string
+            }
+            Returns: number
+          }
+      create_reseller:
+        | {
+            Args: {
+              p_creator_id: number
+              p_email: string
+              p_key: string
+              p_nome: string
+              p_session_token: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_creator_id: number
+              p_creditos?: number
+              p_email: string
+              p_key: string
+              p_nome: string
+              p_session_token: string
+            }
+            Returns: number
+          }
       get_admin_balance: {
         Args: { p_admin_id: number; p_session_token: string }
         Returns: number
