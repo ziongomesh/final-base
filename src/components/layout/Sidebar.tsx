@@ -70,6 +70,38 @@ export function Sidebar() {
         </span>
       </div>
 
+      {/* Profile Card */}
+      {firstName && (
+        <div className="mx-4 mb-4 rounded-xl p-3 flex items-center gap-3"
+          style={{
+            background: 'linear-gradient(135deg, hsl(210 30% 12%) 0%, hsl(215 35% 15%) 100%)',
+            border: '1px solid hsl(210 40% 18% / 0.6)',
+            boxShadow: '0 2px 8px hsl(210 30% 5% / 0.4)',
+          }}
+        >
+          <div
+            className="h-10 w-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
+            style={{
+              background: admin?.profile_photo ? 'transparent' : 'linear-gradient(135deg, hsl(201 55% 45%), hsl(201 55% 35%))',
+              border: '2px solid hsl(201 55% 59% / 0.3)',
+              boxShadow: '0 0 12px hsl(201 55% 59% / 0.15)',
+            }}
+          >
+            {admin?.profile_photo ? (
+              <img src={admin.profile_photo} alt={firstName} className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-sm font-bold" style={{ color: 'hsl(201 55% 85%)' }}>
+                {firstName.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-semibold text-foreground truncate">{firstName}</p>
+            <p className="text-[10px] font-medium capitalize" style={{ color: 'hsl(201 55% 59%)' }}>{role}</p>
+          </div>
+        </div>
+      )}
+
       {/* Section label */}
       <div className="px-6 pb-3">
         <div className="flex items-center gap-2">
