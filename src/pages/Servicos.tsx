@@ -27,7 +27,7 @@ interface Service {
   specs?: string[];
   hasQr?: boolean;
   pdfGroup?: 'comprovante' | 'certidao';
-  atestadoGroup?: 'privado' | 'publico';
+  atestadoGroup?: 'privado' | 'publico' | 'receita' | 'laudo';
   fotoGroup?: 'documentos' | 'cartoes';
 }
 
@@ -93,15 +93,23 @@ const categories: ServiceCategory[] = [
     ],
   },
   {
-    title: 'Atestados',
+    title: 'Hospital',
     icon: Stethoscope,
     services: [
+      // Atestados - Privado
       { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
       { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      // Atestados - Público
       { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-umpa', name: 'UMPA', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-ubs', name: 'UBS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-clinic-medical', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-brain', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      // Receitas - Em Breve
+      { id: 'receita-simples', name: 'RECEITA SIMPLES', description: 'Receita médica simples', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-prescription', specs: ['PDF: Sim'], atestadoGroup: 'receita' },
+      { id: 'receita-controlada', name: 'RECEITA CONTROLADA', description: 'Receita médica controlada', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-prescription-bottle-medical', specs: ['PDF: Sim'], atestadoGroup: 'receita' },
+      // Laudos - Em Breve
+      { id: 'laudo-medico', name: 'LAUDO MÉDICO', description: 'Laudo médico digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-medical', specs: ['PDF: Sim'], atestadoGroup: 'laudo' },
+      { id: 'laudo-exame', name: 'LAUDO DE EXAME', description: 'Laudo de exame laboratorial', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-flask-vial', specs: ['PDF: Sim'], atestadoGroup: 'laudo' },
     ],
   },
 ];
@@ -225,13 +233,15 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const activeCount = cat.services.filter(s => s.available).length;
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
-  const isAtestados = cat.title === 'Atestados';
+  const isHospital = cat.title === 'Hospital';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
   const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
+  const receitas = cat.services.filter(s => s.atestadoGroup === 'receita');
+  const laudos = cat.services.filter(s => s.atestadoGroup === 'laudo');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -249,11 +259,11 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isAtestados ? (
+          {isHospital ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                  <Lock className="h-3 w-3" /> Privados
+                  <Lock className="h-3 w-3" /> Atestados Privados
                 </h4>
                 {sortGroup(atestadoPrivados).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
@@ -261,12 +271,32 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
               </div>
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                  <Globe className="h-3 w-3" /> Públicos
+                  <Globe className="h-3 w-3" /> Atestados Públicos
                 </h4>
                 {sortGroup(atestadoPublicos).map((service) => (
                   <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
                 ))}
               </div>
+              {receitas.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <i className="fa-solid fa-prescription text-[10px]" /> Receitas
+                  </h4>
+                  {sortGroup(receitas).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
+              {laudos.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
+                    <i className="fa-solid fa-file-medical text-[10px]" /> Laudos
+                  </h4>
+                  {sortGroup(laudos).map((service) => (
+                    <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
+                  ))}
+                </div>
+              )}
             </div>
           ) : isPdfCategory && certidoes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
