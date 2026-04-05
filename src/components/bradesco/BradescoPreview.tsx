@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import baseBradesco from '@/assets/base-bradesco.png';
 
 export interface BradescoFormData {
@@ -126,34 +127,13 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormDat
   }
 }
 
-function drawWatermarks(ctx: CanvasRenderingContext2D) {
-  ctx.save();
-  ctx.globalAlpha = 0.08;
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 120px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  const text = 'DATA SISTEMAS';
-  const spacingX = 350;
-  const spacingY = 250;
-
-  for (let y = -200; y < PAGE_H + 200; y += spacingY) {
-    for (let x = -200; x < PAGE_W + 200; x += spacingX) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(-Math.PI / 6);
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
-    }
-  }
-  ctx.restore();
-}
+// watermark is now drawn via logo image
 
 export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: BradescoFormData }>(
   function BradescoPreview({ formData }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [bgImage, setBgImage] = useState<HTMLImageElement | null>(null);
+    const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
     const [ready, setReady] = useState(false);
     const rafRef = useRef<number>(0);
 
@@ -188,11 +168,20 @@ export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: Brades
       let cancelled = false;
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.onload = () => { if (!cancelled) { setBgImage(img); setReady(true); } };
+      img.onload = () => { if (!cancelled) { setBgImage(img); } };
       img.onerror = () => console.error('Erro ao carregar base Bradesco');
       img.src = baseBradesco;
+
+      loadWatermarkLogo().then(logo => {
+        if (!cancelled) setLogoImage(logo);
+      });
+
       return () => { cancelled = true; };
     }, []);
+
+    useEffect(() => {
+      if (bgImage && logoImage) setReady(true);
+    }, [bgImage, logoImage]);
 
     useEffect(() => {
       if (!ready || !bgImage) return;
@@ -207,7 +196,7 @@ export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: Brades
         ctx.clearRect(0, 0, PAGE_W, PAGE_H);
         ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
         drawFormFields(ctx, formData);
-        drawWatermarks(ctx);
+        if (logoImage) drawLogoWatermarks(ctx, PAGE_W, PAGE_H, logoImage);
       });
       return () => cancelAnimationFrame(rafRef.current);
     }, [formData, ready, bgImage]);

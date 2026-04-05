@@ -1,30 +1,20 @@
+import watermarkLogo from '@/assets/watermark-logo.png';
+
 export default function WatermarkOverlay() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-10" style={{ userSelect: 'none' }}>
-      {Array.from({ length: 16 }).map((_, rowIdx) => (
-        <div
-          key={rowIdx}
-          className="absolute whitespace-nowrap"
-          style={{
-            top: `${rowIdx * 7}%`,
-            left: '-10%',
-            width: '140%',
-            transform: 'rotate(-25deg)',
-            transformOrigin: 'center center',
-          }}
-        >
-          <span
-            className="text-[11px] sm:text-sm font-bold tracking-[0.3em] uppercase"
-            style={{
-              color: 'rgba(180, 180, 180, 0.35)',
-              textShadow: '0 0 2px rgba(150,150,150,0.15)',
-              letterSpacing: '0.25em',
-            }}
-          >
-            {'DATA SISTEMAS \u00A0\u00A0 '.repeat(10)}
-          </span>
-        </div>
-      ))}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${watermarkLogo})`,
+          backgroundSize: '80px 80px',
+          backgroundRepeat: 'repeat',
+          opacity: 0.07,
+          transform: 'rotate(-25deg) scale(1.5)',
+          transformOrigin: 'center center',
+          filter: 'grayscale(100%)',
+        }}
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
@@ -130,36 +131,13 @@ function drawFormFields(ctx: CanvasRenderingContext2D, formData: PicpayFormData)
   }
 }
 
-function drawWatermarks(ctx: CanvasRenderingContext2D) {
-  ctx.save();
-  ctx.globalAlpha = 0.08;
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 120px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // Draw multiple watermarks across the entire canvas in a grid pattern
-  const text = 'DATA SISTEMAS';
-  const spacingX = 350;
-  const spacingY = 250;
-
-  for (let y = -200; y < PAGE_H + 200; y += spacingY) {
-    for (let x = -200; x < PAGE_W + 200; x += spacingX) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(-Math.PI / 6);
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
-    }
-  }
-
-  ctx.restore();
-}
+// watermark is now drawn via logo image
 
 export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
   function PicpayPreview({ formData }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [bgImage, setBgImage] = useState<HTMLImageElement | null>(null);
+    const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
     const [ready, setReady] = useState(false);
     const rafRef = useRef<number>(0);
 
@@ -197,15 +175,22 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       img.onload = () => {
         if (cancelled) return;
         setBgImage(img);
-        setReady(true);
       };
       img.onerror = () => console.error('Erro ao carregar base PicPay');
       img.src = basePicpay;
+
+      loadWatermarkLogo().then(logo => {
+        if (!cancelled) setLogoImage(logo);
+      });
 
       return () => {
         cancelled = true;
       };
     }, []);
+
+    useEffect(() => {
+      if (bgImage && logoImage) setReady(true);
+    }, [bgImage, logoImage]);
 
     useEffect(() => {
       if (!ready || !bgImage) return;
@@ -224,7 +209,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         ctx.clearRect(0, 0, PAGE_W, PAGE_H);
         ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
         drawFormFields(ctx, formData);
-        drawWatermarks(ctx);
+        if (logoImage) drawLogoWatermarks(ctx, PAGE_W, PAGE_H, logoImage);
       });
 
       return () => cancelAnimationFrame(rafRef.current);

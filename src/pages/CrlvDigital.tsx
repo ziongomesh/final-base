@@ -17,6 +17,7 @@ import {
   Car, User, Loader2, ArrowLeft, Wrench, FileText, Eye, ClipboardList, QrCode, Upload, X, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { CrlvPreview, type CrlvPreviewRef } from '@/components/crlv/CrlvPreview';
+import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import { CrlvPdfEditor } from '@/components/crlv/CrlvPdfEditor';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -770,7 +771,10 @@ export default function CrlvDigital() {
               <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-4 w-4" /> Preview em tempo real
               </h3>
-              <CrlvPreview form={form} customQrPreview={customQrPreview} showDenseQr={useDenseQr} />
+              <div className="relative">
+                <CrlvPreview form={form} customQrPreview={customQrPreview} showDenseQr={useDenseQr} />
+                <WatermarkOverlay />
+              </div>
             </div>
           </div>
           </div>
