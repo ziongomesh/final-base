@@ -1,4 +1,4 @@
-import watermarkLogo from '@/assets/watermark-logo.png';
+import watermarkPattern from '@/assets/watermark-pattern.png';
 
 export default function WatermarkOverlay() {
   return (
@@ -6,13 +6,11 @@ export default function WatermarkOverlay() {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url(${watermarkLogo})`,
-          backgroundSize: '180px 180px',
-          backgroundRepeat: 'repeat',
-          opacity: 0.07,
-          transform: 'rotate(-25deg) scale(1.8)',
-          transformOrigin: 'center center',
-          filter: 'grayscale(100%)',
+          backgroundImage: `url(${watermarkPattern})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.12,
         }}
       />
     </div>
