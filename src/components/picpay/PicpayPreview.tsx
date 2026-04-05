@@ -209,7 +209,7 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
         ctx.clearRect(0, 0, PAGE_W, PAGE_H);
         ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
         drawFormFields(ctx, formData);
-        drawWatermarks(ctx);
+        if (logoImage) drawLogoWatermarks(ctx, PAGE_W, PAGE_H, logoImage);
       });
 
       return () => cancelAnimationFrame(rafRef.current);
