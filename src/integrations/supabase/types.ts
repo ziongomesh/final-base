@@ -983,6 +983,7 @@ export type Database = {
           profile_photo: string
           rank: string
           session_token: string
+          tutorial_completed: boolean
         }[]
       }
       validate_pin: {
