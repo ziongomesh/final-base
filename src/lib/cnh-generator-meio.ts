@@ -133,18 +133,19 @@ function drawTexts(ctx: CanvasRenderingContext2D, data: CnhMeioData, s: number =
   ctx.fillText(data.estadoExtenso || '', 346 * s, 675 * s);
 }
 
-export async function generateCNHMeio(canvas: HTMLCanvasElement, data: CnhMeioData): Promise<void> {
+export async function generateCNHMeio(canvas: HTMLCanvasElement, data: CnhMeioData, scale: number = 1): Promise<void> {
   await loadFonts();
 
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Could not get canvas context');
+  const s = scale;
 
-  canvas.width = 1011;
-  canvas.height = 740;
+  canvas.width = 1011 * s;
+  canvas.height = 740 * s;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  await drawTemplate(ctx);
-  drawTexts(ctx, data);
+  await drawTemplate(ctx, s);
+  drawTexts(ctx, data, s);
 }
 
 export type { CnhMeioData };
