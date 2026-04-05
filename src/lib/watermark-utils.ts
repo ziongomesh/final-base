@@ -2,6 +2,7 @@ import watermarkPattern from '@/assets/watermark-pattern.png';
 
 let cachedPatternImage: HTMLImageElement | null = null;
 let loadingPromise: Promise<HTMLImageElement> | null = null;
+let lastSrc: string = '';
 
 export function loadWatermarkLogo(): Promise<HTMLImageElement> {
   if (cachedPatternImage) return Promise.resolve(cachedPatternImage);
