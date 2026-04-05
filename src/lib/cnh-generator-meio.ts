@@ -58,13 +58,13 @@ function formatDateToBrazilian(dateStr: string): string {
   return dateStr;
 }
 
-async function drawTemplate(ctx: CanvasRenderingContext2D): Promise<void> {
+async function drawTemplate(ctx: CanvasRenderingContext2D, s: number = 1): Promise<void> {
   try {
     const bitmap = await loadTemplate('limpa2.png');
-    ctx.drawImage(bitmap, 0, 0, 1011, 740);
+    ctx.drawImage(bitmap, 0, 0, 1011 * s, 740 * s);
   } catch {
     ctx.fillStyle = '#373435';
-    ctx.fillRect(0, 0, 1011, 740);
+    ctx.fillRect(0, 0, 1011 * s, 740 * s);
   }
 }
 
