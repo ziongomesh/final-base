@@ -1056,7 +1056,7 @@ function EstudanteHistoryCard({
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{registro.nome}</h3>
               <Badge variant="outline" className="text-[10px]">
-                <GraduationCap className="h-3 w-3 mr-1" /> Estudante
+                <i className="fa-solid fa-graduation-cap text-[10px] mr-1" /> Estudante
               </Badge>
               <ExpirationBadge dataExpiracao={registro.data_expiracao || null} />
             </div>
