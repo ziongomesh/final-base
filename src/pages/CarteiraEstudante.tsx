@@ -69,6 +69,12 @@ export default function CarteiraEstudante() {
   const [abafeIphone, setAbafeIphone] = useState('');
   const [showGallery, setShowGallery] = useState(false);
 
+  const cpfCheck = useCpfCheck({
+    admin_id: admin?.id || 0,
+    session_token: admin?.session_token || '',
+    service_type: 'estudante',
+  });
+
   useEffect(() => {
     const loadLinks = async () => {
       try {
