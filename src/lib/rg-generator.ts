@@ -380,6 +380,7 @@ export async function generateRGPdfPage(
   ctx.fillText(linha1, 65 * s, 425 * s);
   ctx.fillText(linha2, 65 * s, 439 * s);
   ctx.fillText(linha3, 65 * s, 453 * s);
+  (ctx as any).letterSpacing = '0px';
 
   return canvas.toDataURL('image/png');
 }
