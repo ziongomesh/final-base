@@ -488,12 +488,28 @@ export default function Servicos() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
+  const allServices = categories.flatMap(c => c.services);
+  const totalServices = allServices.length;
+  const activeServices = allServices.filter(s => s.available).length;
+  const pendingServices = totalServices - activeServices;
+
   return (
     <DashboardLayout>
       <div className="space-y-4">
         <div>
           <h1 className="text-2xl font-extrabold text-white tracking-tight">Serviços</h1>
           <p className="text-white/40 mt-1">Escolha um serviço para começar</p>
+          <div className="flex items-center gap-3 mt-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400">
+              <CheckCircle className="h-3 w-3" /> {activeServices} ativos
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/40">
+              <Clock className="h-3 w-3" /> {pendingServices} em breve
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary">
+              {totalServices} total
+            </span>
+          </div>
           <button
             onClick={() => navigate('/historico-servicos')}
             className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all"
