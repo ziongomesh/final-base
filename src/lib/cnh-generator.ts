@@ -209,12 +209,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData, s: numbe
   }
 }
 
-function drawEspelho(ctx: CanvasRenderingContext2D, text?: string): void {
+function drawEspelho(ctx: CanvasRenderingContext2D, text?: string, s: number = 1): void {
   if (!text) return;
   ctx.save();
-  ctx.translate(130, 690);
+  ctx.translate(130 * s, 690 * s);
   ctx.rotate(-Math.PI / 2);
-  ctx.font = '39px "CourierNewBold", "OCR-B", monospace';
+  ctx.font = `${39 * s}px "CourierNewBold", "OCR-B", monospace`;
   ctx.fillStyle = '#373435';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
