@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt, Camera } from 'lucide-react';
+import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt, Camera, Zap, Target, Trophy, Sparkles, Star } from 'lucide-react';
 
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import api from '@/lib/api';
 
 interface Service {
   id: string;
@@ -65,22 +66,6 @@ const categories: ServiceCategory[] = [
       { id: 'cnh-digital-2022', name: 'CNH DIGITAL (2022)', description: 'Modelo anterior da CNH Digital', credits: 1, available: false, route: '#', icon: FileText, iconImage: iconCnh2022, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
       { id: 'rg-digital', name: 'CIN (RG DIGITAL)', description: 'Carteira de Identidade Nacional', credits: 1, available: true, route: '/servicos/rg-digital', icon: FileText, iconImage: iconGovbr, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Sim', 'App: Sim'] },
       { id: 'cnh-arrais-nautica', name: 'ARRAIS NÁUTICA', description: 'Habilitação Náutica', credits: 1, available: true, route: '/servicos/cnh-nautica', icon: Anchor, iconImage: iconMarinha, exampleImage: exemploGovbr, specs: ['QR Code: Sim', 'PDF: Não', 'App: Sim'] },
-    ],
-  },
-  {
-    title: 'Documentos em Foto',
-    icon: Camera,
-    services: [
-      { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconCrm, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconOab, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 1, available: false, route: '#', icon: FileText, iconImage: iconCnh, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconItau, fotoGroup: 'cartoes' },
-      { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconBradesco, fotoGroup: 'cartoes' },
-      { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconNubank, fotoGroup: 'cartoes' },
-      { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconPicpay, fotoGroup: 'cartoes' },
-      { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconSantander, fotoGroup: 'cartoes' },
-      { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconC6bank, fotoGroup: 'cartoes' },
     ],
   },
   {
@@ -138,75 +123,40 @@ const categories: ServiceCategory[] = [
   },
 ];
 
-const documentTypes = [
-  'Carteira Motorista',
-  'Passaporte',
-  'Declaração Bancos',
-  'Faturas',
-  'Cheques Bancos',
-  'Carteira Militar',
-  'Cartão de Seguro',
-  'Carta de Residência',
+// ─── VIP Services ───
+const vipFotoServices: Service[] = [
+  { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 4, available: false, route: '#', icon: IdCard, iconImage: iconCrm, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 4, available: false, route: '#', icon: IdCard, iconImage: iconOab, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 4, available: false, route: '#', icon: FileText, iconImage: iconCnh, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+  { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconItau, fotoGroup: 'cartoes' },
+  { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconBradesco, fotoGroup: 'cartoes' },
+  { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconNubank, fotoGroup: 'cartoes' },
+  { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconPicpay, fotoGroup: 'cartoes' },
+  { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconSantander, fotoGroup: 'cartoes' },
+  { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconC6bank, fotoGroup: 'cartoes' },
 ];
 
-interface VipCountry {
-  name: string;
-  code: string; // ISO 3166-1 alpha-2 lowercase for flagcdn
+// ─── VIP tier helpers ───
+type VipTier = 'none' | 'vip' | 'super_vip';
+
+function getVipTier(weeklyServices: number): VipTier {
+  if (weeklyServices >= 100) return 'super_vip';
+  if (weeklyServices >= 50) return 'vip';
+  return 'none';
 }
 
-interface VipCategory {
-  title: string;
-  countries: VipCountry[];
+function getVipLabel(tier: VipTier): string {
+  if (tier === 'super_vip') return 'SUPER VIP';
+  if (tier === 'vip') return 'VIP';
+  return 'NORMAL';
 }
 
-const passportCountries: VipCountry[] = [
-  { name: 'Estados Unidos', code: 'us' }, { name: 'Reino Unido', code: 'gb' }, { name: 'Canadá', code: 'ca' },
-  { name: 'Austrália', code: 'au' }, { name: 'Japão', code: 'jp' }, { name: 'Alemanha', code: 'de' },
-  { name: 'França', code: 'fr' }, { name: 'Itália', code: 'it' }, { name: 'Portugal', code: 'pt' },
-  { name: 'México', code: 'mx' },
-];
-
-const idCountries: VipCountry[] = [
-  { name: 'Eslováquia', code: 'sk' }, { name: 'Alemanha', code: 'de' }, { name: 'Ucrânia', code: 'ua' },
-  { name: 'Noruega', code: 'no' }, { name: 'Armênia', code: 'am' }, { name: 'Áustria', code: 'at' },
-  { name: 'Bangladesh', code: 'bd' }, { name: 'Bulgária', code: 'bg' }, { name: 'Bélgica', code: 'be' },
-  { name: 'Camarões', code: 'cm' }, { name: 'Chile', code: 'cl' }, { name: 'Croácia', code: 'hr' },
-  { name: 'Tcheco', code: 'cz' }, { name: 'Chipre', code: 'cy' }, { name: 'Dinamarca', code: 'dk' },
-  { name: 'Dominicano', code: 'do' }, { name: 'Egito', code: 'eg' }, { name: 'Estônia', code: 'ee' },
-  { name: 'Finlândia', code: 'fi' }, { name: 'Geórgia', code: 'ge' }, { name: 'Grécia', code: 'gr' },
-  { name: 'Hungria', code: 'hu' }, { name: 'Índia', code: 'in' }, { name: 'Indonésia', code: 'id' },
-  { name: 'Irlanda', code: 'ie' }, { name: 'Israel', code: 'il' }, { name: 'Itália', code: 'it' },
-  { name: 'Costa do Marfim', code: 'ci' }, { name: 'Cazaquistão', code: 'kz' }, { name: 'Quênia', code: 'ke' },
-  { name: 'Quirguistão', code: 'kg' }, { name: 'Letônia', code: 'lv' }, { name: 'Lituânia', code: 'lt' },
-  { name: 'Malásia', code: 'my' }, { name: 'Malta', code: 'mt' }, { name: 'Holanda', code: 'nl' },
-  { name: 'Nova Zelândia', code: 'nz' }, { name: 'Nigéria', code: 'ng' }, { name: 'Macedônia do Norte', code: 'mk' },
-  { name: 'Peru', code: 'pe' }, { name: 'Portugal', code: 'pt' }, { name: 'Polônia', code: 'pl' },
-  { name: 'Romênia', code: 'ro' }, { name: 'Sérvia', code: 'rs' }, { name: 'Cingapura', code: 'sg' },
-  { name: 'Eslovênia', code: 'si' }, { name: 'África do Sul', code: 'za' }, { name: 'Coreia do Sul', code: 'kr' },
-  { name: 'Espanha', code: 'es' }, { name: 'Suécia', code: 'se' }, { name: 'Suíça', code: 'ch' },
-  { name: 'Taiwan', code: 'tw' }, { name: 'Tailândia', code: 'th' }, { name: 'Emirados Árabes Unidos', code: 'ae' },
-  { name: 'Turquia', code: 'tr' }, { name: 'Venezuela', code: 've' }, { name: 'Vietnã', code: 'vn' },
-  { name: 'Luxemburgo', code: 'lu' },
-];
-
-const dlCountries: VipCountry[] = [
-  { name: 'Estados Unidos', code: 'us' }, { name: 'Reino Unido', code: 'gb' }, { name: 'China', code: 'cn' },
-  { name: 'Hong Kong', code: 'hk' }, { name: 'França', code: 'fr' }, { name: 'Canadá', code: 'ca' },
-  { name: 'Alemanha', code: 'de' }, { name: 'Japão', code: 'jp' }, { name: 'Austrália', code: 'au' },
-  { name: 'México', code: 'mx' },
-];
-
-const billCountries: VipCountry[] = [
-  { name: 'Estados Unidos', code: 'us' }, { name: 'Reino Unido', code: 'gb' },
-  { name: 'Canadá', code: 'ca' }, { name: 'Austrália', code: 'au' }, { name: 'Alemanha', code: 'de' },
-];
-
-const vipCategories: VipCategory[] = [
-  { title: 'Passaportes', countries: passportCountries },
-  { title: 'Carteiras de Identidade', countries: idCountries },
-  { title: 'Carteiras de Motorista', countries: dlCountries },
-  { title: 'Extratos Bancários', countries: billCountries },
-];
+function getVipCredits(tier: VipTier): number {
+  if (tier === 'super_vip') return 2;
+  if (tier === 'vip') return 3;
+  return 4;
+}
 
 // ─── Service Card (Nacional) ───
 function ServiceCard({ service, hasCredits, isMaintenance }: { service: Service; hasCredits: boolean; isMaintenance?: boolean }) {
@@ -286,15 +236,12 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
   const isAtestados = cat.title === 'Atestados';
-  const isFoto = cat.title === 'Documentos em Foto';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
   const pdfOthers = cat.services.filter(s => !s.pdfGroup || s.pdfGroup === 'comprovante');
   const atestadoPrivados = cat.services.filter(s => s.atestadoGroup === 'privado');
   const atestadoPublicos = cat.services.filter(s => s.atestadoGroup === 'publico');
-  const fotoDocumentos = cat.services.filter(s => s.fotoGroup === 'documentos');
-  const fotoCartoes = cat.services.filter(s => s.fotoGroup === 'cartoes');
   const sortGroup = (arr: Service[]) => [...arr.filter(s => s.available), ...arr.filter(s => !s.available)];
 
   return (
@@ -312,37 +259,7 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
       </button>
       {open && (
         <div className="p-2 bg-transparent">
-          {isFoto ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                  <FileText className="h-3 w-3" /> Documentos
-                </h4>
-                {sortGroup(fotoDocumentos).map((service) => (
-                  <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
-                ))}
-              </div>
-              {fotoCartoes.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
-                    <CreditCard className="h-3 w-3" /> Cartões de Crédito
-                  </h4>
-                  <div className="relative mb-2">
-                    <input
-                      type="text"
-                      placeholder="Buscar por BIN..."
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-white/20 outline-none focus:border-[hsl(201,55%,59%)]"
-                    />
-                  </div>
-                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(210 20% 25%) transparent' }}>
-                    {sortGroup(fotoCartoes).map((service) => (
-                      <ServiceCard key={service.id} service={service} hasCredits={hasCredits} isMaintenance={!!maintenanceMap[service.id]} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : isAtestados ? (
+          {isAtestados ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="text-[11px] font-semibold text-white/30 uppercase tracking-wider px-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
@@ -401,72 +318,133 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   );
 }
 
-// ─── Country Card (expande docs) ───
-function CountryCard({ country }: { country: VipCountry }) {
-  const [open, setOpen] = useState(false);
+// ─── VIP Service Card (gold styled) ───
+function VipServiceCard({ service, tier, hasCredits }: { service: Service; tier: VipTier; hasCredits: boolean }) {
+  const navigate = useNavigate();
+  const creditCost = getVipCredits(tier);
+  const canAccess = service.available && hasCredits;
+  const Icon = service.icon || FileText;
 
   return (
-    <div className="border border-white/10 rounded-lg overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${open ? 'bg-amber-900/30' : 'bg-white/5 hover:bg-white/10'}`}
-      >
-        <img src={`https://flagcdn.com/w40/${country.code}.png`} alt={country.name} className="h-5 w-7 rounded-sm object-cover" loading="lazy" />
-        <span className="flex-1 text-left font-medium text-sm text-white">{country.name}</span>
-        {open ? <ChevronUp className="h-3.5 w-3.5 text-white/30" /> : <ChevronDown className="h-3.5 w-3.5 text-white/30" />}
-      </button>
-      {open && (
-        <div className="p-2 space-y-1 bg-transparent">
-          {documentTypes.map((doc) => (
-            <div key={doc} className="flex items-center gap-3 px-3 py-2 rounded-md border border-white/5 bg-white/[0.02] opacity-60 cursor-default">
-              <span className="flex-1 text-xs text-white/60">{doc}</span>
-              <Badge variant="secondary" className="text-[9px] px-1.5 py-0">
-                <Clock className="h-2 w-2 mr-0.5" /> Breve
-              </Badge>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── VIP Category Accordion (gold) ───
-function VipCategoryAccordion({ cat }: { cat: VipCategory }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid hsl(43, 50%, 35%)' }}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-3.5 font-semibold text-sm transition-colors"
+    <div
+      className={`relative overflow-hidden rounded-lg p-3 flex items-center gap-3 transition-all ${
+        service.available
+          ? canAccess ? 'cursor-pointer hover:scale-[1.01]' : 'cursor-default'
+          : 'opacity-60 cursor-default'
+      }`}
+      style={{
+        background: service.available
+          ? 'linear-gradient(135deg, hsla(43, 50%, 20%, 0.6) 0%, hsla(38, 40%, 15%, 0.4) 100%)'
+          : 'hsla(0, 0%, 100%, 0.03)',
+        border: service.available
+          ? '1px solid hsla(43, 60%, 40%, 0.4)'
+          : '1px solid hsla(0, 0%, 100%, 0.08)',
+      }}
+      onClick={() => service.available && canAccess && navigate(service.route)}
+    >
+      <div
+        className="h-14 w-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, hsl(43, 60%, 25%) 0%, hsl(38, 55%, 30%) 50%, hsl(43, 60%, 25%) 100%)',
-          color: 'hsl(43, 80%, 75%)',
+          background: service.available ? 'hsla(43, 40%, 25%, 0.5)' : 'hsla(0, 0%, 100%, 0.05)',
+          clipPath: 'circle(50%)',
         }}
       >
-        <span className="flex-1 text-left">{cat.title}</span>
-        <span
-          className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-          style={{ background: 'hsl(43, 50%, 20%)', color: 'hsl(43, 80%, 70%)' }}
-        >
-          {cat.countries.length}
+        {service.iconImage
+          ? <img src={service.iconImage} alt={service.name} className="h-[140%] w-[140%] object-cover object-center" />
+          : <Icon className="h-7 w-7" style={{ color: service.available ? 'hsl(43, 80%, 70%)' : 'hsl(0, 0%, 50%)' }} />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-sm truncate" style={{ color: service.available ? 'hsl(43, 80%, 80%)' : 'hsl(0, 0%, 60%)' }}>
+          {service.name}
+        </h3>
+        <p className="text-xs truncate" style={{ color: service.available ? 'hsla(43, 40%, 60%, 0.8)' : 'hsla(0, 0%, 100%, 0.3)' }}>
+          {service.description}
+        </p>
+        {service.specs && (
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {service.specs.map((spec) => (
+              <span key={spec} className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'hsla(43, 30%, 30%, 0.3)', color: 'hsla(43, 40%, 60%, 0.7)' }}>{spec}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col items-end gap-1 shrink-0">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{
+          background: service.available
+            ? (tier === 'super_vip' ? 'hsla(43, 80%, 50%, 0.2)' : tier === 'vip' ? 'hsla(43, 60%, 40%, 0.2)' : 'hsla(0, 0%, 100%, 0.05)')
+            : 'hsla(0, 0%, 100%, 0.05)',
+          color: service.available
+            ? (tier === 'super_vip' ? 'hsl(43, 90%, 70%)' : tier === 'vip' ? 'hsl(43, 70%, 65%)' : 'hsl(0, 0%, 60%)')
+            : 'hsl(0, 0%, 50%)',
+        }}>
+          {creditCost} cred.
         </span>
-        {open
-          ? <ChevronUp className="h-4 w-4" style={{ color: 'hsl(43, 80%, 65%)' }} />
-          : <ChevronDown className="h-4 w-4" style={{ color: 'hsl(43, 80%, 65%)' }} />
-        }
-      </button>
-      {open && (
-        <div className="p-2 space-y-1.5 bg-transparent">
-          {cat.countries.map((country) => (
-            <CountryCard key={country.name} country={country} />
-          ))}
-        </div>
-      )}
+        {service.available ? (
+          <Badge className="text-[10px] px-1.5 py-0 border-0" style={{ background: 'hsla(43, 60%, 40%, 0.3)', color: 'hsl(43, 80%, 70%)' }}>
+            <CheckCircle className="h-2.5 w-2.5 mr-0.5" /> Ativo
+          </Badge>
+        ) : (
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+            <Clock className="h-2.5 w-2.5 mr-0.5" /> Breve
+          </Badge>
+        )}
+      </div>
     </div>
   );
 }
+
+// ─── VIP Progress Bar ───
+function VipProgressBar({ current, target, label, color }: { current: number; target: number; label: string; color: string }) {
+  const pct = Math.min((current / target) * 100, 100);
+  const achieved = current >= target;
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold" style={{ color }}>{label}</span>
+        <span className="text-[11px] font-mono" style={{ color: achieved ? color : 'hsla(0, 0%, 100%, 0.4)' }}>
+          {current}/{target}
+        </span>
+      </div>
+      <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'hsla(0, 0%, 100%, 0.06)' }}>
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{
+            width: `${pct}%`,
+            background: achieved
+              ? `linear-gradient(90deg, ${color}, ${color}dd)`
+              : `linear-gradient(90deg, ${color}88, ${color}44)`,
+            boxShadow: achieved ? `0 0 12px ${color}60` : 'none',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── International Teaser ───
+const documentTypes = [
+  'Carteira Motorista',
+  'Passaporte',
+  'Declaração Bancos',
+  'Faturas',
+  'Cheques Bancos',
+  'Carteira Militar',
+  'Cartão de Seguro',
+  'Carta de Residência',
+];
+
+interface VipCountry {
+  name: string;
+  code: string;
+}
+
+const internationalFlags = [
+  { name: 'Estados Unidos', code: 'us' }, { name: 'Reino Unido', code: 'gb' }, { name: 'Canadá', code: 'ca' },
+  { name: 'Austrália', code: 'au' }, { name: 'Japão', code: 'jp' }, { name: 'Alemanha', code: 'de' },
+  { name: 'França', code: 'fr' }, { name: 'Itália', code: 'it' }, { name: 'Portugal', code: 'pt' },
+  { name: 'México', code: 'mx' }, { name: 'Espanha', code: 'es' }, { name: 'Suíça', code: 'ch' },
+];
 
 // ─── Page ───
 export default function Servicos() {
@@ -474,6 +452,7 @@ export default function Servicos() {
   const navigate = useNavigate();
   const hasCredits = credits > 0;
   const [maintenanceMap, setMaintenanceMap] = useState<Record<string, boolean>>({});
+  const [weeklyServices, setWeeklyServices] = useState(0);
 
   useEffect(() => {
     if (!admin) return;
@@ -496,13 +475,37 @@ export default function Servicos() {
     fetchMaintenance();
   }, [admin]);
 
+  useEffect(() => {
+    if (!admin) return;
+    api.admins.getMyDocumentStats(admin.id)
+      .then((stats: any) => setWeeklyServices(stats?.week || 0))
+      .catch(() => {});
+  }, [admin]);
+
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
 
-  const allServices = categories.flatMap(c => c.services);
-  const totalServices = allServices.length;
-  const activeServices = allServices.filter(s => s.available).length;
+  const allServicesNacional = categories.flatMap(c => c.services);
+  const totalServices = allServicesNacional.length;
+  const activeServices = allServicesNacional.filter(s => s.available).length;
   const pendingServices = totalServices - activeServices;
+
+  const tier = getVipTier(weeklyServices);
+  const tierLabel = getVipLabel(tier);
+  const tierCredits = getVipCredits(tier);
+
+  // CNH NA MESA is the first available VIP service
+  const cnhNaMesa: Service = {
+    id: 'cnh-na-mesa',
+    name: 'CNH NA MESA',
+    description: 'Geração completa direto na mesa — sem computador',
+    credits: tierCredits,
+    available: true,
+    route: '/servicos/cnh-digital',
+    icon: Zap,
+    iconImage: iconCnh,
+    specs: ['QR Code: Sim', 'PDF: Sim', 'Exclusivo VIP'],
+  };
 
   return (
     <DashboardLayout>
@@ -545,8 +548,8 @@ export default function Servicos() {
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
-            <TabsTrigger value="internacional" className="flex-1 gap-2 text-sm font-semibold">
-              <Crown className="h-4 w-4" /> Internacional VIP
+            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold">
+              <Crown className="h-4 w-4" /> VIP
             </TabsTrigger>
           </TabsList>
 
@@ -556,42 +559,206 @@ export default function Servicos() {
             ))}
           </TabsContent>
 
-          <TabsContent value="internacional" className="space-y-3 mt-0">
-            {/* VIP Banner - Gold compact */}
+          <TabsContent value="vip" className="space-y-4 mt-0">
+            {/* ── VIP Hero Banner ── */}
             <div
-              className="relative overflow-hidden rounded-xl p-3"
+              className="relative overflow-hidden rounded-2xl p-5"
               style={{
-                background: 'linear-gradient(135deg, hsl(43, 60%, 22%) 0%, hsl(38, 55%, 30%) 40%, hsl(48, 70%, 40%) 100%)',
-                border: '1px solid hsl(43, 60%, 40%)',
+                background: 'linear-gradient(135deg, hsl(43, 60%, 15%) 0%, hsl(38, 50%, 22%) 40%, hsl(48, 70%, 30%) 100%)',
+                border: '1px solid hsl(43, 60%, 35%)',
               }}
             >
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-full flex items-center justify-center shrink-0" style={{ background: 'hsl(43, 50%, 30%)' }}>
-                  <Crown className="h-5 w-5" style={{ color: 'hsl(43, 80%, 70%)' }} />
+              {/* Decorative glow */}
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.15), transparent)' }} />
+              <div className="absolute -left-4 -bottom-4 h-20 w-20 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.08), transparent)' }} />
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center"
+                    style={{ background: 'hsla(43, 60%, 40%, 0.3)', border: '1px solid hsla(43, 60%, 50%, 0.3)' }}
+                  >
+                    <Crown className="h-6 w-6" style={{ color: 'hsl(43, 90%, 70%)' }} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-extrabold" style={{ color: 'hsl(43, 90%, 80%)' }}>
+                      Área VIP
+                    </h2>
+                    <p className="text-[11px]" style={{ color: 'hsl(43, 40%, 55%)' }}>
+                      Exclusivo — não se compra, se conquista
+                    </p>
+                  </div>
+                  {tier !== 'none' && (
+                    <div
+                      className="ml-auto px-3 py-1 rounded-full text-xs font-extrabold animate-pulse"
+                      style={{
+                        background: tier === 'super_vip'
+                          ? 'linear-gradient(135deg, hsl(43, 90%, 50%), hsl(38, 80%, 40%))'
+                          : 'linear-gradient(135deg, hsl(43, 60%, 40%), hsl(38, 50%, 30%))',
+                        color: 'hsl(43, 90%, 95%)',
+                        boxShadow: tier === 'super_vip'
+                          ? '0 0 20px hsla(43, 90%, 50%, 0.4)'
+                          : '0 0 12px hsla(43, 60%, 40%, 0.3)',
+                      }}
+                    >
+                      {tierLabel}
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sm flex items-center gap-2" style={{ color: 'hsl(43, 80%, 80%)' }}>
-                    Internacional VIP
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: 'hsl(43, 50%, 25%)', color: 'hsl(43, 80%, 70%)' }}>VIP</span>
-                  </h3>
-                  <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'hsl(43, 40%, 60%)' }}>Em breve disponível.</p>
+
+                {/* Progress bars */}
+                <div className="space-y-3 mt-4">
+                  <VipProgressBar current={weeklyServices} target={50} label="VIP — 50 serviços/semana" color="hsl(43, 70%, 55%)" />
+                  <VipProgressBar current={weeklyServices} target={100} label="SUPER VIP — 100 serviços/semana" color="hsl(43, 90%, 65%)" />
+                </div>
+
+                {/* Pricing breakdown */}
+                <div className="grid grid-cols-3 gap-2 mt-4">
+                  {[
+                    { label: 'Normal', credits: 4, active: tier === 'none' },
+                    { label: 'VIP', credits: 3, active: tier === 'vip' },
+                    { label: 'Super VIP', credits: 2, active: tier === 'super_vip' },
+                  ].map((t) => (
+                    <div
+                      key={t.label}
+                      className="rounded-lg p-2.5 text-center transition-all"
+                      style={{
+                        background: t.active
+                          ? 'linear-gradient(135deg, hsla(43, 70%, 45%, 0.4), hsla(43, 60%, 30%, 0.3))'
+                          : 'hsla(0, 0%, 100%, 0.04)',
+                        border: t.active
+                          ? '1px solid hsla(43, 70%, 50%, 0.5)'
+                          : '1px solid hsla(0, 0%, 100%, 0.06)',
+                        boxShadow: t.active ? '0 0 15px hsla(43, 80%, 50%, 0.15)' : 'none',
+                      }}
+                    >
+                      <div className="text-[10px] font-bold mb-0.5" style={{ color: t.active ? 'hsl(43, 90%, 75%)' : 'hsla(0, 0%, 100%, 0.4)' }}>
+                        {t.label}
+                      </div>
+                      <div className="text-lg font-extrabold" style={{ color: t.active ? 'hsl(43, 90%, 80%)' : 'hsla(0, 0%, 100%, 0.25)' }}>
+                        {t.credits}
+                      </div>
+                      <div className="text-[9px]" style={{ color: t.active ? 'hsl(43, 50%, 60%)' : 'hsla(0, 0%, 100%, 0.2)' }}>
+                        créditos/serviço
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-[10px] mt-3 text-center" style={{ color: 'hsl(43, 40%, 50%)' }}>
+                  Bata a meta semanal de serviços feitos para desbloquear seu nível VIP
+                </p>
+              </div>
+            </div>
+
+            {/* ── CNH NA MESA — Featured ── */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                <Zap className="h-4 w-4" style={{ color: 'hsl(43, 90%, 65%)' }} />
+                Serviços VIP Exclusivos
+              </h3>
+              <VipServiceCard service={cnhNaMesa} tier={tier} hasCredits={hasCredits} />
+            </div>
+
+            {/* ── Docs em Foto (moved from Nacional) ── */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                <Camera className="h-4 w-4" style={{ color: 'hsl(43, 90%, 65%)' }} />
+                Documentos em Foto
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1 flex items-center gap-1.5" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    <FileText className="h-3 w-3" /> Documentos
+                  </h4>
+                  {vipFotoServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
+                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1 flex items-center gap-1.5" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                    <CreditCard className="h-3 w-3" /> Cartões de Crédito
+                  </h4>
+                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(43 30% 25%) transparent' }}>
+                    {vipFotoServices.filter(s => s.fotoGroup === 'cartoes').map((service) => (
+                      <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="absolute -right-3 -top-3 h-16 w-16 rounded-full" style={{ background: 'hsla(43, 60%, 50%, 0.1)' }} />
             </div>
 
-            {/* Observação */}
-            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-              <p className="text-xs font-semibold text-white mb-1">ℹ️ Como funciona?</p>
-              <p className="text-[11px] text-white/40 leading-relaxed">
-                Após todos os módulos do Brasil nativos da base estiverem disponíveis, iremos disponibilizar o internacional.
-                Você poderá gerar passaportes em foto, extratos, PDFs, licenças de dirigir, militares — idênticas 100% ao original.
-              </p>
+            {/* ── Internacional — Em Breve ── */}
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{ border: '1px solid hsla(43, 50%, 30%, 0.5)' }}
+            >
+              <div
+                className="px-4 py-3 flex items-center gap-3"
+                style={{
+                  background: 'linear-gradient(135deg, hsla(43, 40%, 18%, 0.8) 0%, hsla(38, 35%, 15%, 0.6) 100%)',
+                }}
+              >
+                <Globe className="h-5 w-5" style={{ color: 'hsl(43, 60%, 55%)' }} />
+                <span className="flex-1 font-semibold text-sm" style={{ color: 'hsl(43, 60%, 65%)' }}>Internacional</span>
+                <Badge variant="secondary" className="text-[10px] px-2 py-0.5" style={{ background: 'hsla(43, 40%, 25%, 0.5)', color: 'hsl(43, 60%, 55%)' }}>
+                  <Clock className="h-2.5 w-2.5 mr-1" /> Em Breve
+                </Badge>
+              </div>
+              <div className="p-3" style={{ background: 'hsla(0, 0%, 100%, 0.02)' }}>
+                <div className="flex flex-wrap gap-2 justify-center mb-3">
+                  {internationalFlags.map((flag) => (
+                    <div key={flag.code} className="flex items-center gap-1.5 px-2 py-1 rounded-md opacity-50" style={{ background: 'hsla(0, 0%, 100%, 0.04)', border: '1px solid hsla(0, 0%, 100%, 0.06)' }}>
+                      <img src={`https://flagcdn.com/w20/${flag.code}.png`} alt={flag.name} className="h-3 w-5 rounded-sm object-cover" loading="lazy" />
+                      <span className="text-[10px] text-white/40">{flag.name}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-white/30 text-center">
+                  Passaportes, carteiras de motorista, identidades e muito mais de +60 países
+                </p>
+              </div>
             </div>
 
-            {vipCategories.map((cat) => (
-              <VipCategoryAccordion key={cat.title} cat={cat} />
-            ))}
+            {/* ── Motivational Box ── */}
+            <div
+              className="relative overflow-hidden rounded-xl p-4"
+              style={{
+                background: 'linear-gradient(135deg, hsla(43, 50%, 15%, 0.5) 0%, hsla(260, 30%, 15%, 0.3) 100%)',
+                border: '1px solid hsla(43, 40%, 30%, 0.3)',
+              }}
+            >
+              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full" style={{ background: 'radial-gradient(circle, hsla(43, 80%, 50%, 0.06), transparent)' }} />
+
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'hsla(43, 50%, 30%, 0.3)' }}>
+                  <Sparkles className="h-5 w-5" style={{ color: 'hsl(43, 80%, 65%)' }} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-sm" style={{ color: 'hsl(43, 80%, 75%)' }}>
+                    Em breve, milhares de serviços adicionais
+                  </h4>
+                  <p className="text-[11px] leading-relaxed mt-1" style={{ color: 'hsla(43, 30%, 55%, 0.8)' }}>
+                    Serviços super exclusivos estão chegando. Imagina fazer seus docs sem sentar no computador...
+                    A área VIP é algo exclusivo da base. Não se compra — se conquista batendo metas.
+                  </p>
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-1.5">
+                      <Target className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
+                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Bata metas</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Trophy className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
+                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Desbloqueie VIP</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Star className="h-3.5 w-3.5" style={{ color: 'hsl(43, 70%, 55%)' }} />
+                      <span className="text-[10px] font-medium" style={{ color: 'hsl(43, 60%, 55%)' }}>Pague menos</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
