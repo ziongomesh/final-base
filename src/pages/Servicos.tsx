@@ -318,12 +318,11 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   );
 }
 
-// ─── VIP Service Card (gold styled) ───
+// ─── VIP Service Card (no icons, clean) ───
 function VipServiceCard({ service, tier, hasCredits }: { service: Service; tier: VipTier; hasCredits: boolean }) {
   const navigate = useNavigate();
   const creditCost = getVipCredits(tier);
   const canAccess = service.available && hasCredits;
-  const Icon = service.icon || FileText;
 
   return (
     <div
@@ -342,17 +341,6 @@ function VipServiceCard({ service, tier, hasCredits }: { service: Service; tier:
       }}
       onClick={() => service.available && canAccess && navigate(service.route)}
     >
-      <div
-        className="h-14 w-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
-        style={{
-          background: service.available ? 'hsla(43, 40%, 25%, 0.5)' : 'hsla(0, 0%, 100%, 0.05)',
-          clipPath: 'circle(50%)',
-        }}
-      >
-        {service.iconImage
-          ? <img src={service.iconImage} alt={service.name} className="h-[140%] w-[140%] object-cover object-center" />
-          : <Icon className="h-7 w-7" style={{ color: service.available ? 'hsl(43, 80%, 70%)' : 'hsl(0, 0%, 50%)' }} />}
-      </div>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-sm truncate" style={{ color: service.available ? 'hsl(43, 80%, 80%)' : 'hsl(0, 0%, 60%)' }}>
           {service.name}
@@ -360,13 +348,6 @@ function VipServiceCard({ service, tier, hasCredits }: { service: Service; tier:
         <p className="text-xs truncate" style={{ color: service.available ? 'hsla(43, 40%, 60%, 0.8)' : 'hsla(0, 0%, 100%, 0.3)' }}>
           {service.description}
         </p>
-        {service.specs && (
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            {service.specs.map((spec) => (
-              <span key={spec} className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: 'hsla(43, 30%, 30%, 0.3)', color: 'hsla(43, 40%, 60%, 0.7)' }}>{spec}</span>
-            ))}
-          </div>
-        )}
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{
