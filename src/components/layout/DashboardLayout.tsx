@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </main>
 
       {/* Footer */}
-      <div className="lg:ml-[64px]">
+      <div className="lg:ml-[72px]">
         <DashboardFooter />
       </div>
     </div>
