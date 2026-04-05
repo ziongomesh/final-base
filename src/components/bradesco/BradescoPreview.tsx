@@ -104,10 +104,29 @@ function drawWrappedText(
   if (line) ctx.fillText(line, x, y + yOffset);
 }
 
+// Section titles drawn as static text on the canvas
+interface SectionTitle {
+  text: string;
+  x: number;
+  y: number;
+  size: number;
+  bold: boolean;
+}
+
+const SECTION_TITLES: SectionTitle[] = [
+  { text: 'Dados de quem pagou', x: pdfPx(79), y: pdfPx(570), size: FONT_SIZE, bold: true },
+];
+
 function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormData) {
   ctx.fillStyle = TEXT_COLOR;
   ctx.textBaseline = 'top';
   ctx.textAlign = 'left';
+
+  // Draw section titles
+  for (const title of SECTION_TITLES) {
+    ctx.font = `${title.bold ? 'bold ' : ''}${title.size}px Arial, sans-serif`;
+    ctx.fillText(title.text, title.x, title.y);
+  }
 
   for (const field of FIELDS) {
     let value = formData[field.key] || '';
