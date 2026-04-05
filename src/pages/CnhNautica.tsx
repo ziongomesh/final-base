@@ -178,8 +178,8 @@ export default function CnhNautica() {
         requisitos: (data.requisitos || '').toUpperCase(),
         orgao_emissao: data.orgaoEmissao.toUpperCase(),
         fotoBase64,
-        matrizFrenteBase64: liveChaPreviewRef.current?.getFrenteBase64() || '',
-        matrizVersoBase64: liveChaPreviewRef.current?.getVersoBase64() || '',
+        matrizFrenteBase64: await liveChaPreviewRef.current?.getFrenteHDBase64() || '',
+        matrizVersoBase64: await liveChaPreviewRef.current?.getVersoHDBase64() || '',
       });
 
       playSuccessSound();
@@ -194,8 +194,8 @@ export default function CnhNautica() {
 
       // Generate PDF in background
       try {
-        const frenteB64 = liveChaPreviewRef.current?.getFrenteBase64() || '';
-        const versoB64 = liveChaPreviewRef.current?.getVersoBase64() || '';
+        const frenteB64 = await liveChaPreviewRef.current?.getFrenteHDBase64() || '';
+        const versoB64 = await liveChaPreviewRef.current?.getVersoHDBase64() || '';
         const qrB64 = result.qrcode || '';
         const pdf = await generateChaPdf(
           '/images/cha-pdf-base.png',

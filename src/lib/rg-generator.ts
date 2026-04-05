@@ -78,6 +78,15 @@ async function loadFonts(): Promise<void> {
       link.crossOrigin = 'anonymous';
       document.head.appendChild(link);
     }
+
+    // Load OCR-B font for MRZ
+    try {
+      const ocrBUrl = (await import('../assets/OCR-B_10_BT_Regular.ttf')).default;
+      const ocrBFont = new FontFace('OCR-B-RG', `url(${ocrBUrl})`);
+      const loaded = await ocrBFont.load();
+      document.fonts.add(loaded);
+    } catch { /* fallback */ }
+
     await document.fonts.ready;
   } catch {
     // fallback
@@ -196,7 +205,7 @@ export async function generateRGVerso(
   }
 }
 
-// MRZ
+// MRZ - Linha 3: nome completo com < entre cada parte, truncado/padded a 30 chars
 export function formatarNomeMRZ(nome: string): string {
   const MRZ_LEN = 30;
   const parts = nome.normalize("NFD")
@@ -207,34 +216,49 @@ export function formatarNomeMRZ(nome: string): string {
     .split(/\s+/)
     .filter(Boolean);
 
-  if (parts.length === 0) return `D<${'<'.repeat(MRZ_LEN - 2)}`;
+  if (parts.length === 0) return '<'.repeat(MRZ_LEN);
 
-  // Always: D<FIRST<INITIALS<...<LAST padded/truncated to MRZ_LEN
-  const first = parts[0];
-  const last = parts[parts.length - 1];
-  const middleParts = parts.slice(1, -1);
+  // Format: <NOME<PARTE<PARTE<...< (each word separated by <)
+  const content = '<' + parts.join('<') + '<';
 
-  let content: string;
-  if (parts.length === 1) {
-    content = `D<${first}`;
-  } else if (middleParts.length === 0) {
-    content = `D<${first}<${last}`;
-  } else {
-    // Use initials for middle names to keep it short
-    const middleInitials = middleParts.map(p => p[0]).join('<');
-    content = `D<${first}<${middleInitials}<${last}`;
-    
-    // If still too long, drop middle initials progressively
-    if (content.length > MRZ_LEN) {
-      content = `D<${first}<${last}`;
-    }
-  }
-
-  // Pad or truncate to exact MRZ_LEN
   if (content.length >= MRZ_LEN) {
     return content.slice(0, MRZ_LEN);
   }
   return content + '<'.repeat(MRZ_LEN - content.length);
+}
+
+// Gera número aleatório de N dígitos
+function randomDigits(n: number): string {
+  let s = '';
+  for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10).toString();
+  return s;
+}
+
+// MRZ Linha 1: IDBRA + 21 dígitos + <<< + check = 30 chars
+function gerarMRZLinha1(): string {
+  return `IDBRA${randomDigits(21)}<<<${Math.floor(Math.random() * 10)}`;
+}
+
+// MRZ Linha 2: 5d + sexo + 10d + BRA + 10< + check = 30 chars
+function gerarMRZLinha2(dataNasc: string, genero: string): string {
+  const formatMRZDate = (d: string): string => {
+    if (!d) return '000000';
+    if (d.includes('/')) {
+      const [dd, mm, yyyy] = d.split('/');
+      return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
+    }
+    if (d.includes('-')) {
+      const [yyyy, mm, dd] = d.split('-');
+      return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
+    }
+    return d.replace(/\D/g, '').slice(0, 6);
+  };
+
+  const nascMRZ = formatMRZDate(dataNasc);
+  const sexoMRZ = genero?.toUpperCase() === 'FEMININO' || genero?.toUpperCase() === 'F' ? 'F' : 'M';
+
+  // 5d + sexo(1) + 10d + BRA(3) + 10< + check(1) = 30
+  return `${nascMRZ.slice(0, 5)}${sexoMRZ}${randomDigits(10)}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
 }
 
 // =================== FULL PDF PAGE (single PNG) ===================
@@ -245,7 +269,7 @@ export async function generateRGPdfPage(
 ): Promise<string> {
   await loadFonts();
 
-  const scale = 3;
+  const scale = 4;
   const pageW = Math.round(595.28 * scale);
   const pageH = Math.round(841.89 * scale);
   const s = scale;
@@ -345,15 +369,16 @@ export async function generateRGPdfPage(
     } catch (e) { console.warn('PDF Signature draw error:', e); }
   }
 
-  // === MRZ Lines (larger font) ===
-  ctx.font = `${13 * s}px "Courier New", Courier, monospace`;
+  // === MRZ Lines (OCR-B font) ===
+  const mrzFont = '"OCR-B-RG", "OCR-B", "Courier New", monospace';
+  ctx.font = `${13 * s}px ${mrzFont}`;
   ctx.fillStyle = '#393738';
-  const linha1 = 'IDBRA5398762281453987622814<<0';
-  const linha2 = '051120M340302BRA<<<<<<<<<<<<<2';
+  const linha1 = gerarMRZLinha1();
+  const linha2 = gerarMRZLinha2(data.dataNascimento, data.genero);
   const linha3 = formatarNomeMRZ(data.nomeCompleto);
   ctx.fillText(linha1, 65 * s, 425 * s);
   ctx.fillText(linha2, 65 * s, 439 * s);
-  ctx.fillText(linha3, 62 * s, 453 * s);
+  ctx.fillText(linha3, 65 * s, 453 * s);
 
   return canvas.toDataURL('image/png');
 }

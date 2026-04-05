@@ -209,7 +209,7 @@ export const supabaseApi = {
       return data || [];
     },
 
-    createMaster: async (params: { nome: string; email: string; key: string; criadoPor: number }) => {
+    createMaster: async (params: { nome: string; email: string; key: string; criadoPor: number; creditos?: number }) => {
       const session = getStoredSession();
       if (!session) throw new Error('Sessão inválida');
 
@@ -218,14 +218,15 @@ export const supabaseApi = {
         p_session_token: session.sessionToken,
         p_nome: params.nome,
         p_email: params.email,
-        p_key: params.key
-      });
+        p_key: params.key,
+        p_creditos: params.creditos || 0
+      } as any);
 
       if (error) throw new Error(error.message);
       return { id: data };
     },
 
-    createReseller: async (params: { nome: string; email: string; key: string; criadoPor: number }) => {
+    createReseller: async (params: { nome: string; email: string; key: string; criadoPor: number; creditos?: number }) => {
       const session = getStoredSession();
       if (!session) throw new Error('Sessão inválida');
 
@@ -234,8 +235,9 @@ export const supabaseApi = {
         p_session_token: session.sessionToken,
         p_nome: params.nome,
         p_email: params.email,
-        p_key: params.key
-      });
+        p_key: params.key,
+        p_creditos: params.creditos || 0
+      } as any);
 
       if (error) throw new Error(error.message);
       return { id: data };
