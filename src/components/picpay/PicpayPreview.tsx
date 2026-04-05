@@ -175,15 +175,22 @@ export const PicpayPreview = forwardRef<PicpayPreviewRef, PicpayPreviewProps>(
       img.onload = () => {
         if (cancelled) return;
         setBgImage(img);
-        setReady(true);
       };
       img.onerror = () => console.error('Erro ao carregar base PicPay');
       img.src = basePicpay;
+
+      loadWatermarkLogo().then(logo => {
+        if (!cancelled) setLogoImage(logo);
+      });
 
       return () => {
         cancelled = true;
       };
     }, []);
+
+    useEffect(() => {
+      if (bgImage && logoImage) setReady(true);
+    }, [bgImage, logoImage]);
 
     useEffect(() => {
       if (!ready || !bgImage) return;
