@@ -438,6 +438,54 @@ export type Database = {
         }
         Relationships: []
       }
+      sub_recharge_plans: {
+        Row: {
+          admin_id: number
+          badge: string | null
+          badge_color: string | null
+          base_credits: number
+          bonus: number
+          created_at: string
+          credits: number
+          id: number
+          is_active: boolean
+          name: string
+          sort_order: number | null
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          admin_id: number
+          badge?: string | null
+          badge_color?: string | null
+          base_credits: number
+          bonus?: number
+          created_at?: string
+          credits: number
+          id?: number
+          is_active?: boolean
+          name: string
+          sort_order?: number | null
+          total: number
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: number
+          badge?: string | null
+          badge_color?: string | null
+          base_credits?: number
+          bonus?: number
+          created_at?: string
+          credits?: number
+          id?: number
+          is_active?: boolean
+          name?: string
+          sort_order?: number | null
+          total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       usuarios: {
         Row: {
           admin_id: number
