@@ -135,6 +135,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       playSuccessSound();
       toast.success(`Bem-vindo, ${adminData.nome}!`, { description: 'Login realizado com sucesso' });
+      
+      // Play welcome audio via TTS
+      setTimeout(() => {
+        playWelcomeAudio(adminData.nome).catch(() => {});
+      }, 500);
 
       return { error: null, admin: adminData };
     } catch (e: any) {
