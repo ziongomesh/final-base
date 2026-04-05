@@ -22,6 +22,8 @@ interface ChaPreviewProps {
 export interface ChaPreviewHandle {
   getFrenteBase64: () => string;
   getVersoBase64: () => string;
+  getFrenteHDBase64: () => Promise<string>;
+  getVersoHDBase64: () => Promise<string>;
 }
 
 // Default positions as fractions of canvas W/H
