@@ -1319,6 +1319,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   })}
                 </div>
               </div>
+              )}
 
               {selectedPkg && (
                 <Button
