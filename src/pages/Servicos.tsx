@@ -99,6 +99,17 @@ const categories: ServiceCategory[] = [
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
     ],
   },
+  {
+    title: 'Mesa (Foto Documento)',
+    icon: Camera,
+    services: [
+      { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-cartoes', name: 'CARTÕES NA MESA', description: 'Cartões de crédito em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: CreditCard, specs: ['Foto: Sim'] },
+    ],
+  },
 ];
 
 // ─── VIP Services ───
