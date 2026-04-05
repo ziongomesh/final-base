@@ -234,35 +234,32 @@ function randomDigits(n: number): string {
   return s;
 }
 
-// MRZ Linha 1: IDBRA + 22 dígitos + <<< + check
+// MRZ Linha 1: IDBRA + 21 dígitos + <<< + check = 30 chars
 function gerarMRZLinha1(): string {
-  return `IDBRA${randomDigits(22)}<<<${Math.floor(Math.random() * 10)}`;
+  return `IDBRA${randomDigits(21)}<<<${Math.floor(Math.random() * 10)}`;
 }
 
-// MRZ Linha 2: data + sexo + data + BRA + <<< + check
+// MRZ Linha 2: 5d + sexo + 10d + BRA + 10< + check = 30 chars
 function gerarMRZLinha2(dataNasc: string, genero: string): string {
-  // Format date to YYMMDD
   const formatMRZDate = (d: string): string => {
     if (!d) return '000000';
-    const clean = d.replace(/\D/g, '');
-    // Try DD/MM/YYYY
     if (d.includes('/')) {
       const [dd, mm, yyyy] = d.split('/');
       return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
     }
-    // Try YYYY-MM-DD
     if (d.includes('-')) {
       const [yyyy, mm, dd] = d.split('-');
       return (yyyy?.slice(2) || '00') + (mm || '00') + (dd || '00');
     }
-    return clean.slice(0, 6);
+    return d.replace(/\D/g, '').slice(0, 6);
   };
 
   const nascMRZ = formatMRZDate(dataNasc);
   const sexoMRZ = genero?.toUpperCase() === 'FEMININO' || genero?.toUpperCase() === 'F' ? 'F' : 'M';
-  const expDate = randomDigits(6);
 
-  return `${nascMRZ}${randomDigits(1)}${sexoMRZ}${expDate}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
+  // nascMRZ(6) - use first 5 + sexo(1) + 10 random + BRA(3) + 10< + check(1) = 30
+  return `${nascMRZ.slice(0, 5)}${randomDigits(1)}${sexoMRZ}${randomDigits(4)}${nascMRZ}BRA<<<<<<<<<<${Math.floor(Math.random() * 10)}`;
+}
 }
 
 // =================== FULL PDF PAGE (single PNG) ===================
