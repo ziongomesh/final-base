@@ -80,20 +80,16 @@ export function Sidebar() {
           }}
         >
           <div
-            className="h-10 w-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
+            className="h-10 w-10 rounded-full shrink-0 flex items-center justify-center"
             style={{
-              background: admin?.profile_photo ? 'transparent' : 'linear-gradient(135deg, hsl(201 55% 45%), hsl(201 55% 35%))',
+              background: 'linear-gradient(135deg, hsl(201 55% 45%), hsl(201 55% 35%))',
               border: '2px solid hsl(201 55% 59% / 0.3)',
               boxShadow: '0 0 12px hsl(201 55% 59% / 0.15)',
             }}
           >
-            {admin?.profile_photo ? (
-              <img src={admin.profile_photo} alt={firstName} className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-sm font-bold" style={{ color: 'hsl(201 55% 85%)' }}>
-                {firstName.charAt(0).toUpperCase()}
-              </span>
-            )}
+            <span className="text-sm font-bold" style={{ color: 'hsl(201 55% 85%)' }}>
+              {firstName.charAt(0).toUpperCase()}
+            </span>
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[13px] font-semibold text-foreground truncate">{firstName}</p>
