@@ -165,7 +165,7 @@ async function drawTexts(ctx: CanvasRenderingContext2D, data: CnhData, s: number
   });
 }
 
-async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise<void> {
+async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData, s: number = 1): Promise<void> {
   if (data.foto) {
     try {
       let fotoDataUrl: string;
@@ -175,12 +175,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise
         fotoDataUrl = data.foto.startsWith('data:') ? data.foto : `/${data.foto}`;
       }
       const fotoImg = await loadImage(fotoDataUrl);
-      const { x, y, width, height } = CNH_CONFIG.images.foto;
+      const { x, y, width, height } = CNH_IMAGES.foto;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(x, 0, width, y + height);
+      ctx.rect(x * s, 0, width * s, (y + height) * s);
       ctx.clip();
-      ctx.drawImage(fotoImg, x, y, width, height);
+      ctx.drawImage(fotoImg, x * s, y * s, width * s, height * s);
       ctx.restore();
     } catch {
       // Silencioso
@@ -196,12 +196,12 @@ async function drawImages(ctx: CanvasRenderingContext2D, data: CnhData): Promise
         assDataUrl = data.assinatura.startsWith('data:') ? data.assinatura : `/${data.assinatura}`;
       }
       const assImg = await loadImage(assDataUrl);
-      const { x, y, width, height } = CNH_CONFIG.images.assinatura;
+      const { x, y, width, height } = CNH_IMAGES.assinatura;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(x, y, width, height);
+      ctx.rect(x * s, y * s, width * s, height * s);
       ctx.clip();
-      ctx.drawImage(assImg, x, y, width, height);
+      ctx.drawImage(assImg, x * s, y * s, width * s, height * s);
       ctx.restore();
     } catch {
       // Silencioso
