@@ -113,6 +113,13 @@ export default function CarteiraEstudante() {
     return () => { sub.unsubscribe(); setFormDirty(false); };
   }, [form, setFormDirty]);
 
+  // CPF check on change
+  const watchedCpf = form.watch('cpf');
+  useEffect(() => {
+    const clean = (watchedCpf || '').replace(/\D/g, '');
+    if (clean.length === 11) cpfCheck.checkCpf(watchedCpf);
+  }, [watchedCpf]);
+
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
       toast.error('Formato inválido. Use PNG ou JPG.');
