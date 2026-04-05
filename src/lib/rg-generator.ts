@@ -245,7 +245,7 @@ export async function generateRGPdfPage(
 ): Promise<string> {
   await loadFonts();
 
-  const scale = 3;
+  const scale = 4;
   const pageW = Math.round(595.28 * scale);
   const pageH = Math.round(841.89 * scale);
   const s = scale;
