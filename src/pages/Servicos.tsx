@@ -69,7 +69,10 @@ const categories: ServiceCategory[] = [
     title: 'PDF',
     icon: FileText,
     services: [
-      { id: 'comprovante-residencia', name: 'COMPROVANTE DE RESIDÊNCIA', description: 'Comprovante de endereço', credits: 1, available: false, route: '#', icon: Home, faIcon: 'fa-solid fa-house', pdfGroup: 'comprovante' },
+      { id: 'comprovante-residencia-vivo', name: 'COMPROVANTE VIVO', description: 'Comprovante de residência Vivo', credits: 1, available: false, route: '#', icon: Home, faIcon: 'fa-solid fa-house', pdfGroup: 'comprovante' },
+      { id: 'comprovante-residencia-claro', name: 'COMPROVANTE CLARO', description: 'Comprovante de residência Claro', credits: 1, available: false, route: '#', icon: Home, faIcon: 'fa-solid fa-house', pdfGroup: 'comprovante' },
+      { id: 'comprovante-residencia-tim', name: 'COMPROVANTE TIM', description: 'Comprovante de residência Tim', credits: 1, available: false, route: '#', icon: Home, faIcon: 'fa-solid fa-house', pdfGroup: 'comprovante' },
+      { id: 'comprovante-residencia-brisanet', name: 'COMPROVANTE BRISANET', description: 'Comprovante de residência Brisanet', credits: 1, available: false, route: '#', icon: Home, faIcon: 'fa-solid fa-house', pdfGroup: 'comprovante' },
       { id: 'certidao-nascimento-qr-on', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento com QR Code', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-lines', hasQr: true, pdfGroup: 'certidao' },
       { id: 'certidao-nascimento-qr-off', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento sem QR Code', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-lines', hasQr: false, pdfGroup: 'certidao' },
       { id: 'certidao-obito', name: 'CERTIDÃO DE ÓBITO', description: 'Certidão de óbito digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-cross', pdfGroup: 'certidao' },
