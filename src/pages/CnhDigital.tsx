@@ -811,6 +811,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">Data de Nascimento <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="DD/MM/AAAA" maxLength={10} className="h-8 text-sm"
+                          onFocus={() => speakField('dataNascimentoData')}
                           onChange={(e) => field.onChange(formatDate(e.target.value))}
                         />
                       </FormControl>
