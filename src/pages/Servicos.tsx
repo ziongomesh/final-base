@@ -233,7 +233,7 @@ function CategoryAccordion({ cat, hasCredits, maintenanceMap }: { cat: ServiceCa
   const activeCount = cat.services.filter(s => s.available).length;
   const isPdfCategory = cat.title === 'PDF';
   const isComprovantes = cat.title === 'Comprovantes';
-  const isAtestados = cat.title === 'Atestados';
+  const isHospital = cat.title === 'Hospital';
   const sorted = [...cat.services.filter(s => s.available), ...cat.services.filter(s => !s.available)];
 
   const certidoes = cat.services.filter(s => s.pdfGroup === 'certidao');
