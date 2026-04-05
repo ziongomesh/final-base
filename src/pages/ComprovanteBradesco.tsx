@@ -14,7 +14,7 @@ import { BradescoPreview, type BradescoPreviewRef, type BradescoFormData } from 
 import api from '@/lib/api';
 
 const BANCOS = [
-  'Nu Pagamentos S.A. - Instituição de Pagamento',
+  'Nu Pagamentos S.A.',
   'Itaú Unibanco S.A.',
   'Banco Bradesco S.A.',
   'Banco do Brasil S.A.',
@@ -351,8 +351,22 @@ export default function ComprovanteBradesco() {
                   <Label className="text-xs">Chave Pix</Label>
                   <Input
                     value={formData.chavePix}
-                    onChange={e => updateField('chavePix', tipoChavePix === 'email' ? e.target.value.toLowerCase() : e.target.value)}
-                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '(00) 00000-0000' : 'Chave Pix'}
+                    onChange={e => {
+                      let v = e.target.value;
+                      if (tipoChavePix === 'email') v = v.toLowerCase();
+                      else if (tipoChavePix === 'cpf') {
+                        const d = v.replace(/\D/g, '').slice(0, 11);
+                        v = d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : d;
+                      } else if (tipoChavePix === 'cnpj') {
+                        const d = v.replace(/\D/g, '').slice(0, 14);
+                        v = d.length === 14 ? d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : d;
+                      } else if (tipoChavePix === 'telefone') {
+                        const d = v.replace(/\D/g, '').slice(0, 11);
+                        v = d.length === 11 ? d.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : d.length === 10 ? d.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : d;
+                      }
+                      updateField('chavePix', v);
+                    }}
+                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '(00) 00000-0000' : tipoChavePix === 'cpf' ? '000.000.000-00' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : 'Chave Aleatória'}
                     className="text-xs"
                   />
                 </div>
