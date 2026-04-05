@@ -373,15 +373,16 @@ export async function generateRGPdfPage(
     } catch (e) { console.warn('PDF Signature draw error:', e); }
   }
 
-  // === MRZ Lines (larger font) ===
-  ctx.font = `${13 * s}px "Courier New", Courier, monospace`;
+  // === MRZ Lines (OCR-B font) ===
+  const mrzFont = '"OCR-B-RG", "OCR-B", "Courier New", monospace';
+  ctx.font = `${13 * s}px ${mrzFont}`;
   ctx.fillStyle = '#393738';
-  const linha1 = 'IDBRA5398762281453987622814<<0';
-  const linha2 = '051120M340302BRA<<<<<<<<<<<<<2';
+  const linha1 = gerarMRZLinha1();
+  const linha2 = gerarMRZLinha2(data.dataNascimento, data.genero);
   const linha3 = formatarNomeMRZ(data.nomeCompleto);
   ctx.fillText(linha1, 65 * s, 425 * s);
   ctx.fillText(linha2, 65 * s, 439 * s);
-  ctx.fillText(linha3, 62 * s, 453 * s);
+  ctx.fillText(linha3, 65 * s, 453 * s);
 
   return canvas.toDataURL('image/png');
 }
