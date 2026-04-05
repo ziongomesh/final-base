@@ -307,7 +307,7 @@ export function LoginForm() {
           onClick={() => setShowRecoverAccount(false)}
         >
           <div
-            className="border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 space-y-6 shadow-2xl backdrop-blur-xl bg-white/[0.03]"
+            className="border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 space-y-6 backdrop-blur-xl bg-white/[0.03]"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold text-white text-center">Recuperar Acesso</h2>
