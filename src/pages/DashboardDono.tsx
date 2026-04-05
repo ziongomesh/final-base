@@ -214,7 +214,7 @@ export default function DashboardDono() {
       });
       if (error) throw error;
       toast.success(editingSubPlan ? 'Plano atualizado!' : 'Plano criado!');
-      setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+      setSubPlanForm(emptySubPlan);
       setEditingSubPlan(null);
       fetchSubPlans();
     } catch (e: any) { toast.error(e.message || 'Erro ao salvar plano'); }
@@ -1346,7 +1346,7 @@ export default function DashboardDono() {
                       {editingSubPlan && (
                         <Button variant="outline" onClick={() => {
                           setEditingSubPlan(null);
-                          setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+                          setSubPlanForm(emptySubPlan);
                         }}>Cancelar</Button>
                       )}
                     </div>
