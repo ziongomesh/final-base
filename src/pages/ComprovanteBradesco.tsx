@@ -137,8 +137,21 @@ export default function ComprovanteBradesco() {
 
   const handleGerarPdf = async () => {
     if (!admin) return;
-    if (!formData.valor || !formData.nomePagador || !formData.nomeRecebedor || !formData.dataHora) {
-      toast.error('Preencha os campos obrigatórios: Data/Hora, Valor, Pagador e Recebedor');
+    const camposObrigatorios: { key: keyof BradescoFormData; nome: string }[] = [
+      { key: 'dataHora', nome: 'Data e Hora' },
+      { key: 'numeroControle', nome: 'Número de Controle' },
+      { key: 'nomePagador', nome: 'Nome do Pagador' },
+      { key: 'cpfPagador', nome: 'CPF/CNPJ do Pagador' },
+      { key: 'valor', nome: 'Valor' },
+      { key: 'nomeRecebedor', nome: 'Nome do Recebedor' },
+      { key: 'cpfRecebedor', nome: 'CPF/CNPJ do Recebedor' },
+      { key: 'instituicaoRecebedor', nome: 'Instituição do Recebedor' },
+      { key: 'chavePix', nome: 'Chave Pix' },
+      { key: 'autenticacao', nome: 'Autenticação' },
+    ];
+    const faltando = camposObrigatorios.filter(c => !formData[c.key]?.trim());
+    if (faltando.length > 0) {
+      toast.error(`Preencha: ${faltando.map(c => c.nome).join(', ')}`);
       return;
     }
     if ((credits ?? 0) <= 0) {
