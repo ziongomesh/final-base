@@ -16,6 +16,15 @@ interface RecordItem {
   created_at: string;
 }
 
+const serviceColors: Record<string, { bg: string; text: string; icon: string }> = {
+  CNH: { bg: 'hsl(201 55% 59% / 0.15)', text: 'hsl(201 55% 65%)', icon: 'fa-solid fa-id-card' },
+  RG: { bg: 'hsl(280 60% 55% / 0.15)', text: 'hsl(280 60% 65%)', icon: 'fa-solid fa-user' },
+  CRLV: { bg: 'hsl(140 45% 45% / 0.15)', text: 'hsl(140 45% 55%)', icon: 'fa-solid fa-car' },
+  CHA: { bg: 'hsl(210 70% 50% / 0.15)', text: 'hsl(210 70% 60%)', icon: 'fa-solid fa-anchor' },
+  Estudante: { bg: 'hsl(35 80% 50% / 0.15)', text: 'hsl(35 80% 60%)', icon: 'fa-solid fa-graduation-cap' },
+  Hapvida: { bg: 'hsl(350 60% 50% / 0.15)', text: 'hsl(350 60% 60%)', icon: 'fa-solid fa-file-medical' },
+};
+
 function formatDate(dateStr: string) {
   if (!dateStr) return '';
   try {
