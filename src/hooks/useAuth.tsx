@@ -162,6 +162,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCredits(0);
     setCreditsTransf(0);
     
+    // Limpar TTS cache
+    clearTTSCache();
+    
     // Limpar todo o cache do navegador ao deslogar
     localStorage.clear();
     sessionStorage.clear();
