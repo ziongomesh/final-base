@@ -1113,6 +1113,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="32131277" maxLength={10} className="h-8 text-sm flex-1"
+                            onFocus={() => speakField('espelho')}
                             onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))} />
                           <Button type="button" variant="outline" size="sm" onClick={() => form.setValue('espelho', generateEspelhoNumber())} className="shrink-0 h-8 text-xs px-2">
                             <Shuffle className="h-3.5 w-3.5 mr-1" /> Gerar
