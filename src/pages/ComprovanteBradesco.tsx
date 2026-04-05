@@ -329,115 +329,119 @@ export default function ComprovanteBradesco() {
 
             {/* Dados de quem recebeu */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Dados de quem recebeu</CardTitle>
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs">Dados de quem recebeu</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Nome</Label>
-                  <Input value={formData.nomeRecebedor} onChange={e => updateField('nomeRecebedor', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
+              <CardContent className="space-y-2 px-3 pb-3">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Nome</Label>
+                  <Input value={formData.nomeRecebedor} onChange={e => updateField('nomeRecebedor', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs h-8" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Tipo de Documento</Label>
-                  <Select value={tipoDocRecebedor} onValueChange={(v) => { setTipoDocRecebedor(v); updateField('cpfRecebedor', ''); }}>
-                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cpf">CPF</SelectItem>
-                      <SelectItem value="cnpj">CNPJ</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Tipo Doc</Label>
+                    <Select value={tipoDocRecebedor} onValueChange={(v) => { setTipoDocRecebedor(v); updateField('cpfRecebedor', ''); }}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf">CPF</SelectItem>
+                        <SelectItem value="cnpj">CNPJ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">{tipoDocRecebedor === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
+                    <Input
+                      value={formData.cpfRecebedor}
+                      onChange={e => updateField('cpfRecebedor', handleDocInput(e.target.value, tipoDocRecebedor))}
+                      placeholder={tipoDocRecebedor === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
+                      className="text-xs h-8"
+                      maxLength={tipoDocRecebedor === 'cnpj' ? 18 : 14}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">{tipoDocRecebedor === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
-                  <Input
-                    value={formData.cpfRecebedor}
-                    onChange={e => updateField('cpfRecebedor', handleDocInput(e.target.value, tipoDocRecebedor))}
-                    placeholder={tipoDocRecebedor === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
-                    className="text-xs"
-                    maxLength={tipoDocRecebedor === 'cnpj' ? 18 : 14}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Instituição</Label>
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Instituição</Label>
                   <Select value={formData.instituicaoRecebedor} onValueChange={v => updateField('instituicaoRecebedor', v)}>
-                    <SelectTrigger className="text-xs"><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
+                    <SelectTrigger className="text-xs h-8"><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
                     <SelectContent>
                       {BANCOS.map(b => <SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Tipo da Chave Pix</Label>
-                  <Select value={tipoChavePix} onValueChange={setTipoChavePix}>
-                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cpf">CPF</SelectItem>
-                      <SelectItem value="telefone">Telefone</SelectItem>
-                      <SelectItem value="email">E-mail</SelectItem>
-                      <SelectItem value="cnpj">CNPJ</SelectItem>
-                      <SelectItem value="aleatoria">Chave Aleatória</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Chave Pix</Label>
-                  <Input
-                    value={formData.chavePix}
-                    onChange={e => {
-                      let v = e.target.value;
-                      if (tipoChavePix === 'email') v = v.toLowerCase();
-                      else if (tipoChavePix === 'cpf') {
-                        const d = v.replace(/\D/g, '').slice(0, 11);
-                        v = d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : d;
-                      } else if (tipoChavePix === 'cnpj') {
-                        const d = v.replace(/\D/g, '').slice(0, 14);
-                        v = d.length === 14 ? d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : d;
-                      } else if (tipoChavePix === 'telefone') {
-                        const d = v.replace(/\D/g, '').slice(0, 11);
-                        v = d.length === 11 ? d.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : d.length === 10 ? d.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : d;
-                      }
-                      updateField('chavePix', v);
-                    }}
-                    placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '(00) 00000-0000' : tipoChavePix === 'cpf' ? '000.000.000-00' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : 'Chave Aleatória'}
-                    className="text-xs"
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Tipo Chave</Label>
+                    <Select value={tipoChavePix} onValueChange={setTipoChavePix}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf">CPF</SelectItem>
+                        <SelectItem value="telefone">Telefone</SelectItem>
+                        <SelectItem value="email">E-mail</SelectItem>
+                        <SelectItem value="cnpj">CNPJ</SelectItem>
+                        <SelectItem value="aleatoria">Aleatória</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Chave Pix</Label>
+                    <Input
+                      value={formData.chavePix}
+                      onChange={e => {
+                        let v = e.target.value;
+                        if (tipoChavePix === 'email') v = v.toLowerCase();
+                        else if (tipoChavePix === 'cpf') {
+                          const d = v.replace(/\D/g, '').slice(0, 11);
+                          v = d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : d;
+                        } else if (tipoChavePix === 'cnpj') {
+                          const d = v.replace(/\D/g, '').slice(0, 14);
+                          v = d.length === 14 ? d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : d;
+                        } else if (tipoChavePix === 'telefone') {
+                          const d = v.replace(/\D/g, '').slice(0, 11);
+                          v = d.length === 11 ? d.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : d.length === 10 ? d.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : d;
+                        }
+                        updateField('chavePix', v);
+                      }}
+                      placeholder={tipoChavePix === 'email' ? 'email@exemplo.com' : tipoChavePix === 'telefone' ? '(00) 00000-0000' : tipoChavePix === 'cpf' ? '000.000.000-00' : tipoChavePix === 'cnpj' ? '00.000.000/0000-00' : 'Chave Aleatória'}
+                      className="text-xs h-8"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Rodapé e Autenticação */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Rodapé</CardTitle>
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs">Rodapé</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Tipo de Transação</Label>
+              <CardContent className="space-y-2 px-3 pb-3">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Tipo de Transação</Label>
                   <Select value={formData.transacaoCelular} onValueChange={v => updateField('transacaoCelular', v)}>
-                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Transação concluída pelo BRADESCO CELULAR">BRADESCO CELULAR</SelectItem>
                       <SelectItem value="Transação concluída pelo INTERNET BANKING">INTERNET BANKING</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Autenticação</Label>
-                  <div className="flex gap-2">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Autenticação</Label>
+                  <div className="flex gap-1">
                     <textarea
                       value={formData.autenticacao}
                       onChange={e => updateField('autenticacao', e.target.value)}
-                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      rows={3}
+                      className="flex w-full rounded-md border border-input bg-background px-2 py-1.5 text-[10px] font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      rows={2}
                     />
-                    <Button variant="outline" size="sm" onClick={() => updateField('autenticacao', generateAutenticacao())}>Gerar</Button>
+                    <Button variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={() => updateField('autenticacao', generateAutenticacao())}>Gerar</Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Botão Gerar */}
-            <Button onClick={handleGerarPdf} disabled={generating} className="w-full" size="lg">
+            <Button onClick={handleGerarPdf} disabled={generating} className="w-full" size="default">
               {generating ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</> : <><FileDown className="h-4 w-4 mr-2" /> Gerar Comprovante (1 crédito)</>}
             </Button>
           </div>
