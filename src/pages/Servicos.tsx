@@ -20,6 +20,7 @@ interface Service {
   route: string;
   icon?: React.ElementType;
   iconImage?: string;
+  faIcon?: string;
   exampleImage?: string;
   isHot?: boolean;
   specs?: string[];
