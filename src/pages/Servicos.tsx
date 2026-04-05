@@ -686,15 +686,13 @@ export default function Servicos() {
                   50 serv./semana
                 </Badge>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
-                    Documentos
-                  </h4>
-                  {vipFotoServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
-                    <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
-                  ))}
-                </div>
+              <div className="space-y-2">
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider px-2 pb-1" style={{ color: 'hsla(43, 40%, 55%, 0.7)', borderBottom: '1px solid hsla(43, 40%, 30%, 0.3)' }}>
+                  Documentos
+                </h4>
+                {vipFotoServices.filter(s => s.fotoGroup === 'documentos').map((service) => (
+                  <VipServiceCard key={service.id} service={service} tier={tier} hasCredits={hasCredits} />
+                ))}
               </div>
             </div>
 
