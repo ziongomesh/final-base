@@ -32,7 +32,29 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify rank is sub
+    // LIST plans for reseller (by creator_id) — any authenticated user can fetch
+    if (action === "list_for_reseller") {
+      const { creator_id } = body;
+      if (!creator_id) {
+        return new Response(
+          JSON.stringify({ error: "creator_id obrigatório" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const { data, error } = await supabase
+        .from("sub_recharge_plans")
+        .select("*")
+        .eq("admin_id", creator_id)
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (error) throw error;
+      return new Response(JSON.stringify({ plans: data }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // All other actions require sub rank
     const { data: rankData } = await supabase.rpc("get_admin_rank", { p_admin_id: admin_id });
     if (rankData !== "sub") {
       return new Response(
@@ -47,29 +69,6 @@ Deno.serve(async (req) => {
         .from("sub_recharge_plans")
         .select("*")
         .eq("admin_id", admin_id)
-        .order("sort_order", { ascending: true });
-
-      if (error) throw error;
-      return new Response(JSON.stringify({ plans: data }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // LIST plans for reseller (by creator_id)
-    if (action === "list_for_reseller") {
-      const { creator_id } = body;
-      if (!creator_id) {
-        return new Response(
-          JSON.stringify({ error: "creator_id obrigatório" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      // Any authenticated admin can fetch plans of their creator
-      const { data, error } = await supabase
-        .from("sub_recharge_plans")
-        .select("*")
-        .eq("admin_id", creator_id)
-        .eq("is_active", true)
         .order("sort_order", { ascending: true });
 
       if (error) throw error;
@@ -100,6 +99,9 @@ Deno.serve(async (req) => {
           badge_color: plan.badge_color || "bg-blue-500",
           sort_order: plan.sort_order || 0,
           is_active: plan.is_active !== false,
+          qr_code_image: plan.qr_code_image || "",
+          pix_copy_paste: plan.pix_copy_paste || "",
+          whatsapp_number: plan.whatsapp_number || "",
         })
         .select()
         .single();
@@ -131,10 +133,13 @@ Deno.serve(async (req) => {
           badge_color: plan.badge_color,
           sort_order: plan.sort_order,
           is_active: plan.is_active,
+          qr_code_image: plan.qr_code_image || "",
+          pix_copy_paste: plan.pix_copy_paste || "",
+          whatsapp_number: plan.whatsapp_number || "",
           updated_at: new Date().toISOString(),
         })
         .eq("id", plan.id)
-        .eq("admin_id", admin_id) // Ensure ownership
+        .eq("admin_id", admin_id)
         .select()
         .single();
 
