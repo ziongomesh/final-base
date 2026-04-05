@@ -55,17 +55,19 @@ function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData, s: numbe
 
 export async function generateCNHVerso(
   canvas: HTMLCanvasElement,
-  data: CnhVersoData
+  data: CnhVersoData,
+  scale: number = 1
 ): Promise<void> {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas context not available');
+  const s = scale;
 
-  canvas.width = 1011;
-  canvas.height = 740;
+  canvas.width = 1011 * s;
+  canvas.height = 740 * s;
 
   await loadFont();
-  await drawTemplate(ctx);
-  drawMrzText(ctx, data);
+  await drawTemplate(ctx, s);
+  drawMrzText(ctx, data, s);
 }
 
 export type { CnhVersoData };
