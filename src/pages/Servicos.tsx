@@ -92,12 +92,12 @@ const categories: ServiceCategory[] = [
     title: 'Atestados',
     icon: Stethoscope,
     services: [
-      { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
-      { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'privado' },
-      { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
-      { id: 'atestado-umpa', name: 'UMPA', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
-      { id: 'atestado-ubs', name: 'UBS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
-      { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      { id: 'atestado-hapvida', name: 'HAPVIDA', description: 'Atestado médico - Todos os estados', credits: 1, available: true, route: '/servicos/atestado-hapvida', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'atestado-unimed', name: 'UNIMED', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-stethoscope', specs: ['PDF: Sim'], atestadoGroup: 'privado' },
+      { id: 'atestado-upa24h', name: 'UPA 24H', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      { id: 'atestado-umpa', name: 'UMPA', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-hospital', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      { id: 'atestado-ubs', name: 'UBS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-clinic-medical', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
+      { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, faIcon: 'fa-solid fa-brain', specs: ['PDF: Sim'], atestadoGroup: 'publico' },
     ],
   },
   {
