@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { playSuccessSound } from '@/lib/success-sound';
-import { playWelcomeAudio, clearTTSCache } from '@/lib/tts-service';
+import { playWelcomeAudio, clearTTSCache, speakText } from '@/lib/tts-service';
 
 type AppRole = 'dono' | 'sub' | 'master' | 'revendedor' | null;
 
@@ -150,6 +150,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     const nome = admin?.nome;
+    
+    // Play goodbye audio BEFORE clearing state
+    if (nome) {
+      try {
+        const firstName = nome.split(' ')[0];
+        await speakText(`Até mais, ${firstName}! Volte sempre, chefe!`);
+      } catch {}
+    }
+    
     if (admin) {
       try {
         await api.auth.logout(admin.id);
