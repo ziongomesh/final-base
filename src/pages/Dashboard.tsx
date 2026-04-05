@@ -23,12 +23,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (admin && !loading) {
-      if (admin.rank === 'revendedor') {
-        const tutorialKey = `tutorial_completed_${admin.id}`;
-        if (!localStorage.getItem(tutorialKey)) setShowOnboarding(true);
-      } else if (admin.rank === 'master') {
-        const masterKey = `master_tutorial_completed_${admin.id}`;
-        if (!localStorage.getItem(masterKey)) setShowMasterOnboarding(true);
+      if (!admin.tutorial_completed) {
+        if (admin.rank === 'revendedor') {
+          setShowOnboarding(true);
+        } else if (admin.rank === 'master') {
+          setShowMasterOnboarding(true);
+        }
       }
     }
   }, [admin, loading]);
