@@ -32,7 +32,7 @@ const cnhMesaSchema = z.object({
 type CnhMesaFormData = z.infer<typeof cnhMesaSchema>;
 
 export default function CnhMesa() {
-  const { user } = useAuth();
+  const { admin } = useAuth();
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [previewExpanded, setPreviewExpanded] = useState(false);
