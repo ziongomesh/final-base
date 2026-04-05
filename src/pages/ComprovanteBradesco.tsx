@@ -202,6 +202,15 @@ export default function ComprovanteBradesco() {
                     </Button>
                   </div>
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Nome do Pagador</Label>
+                  <Input
+                    value={formData.nomePagador}
+                    onChange={e => updateField('nomePagador', e.target.value.toUpperCase())}
+                    placeholder="NOME COMPLETO"
+                    className="text-xs"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>

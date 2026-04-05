@@ -49,7 +49,7 @@ const FIELDS: FieldDef[] = [
   // Número de Controle - label bold, value regular
   { key: 'numeroControle', x: pdfPx(79), y: pdfPx(510), size: FONT_SIZE, bold: false, label: 'Número de Controle:   ', labelBold: true },
   // Dados de quem pagou - Nome
-  { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false },
+  { key: 'nomePagador', x: pdfPx(95), y: pdfPx(620), size: FONT_SIZE, bold: false, label: 'Nome:   ', labelBold: true },
   // Dados de quem pagou - CPF
   { key: 'cpfPagador', x: pdfPx(95), y: pdfPx(690), size: FONT_SIZE, bold: false },
   // Dados de quem pagou - Ag/CC
