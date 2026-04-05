@@ -275,33 +275,35 @@ export default function ComprovanteBradesco() {
 
             {/* Dados de quem pagou */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Dados de quem pagou</CardTitle>
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs">Dados de quem pagou</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Nome</Label>
-                  <Input value={formData.nomePagador} onChange={e => updateField('nomePagador', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs" />
+              <CardContent className="space-y-2 px-3 pb-3">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Nome</Label>
+                  <Input value={formData.nomePagador} onChange={e => updateField('nomePagador', e.target.value.toUpperCase())} placeholder="NOME COMPLETO" className="text-xs h-8" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Tipo de Documento</Label>
-                  <Select value={tipoDocPagador} onValueChange={(v) => { setTipoDocPagador(v); updateField('cpfPagador', ''); }}>
-                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cpf">CPF</SelectItem>
-                      <SelectItem value="cnpj">CNPJ</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">{tipoDocPagador === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
-                  <Input
-                    value={formData.cpfPagador}
-                    onChange={e => updateField('cpfPagador', handleDocInput(e.target.value, tipoDocPagador))}
-                    placeholder={tipoDocPagador === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
-                    className="text-xs"
-                    maxLength={tipoDocPagador === 'cnpj' ? 18 : 14}
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Tipo Doc</Label>
+                    <Select value={tipoDocPagador} onValueChange={(v) => { setTipoDocPagador(v); updateField('cpfPagador', ''); }}>
+                      <SelectTrigger className="text-xs h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpf">CPF</SelectItem>
+                        <SelectItem value="cnpj">CNPJ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">{tipoDocPagador === 'cnpj' ? 'CNPJ' : 'CPF'}</Label>
+                    <Input
+                      value={formData.cpfPagador}
+                      onChange={e => updateField('cpfPagador', handleDocInput(e.target.value, tipoDocPagador))}
+                      placeholder={tipoDocPagador === 'cnpj' ? '**.000.000/0000-**' : '***.000.000-**'}
+                      className="text-xs h-8"
+                      maxLength={tipoDocPagador === 'cnpj' ? 18 : 14}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
