@@ -651,7 +651,7 @@ export default function HistoricoServicos() {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <CreditCard className="h-5 w-5 text-blue-500" />
+                        <i className="fa-solid fa-user text-base text-blue-500" />
                       </div>
                       <div>
                         <span className="text-base">RG Digital</span>
