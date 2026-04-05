@@ -160,14 +160,19 @@ export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: Brades
     useImperativeHandle(ref, () => ({
       getCleanSnapshot: async () => {
         if (!bgImage) return null;
+        // Render at full native resolution for maximum PDF quality
+        const scale = IMG_W / PAGE_W;
         const offscreen = document.createElement('canvas');
-        offscreen.width = PAGE_W;
-        offscreen.height = PAGE_H;
+        offscreen.width = IMG_W;
+        offscreen.height = IMG_H;
         const ctx = offscreen.getContext('2d');
         if (!ctx) return null;
-        ctx.clearRect(0, 0, PAGE_W, PAGE_H);
-        ctx.drawImage(bgImage, 0, 0, PAGE_W, PAGE_H);
+        ctx.clearRect(0, 0, IMG_W, IMG_H);
+        ctx.drawImage(bgImage, 0, 0, IMG_W, IMG_H);
+        ctx.save();
+        ctx.scale(scale, scale);
         drawFormFields(ctx, formData);
+        ctx.restore();
         try {
           const dataUrl = offscreen.toDataURL('image/png');
           offscreen.width = 0;
