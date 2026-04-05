@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
+import { useCpfCheck } from '@/hooks/useCpfCheck';
+import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import { Navigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
