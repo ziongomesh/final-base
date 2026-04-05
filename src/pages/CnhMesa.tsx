@@ -52,7 +52,7 @@ export default function CnhMesa() {
     },
   });
 
-  if (!user) return <Navigate to="/login" />;
+  if (!admin) return <Navigate to="/login" />;
 
   const watchedValues = form.watch();
 
