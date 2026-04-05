@@ -174,17 +174,22 @@ export default function MasterOnboardingWizard({ userName, adminId, onClose }: M
             {step === 'tips' && (
               <div className="space-y-4">
                 <div className="space-y-3">
-                  {[
-                    { color: 'green', text: 'Comece criando 2-3 revendedores e acompanhe o desempenho deles' },
-                    { color: 'blue', text: 'Recarregue em volume maior para pagar menos por crédito' },
-                    { color: 'amber', text: 'Fique de olho nos revendedores inativos - mantê-los ativos é essencial' },
-                    { color: 'purple', text: 'Use o histórico de transferências para definir metas mensais' },
-                  ].map((tip, i) => (
-                    <div key={i} className={`p-3 rounded-lg bg-gradient-to-r from-${tip.color}-500/10 to-transparent border border-${tip.color}-500/20`}>
-                      <p className={`text-sm font-medium text-${tip.color}-600 dark:text-${tip.color}-400`}>💡 Dica {i + 1}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{tip.text}</p>
-                    </div>
-                  ))}
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/20">
+                    <p className="text-sm font-medium text-green-600 dark:text-green-400">💡 Dica 1</p>
+                    <p className="text-xs text-muted-foreground mt-1">Comece criando 2-3 revendedores e acompanhe o desempenho deles</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-transparent border border-blue-500/20">
+                    <p className="text-sm font-medium text-blue-600 dark:text-blue-400">💡 Dica 2</p>
+                    <p className="text-xs text-muted-foreground mt-1">Recarregue em volume maior para pagar menos por crédito</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-transparent border border-amber-500/20">
+                    <p className="text-sm font-medium text-amber-600 dark:text-amber-400">💡 Dica 3</p>
+                    <p className="text-xs text-muted-foreground mt-1">Fique de olho nos revendedores inativos - mantê-los ativos é essencial</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20">
+                    <p className="text-sm font-medium text-purple-600 dark:text-purple-400">💡 Dica 4</p>
+                    <p className="text-xs text-muted-foreground mt-1">Use o histórico de transferências para definir metas mensais</p>
+                  </div>
                 </div>
                 <Button onClick={handleFinish} className="w-full gap-2"><Rocket className="h-4 w-4" /> Começar a usar!</Button>
               </div>
