@@ -16,6 +16,17 @@ import iconCie from '@/assets/icon-cie.png';
 import iconPagmeia from '@/assets/icon-pagmeia.png';
 import iconUpa24h from '@/assets/icon-upa24h.png';
 import iconUnimed from '@/assets/icon-unimed.png';
+import iconBradesco from '@/assets/icon-bradesco.png';
+import iconPicpay from '@/assets/icon-picpay.png';
+import iconItau from '@/assets/icon-itau.png';
+import iconNubank from '@/assets/icon-nubank.png';
+import iconC6bank from '@/assets/icon-c6bank.png';
+import iconInter from '@/assets/icon-inter.png';
+import iconSantander from '@/assets/icon-santander.png';
+import icon99pay from '@/assets/icon-99pay.png';
+import iconDetran from '@/assets/icon-detran.png';
+import iconOab from '@/assets/icon-oab.png';
+import iconCrm from '@/assets/icon-crm.png';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -60,16 +71,16 @@ const categories: ServiceCategory[] = [
     title: 'Documentos em Foto',
     icon: Camera,
     services: [
-      { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 1, available: false, route: '#', icon: IdCard, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 1, available: false, route: '#', icon: FileText, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
-      { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+      { id: 'foto-crm', name: 'CARTEIRA CRM', description: 'Carteira do Conselho Regional de Medicina', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconCrm, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-oab', name: 'CARTEIRA OAB', description: 'Carteira da Ordem dos Advogados do Brasil', credits: 1, available: false, route: '#', icon: IdCard, iconImage: iconOab, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'foto-cnh', name: 'CARTEIRA DE HABILITAÇÃO', description: 'CNH em formato foto', credits: 1, available: false, route: '#', icon: FileText, iconImage: iconCnh, specs: ['Foto: Sim'], fotoGroup: 'documentos' },
+      { id: 'cc-itau', name: 'ITAÚ', description: 'Cartão de crédito Itaú', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconItau, fotoGroup: 'cartoes' },
+      { id: 'cc-bradesco', name: 'BRADESCO', description: 'Cartão de crédito Bradesco', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconBradesco, fotoGroup: 'cartoes' },
+      { id: 'cc-nubank', name: 'NUBANK', description: 'Cartão de crédito Nubank', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconNubank, fotoGroup: 'cartoes' },
+      { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconPicpay, fotoGroup: 'cartoes' },
+      { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconSantander, fotoGroup: 'cartoes' },
       { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-      { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 1, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
+      { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 1, available: false, route: '#', icon: CreditCard, iconImage: iconC6bank, fotoGroup: 'cartoes' },
     ],
   },
   {
@@ -86,7 +97,7 @@ const categories: ServiceCategory[] = [
     title: 'Veículos',
     icon: Car,
     services: [
-      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, hasQr: true },
+      { id: 'crlv-digital', name: 'CRLV QRCODE ON', description: 'Certificado de Registro e Licenciamento de Veículo', credits: 1, available: true, route: '/servicos/crlv-digital', icon: Car, iconImage: iconDetran, hasQr: true },
     ],
   },
   {
@@ -104,13 +115,13 @@ const categories: ServiceCategory[] = [
     title: 'Comprovantes',
     icon: Receipt,
     services: [
-      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt },
-      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt },
-      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt },
-      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt },
-      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt },
-      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt },
-      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt },
+      { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt, iconImage: iconBradesco },
+      { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt, iconImage: iconPicpay },
+      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconItau },
+      { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconNubank },
+      { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconC6bank },
+      { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt, iconImage: icon99pay },
+      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt, iconImage: iconInter },
     ],
   },
   {
