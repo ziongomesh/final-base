@@ -133,6 +133,7 @@ export const BradescoPreview = forwardRef<BradescoPreviewRef, { formData: Brades
   function BradescoPreview({ formData }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [bgImage, setBgImage] = useState<HTMLImageElement | null>(null);
+    const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
     const [ready, setReady] = useState(false);
     const rafRef = useRef<number>(0);
 
