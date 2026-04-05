@@ -282,8 +282,7 @@ export function LoginForm() {
           onClick={() => setShowCreateAccount(false)}
         >
           <div
-            className="border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 space-y-6 shadow-2xl"
-            style={{ background: 'hsl(220 25% 8%)' }}
+            className="border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 space-y-6 shadow-2xl backdrop-blur-xl bg-white/[0.03]"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold text-white text-center">Criar uma Conta</h2>
