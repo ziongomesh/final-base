@@ -540,14 +540,12 @@ export default function Servicos() {
               </div>
               {/* Right - Small Circle Image */}
               <div
-                className="shrink-0 h-20 w-20 rounded-full overflow-hidden"
-                style={{
-                  border: '2px solid hsl(220, 15%, 20%)',
-                }}
+                className="shrink-0 h-12 w-12 rounded-full overflow-hidden"
+                style={{ border: '1.5px solid hsl(220, 15%, 20%)' }}
               >
                 <img
                   src={vipBanner}
-                  alt="Preview Área Exclusiva"
+                  alt="Preview"
                   className="w-full h-full object-cover"
                 />
               </div>
