@@ -32,7 +32,7 @@ export default function MasterOnboardingWizard({ userName, adminId, onClose }: M
     if (!audioEnabled) return;
     setIsSpeaking(true);
     const script = AUDIO_SCRIPTS[stepKey]?.replace('{name}', userName) || '';
-    await speakAndTrack(script);
+    await speakAndTrack(script, 'k3f7zOv6LF88v78QHCNh');
     setIsSpeaking(false);
   }, [audioEnabled, userName]);
 
