@@ -310,19 +310,19 @@ export default function ComprovanteBradesco() {
 
             {/* Dados da Transação */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Dados da Transação</CardTitle>
+              <CardHeader className="pb-2 pt-3 px-3">
+                <CardTitle className="text-xs">Dados da Transação</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Valor</Label>
+              <CardContent className="px-3 pb-3">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Valor</Label>
                   <Input value={formData.valor} onChange={e => {
                     const raw = e.target.value.replace(/\D/g, '');
                     if (!raw) { updateField('valor', ''); return; }
                     const num = parseInt(raw, 10);
                     const formatted = (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     updateField('valor', formatted);
-                  }} placeholder="0,00" className="text-xs" />
+                  }} placeholder="0,00" className="text-xs h-8" />
                 </div>
               </CardContent>
             </Card>
