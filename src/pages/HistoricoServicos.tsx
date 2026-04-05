@@ -612,7 +612,7 @@ export default function HistoricoServicos() {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <IdCard className="h-5 w-5 text-primary" />
+                        <i className="fa-solid fa-id-card text-base text-primary" />
                       </div>
                       <div>
                         <span className="text-base">CNH Digital</span>
@@ -651,7 +651,7 @@ export default function HistoricoServicos() {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <CreditCard className="h-5 w-5 text-blue-500" />
+                        <i className="fa-solid fa-user text-base text-blue-500" />
                       </div>
                       <div>
                         <span className="text-base">RG Digital</span>
@@ -690,7 +690,7 @@ export default function HistoricoServicos() {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Anchor className="h-5 w-5 text-primary" />
+                        <i className="fa-solid fa-anchor text-base text-primary" />
                       </div>
                       <div>
                         <span className="text-base">Arrais Náutica</span>
@@ -1056,7 +1056,7 @@ function EstudanteHistoryCard({
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{registro.nome}</h3>
               <Badge variant="outline" className="text-[10px]">
-                <GraduationCap className="h-3 w-3 mr-1" /> Estudante
+                <i className="fa-solid fa-graduation-cap text-[10px] mr-1" /> Estudante
               </Badge>
               <ExpirationBadge dataExpiracao={registro.data_expiracao || null} />
             </div>
@@ -1139,7 +1139,7 @@ function NauticaHistoryCard({
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{registro.nome}</h3>
               <Badge variant="outline" className="text-[10px]">
-                <Anchor className="h-3 w-3 mr-1" /> Náutica
+                <i className="fa-solid fa-anchor text-[10px] mr-1" /> Náutica
               </Badge>
               <ExpirationBadge dataExpiracao={registro.expires_at} />
             </div>

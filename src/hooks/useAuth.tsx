@@ -150,41 +150,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     const nome = admin?.nome;
+    const adminId = admin?.id;
     
-    // Play goodbye audio BEFORE clearing state
-    if (nome) {
-      try {
-        const firstName = nome.split(' ')[0];
-        await speakText(`Até mais, ${firstName}! Volte sempre, chefe!`);
-      } catch {}
-    }
-    
-    if (admin) {
-      try {
-        await api.auth.logout(admin.id);
-      } catch (error) {
-        // Silently fail - still clear local state
-      }
-    }
-    
+    // Clear state and storage FIRST to guarantee logout
     setAdmin(null);
     setRole(null);
     setCredits(0);
     setCreditsTransf(0);
-    
-    // Limpar TTS cache
     clearTTSCache();
-    
-    // Limpar todo o cache do navegador ao deslogar
     localStorage.clear();
     sessionStorage.clear();
-    
-    // Limpar caches do Service Worker / Cache API se existirem
     if ('caches' in window) {
       caches.keys().then(names => names.forEach(name => caches.delete(name)));
     }
-    
+
+    // Notify backend (fire and forget)
+    if (adminId) {
+      api.auth.logout(adminId).catch(() => {});
+    }
+
     toast.info(`Até logo, ${nome || 'usuário'}!`, { description: 'Sessão encerrada' });
+
+    // Play goodbye audio AFTER logout (non-blocking)
+    if (nome) {
+      const firstName = nome.split(' ')[0];
+      speakText(`Até mais, ${firstName}! Volte sempre, chefe!`).catch(() => {});
+    }
   };
 
   const updateAdmin = (updatedAdmin: Admin) => {
