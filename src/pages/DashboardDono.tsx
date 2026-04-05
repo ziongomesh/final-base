@@ -591,6 +591,7 @@ export default function DashboardDono() {
             <TabsTrigger value="audit" className="text-[10px] sm:text-xs px-2 sm:px-3 shrink-0">Histórico</TabsTrigger>
             {!isSub && <TabsTrigger value="ranking" className="text-[10px] sm:text-xs px-2 sm:px-3 shrink-0">Ranking</TabsTrigger>}
             <TabsTrigger value="noticias" className="text-[10px] sm:text-xs px-2 sm:px-3 shrink-0">Notícias</TabsTrigger>
+            {isSub && <TabsTrigger value="plans" className="text-[10px] sm:text-xs px-2 sm:px-3 shrink-0" onClick={() => { if (subPlans.length === 0) fetchSubPlans(); }}>Planos</TabsTrigger>}
             <TabsTrigger value="manage" className="text-[10px] sm:text-xs px-2 sm:px-3 shrink-0">Gerenciar</TabsTrigger>
           </TabsList>
 
