@@ -740,6 +740,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">Nome Completo <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="PEDRO DA SILVA GOMES" className="h-8 text-sm"
+                          onFocus={() => speakField('nome')}
                           onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-ZÁÀÂÃÇÉÊÍÓÔÕÚÜ\s]/g, ''))}
                         />
                       </FormControl>
