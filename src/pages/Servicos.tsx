@@ -475,18 +475,6 @@ export default function Servicos() {
   const tierLabel = getVipLabel(tier);
   const tierCredits = getVipCredits(tier);
 
-  // CNH NA MESA is the first available VIP service
-  const cnhNaMesa: Service = {
-    id: 'cnh-na-mesa',
-    name: 'CNH NA MESA',
-    description: 'Geração completa direto na mesa — sem computador',
-    credits: tierCredits,
-    available: true,
-    route: '/servicos/cnh-mesa',
-    icon: Zap,
-    iconImage: iconCnh,
-    specs: ['QR Code: Sim', 'PDF: Sim', 'Exclusivo VIP'],
-  };
 
   return (
     <DashboardLayout>
@@ -643,13 +631,6 @@ export default function Servicos() {
               </div>
             </div>
 
-            {/* ── CNH NA MESA — Featured ── */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                Serviços VIP Exclusivos
-              </h3>
-              <VipServiceCard service={cnhNaMesa} tier={tier} hasCredits={hasCredits} />
-            </div>
 
             {/* ── Docs em Foto ── */}
             <div className="space-y-2">
