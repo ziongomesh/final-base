@@ -28,7 +28,7 @@ export function drawLogoWatermarks(
   logoImg: HTMLImageElement,
   options?: { size?: number; opacity?: number; angle?: number }
 ) {
-  const size = options?.size || Math.round(canvasWidth * 0.08);
+  const size = options?.size || Math.round(canvasWidth * 0.18);
   const opacity = options?.opacity || 0.07;
   const angle = options?.angle || -Math.PI / 6;
   const spacingX = size * 2.5;
