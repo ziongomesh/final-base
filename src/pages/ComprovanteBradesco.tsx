@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,13 @@ export default function ComprovanteBradesco() {
   const [tipoChavePix, setTipoChavePix] = useState<string>('email');
   const [tipoDocPagador, setTipoDocPagador] = useState<string>('cpf');
   const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
+  const [hasTouched, setHasTouched] = useState(false);
+
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    if (hasTouched) setFormDirty(true);
+    return () => setFormDirty(false);
+  }, [hasTouched, setFormDirty]);
 
   const generateControle = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -100,6 +108,7 @@ export default function ComprovanteBradesco() {
   });
 
   const updateField = useCallback((key: keyof BradescoFormData, value: string) => {
+    setHasTouched(true);
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
@@ -202,6 +211,7 @@ export default function ComprovanteBradesco() {
         transacaoCelular: 'Transação concluída pelo BRADESCO CELULAR',
         autenticacao: generateAutenticacao(),
       });
+      setHasTouched(false);
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Erro ao gerar PDF:', err);

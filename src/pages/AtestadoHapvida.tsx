@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
+import { useCpfCheck } from '@/hooks/useCpfCheck';
+import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import { Navigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -185,6 +188,27 @@ export default function AtestadoHapvida() {
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [criadoEm, setCriadoEm] = useState('');
+
+  // Form guard
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    if (nomePaciente || cpfPaciente) setFormDirty(true);
+    else setFormDirty(false);
+    return () => setFormDirty(false);
+  }, [nomePaciente, cpfPaciente, setFormDirty]);
+
+  // CPF duplicate check
+  const cpfCheck = useCpfCheck({
+    admin_id: admin?.id || 0,
+    session_token: admin?.session_token || '',
+    service_type: 'hapvida',
+  });
+
+  useEffect(() => {
+    if (cpfPaciente.replace(/\D/g, '').length === 11) {
+      cpfCheck.checkCpf(cpfPaciente);
+    }
+  }, [cpfPaciente]);
 
   // Toast inicial ao entrar no módulo
   useEffect(() => {
@@ -940,6 +964,13 @@ export default function AtestadoHapvida() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <CpfDuplicateModal
+        open={cpfCheck.showDuplicateModal}
+        onClose={cpfCheck.dismissModal}
+        result={cpfCheck.cpfDuplicate}
+        serviceLabel="Atestado Hapvida"
+      />
     </DashboardLayout>
   );
 }

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFormGuard } from '@/hooks/useFormGuard';
+import { useCpfCheck } from '@/hooks/useCpfCheck';
+import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -67,6 +69,12 @@ export default function CarteiraEstudante() {
   const [abafeIphone, setAbafeIphone] = useState('');
   const [showGallery, setShowGallery] = useState(false);
 
+  const cpfCheck = useCpfCheck({
+    admin_id: admin?.id || 0,
+    session_token: admin?.session_token || '',
+    service_type: 'estudante',
+  });
+
   useEffect(() => {
     const loadLinks = async () => {
       try {
@@ -104,6 +112,13 @@ export default function CarteiraEstudante() {
     });
     return () => { sub.unsubscribe(); setFormDirty(false); };
   }, [form, setFormDirty]);
+
+  // CPF check on change
+  const watchedCpf = form.watch('cpf');
+  useEffect(() => {
+    const clean = (watchedCpf || '').replace(/\D/g, '');
+    if (clean.length === 11) cpfCheck.checkCpf(watchedCpf);
+  }, [watchedCpf]);
 
   const handleFileUpload = (file: File) => {
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
@@ -452,6 +467,13 @@ export default function CarteiraEstudante() {
           sessionToken={admin.session_token}
         />
       )}
+
+      <CpfDuplicateModal
+        open={cpfCheck.showDuplicateModal}
+        onClose={cpfCheck.dismissModal}
+        result={cpfCheck.cpfDuplicate}
+        serviceLabel="Carteira Estudante"
+      />
     </DashboardLayout>
   );
 }

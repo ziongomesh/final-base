@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useFormGuard } from '@/hooks/useFormGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,14 @@ export default function ComprovantePicpay() {
   const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
   const [tipoDocRemetente, setTipoDocRemetente] = useState<string>('cpf');
   const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
+  const [hasTouched, setHasTouched] = useState(false);
+
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    if (hasTouched) setFormDirty(true);
+    return () => setFormDirty(false);
+  }, [hasTouched, setFormDirty]);
+
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
@@ -53,6 +62,7 @@ export default function ComprovantePicpay() {
   });
 
   const updateField = useCallback((key: keyof PicpayFormData, value: string) => {
+    setHasTouched(true);
     setFormData(prev => ({ ...prev, [key]: value }));
   }, []);
 
@@ -153,6 +163,22 @@ export default function ComprovantePicpay() {
       }
 
       await refreshCredits();
+
+      // Reset form
+      setFormData({
+        dataHora: '',
+        valor: '',
+        nomeRemetente: '',
+        cpfPara: '',
+        bancoRecebedor: '',
+        nomeRecebedor: '',
+        cpfDe: '',
+        bancoRemetente: 'PICPAY',
+        idTransacao: '',
+        chavePix: '',
+        agencia: '',
+      });
+      setHasTouched(false);
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Erro ao gerar PDF:', err);
