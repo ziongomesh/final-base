@@ -231,20 +231,20 @@ export default function ComprovanteBradesco() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 animate-fade-in">
+      <div className="space-y-3 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Comprovante PIX Bradesco</h1>
-            <p className="text-muted-foreground text-sm">Preencha os dados e gere o comprovante</p>
+            <h1 className="text-xl font-bold text-foreground">Comprovante PIX Bradesco</h1>
+            <p className="text-muted-foreground text-xs">Preencha os dados e gere o comprovante</p>
           </div>
           <Button variant="outline" size="sm" className="lg:hidden" onClick={() => setShowMobilePreview(true)}>
             <Eye className="h-4 w-4 mr-1" /> Preview
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Form */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Dados Gerais */}
             <Card>
               <CardHeader className="pb-3">
