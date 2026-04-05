@@ -44,7 +44,7 @@ export async function speakText(text: string, voiceId?: string): Promise<HTMLAud
 // Play welcome message on login
 export async function playWelcomeAudio(userName: string): Promise<HTMLAudioElement | null> {
   const text = `Opa ${userName}! Bem-vindo de volta à base. Bom trabalho!`;
-  return speakText(text);
+  return speakText(text, 'k3f7zOv6LF88v78QHCNh');
 }
 
 // Stop any playing audio

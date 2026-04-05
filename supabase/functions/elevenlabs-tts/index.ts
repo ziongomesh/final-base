@@ -29,8 +29,8 @@ serve(async (req) => {
       );
     }
 
-    // Use a Brazilian Portuguese voice - "Roger" by default, can be overridden
-    const selectedVoice = voiceId || "CwhRBWXzGAHq8TQ4Fs17"; // Roger
+    // Use the provided voice ID or default
+    const selectedVoice = voiceId || "k3f7zOv6LF88v78QHCNh";
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}?output_format=mp3_22050_32`,
