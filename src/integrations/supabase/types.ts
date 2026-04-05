@@ -450,9 +450,12 @@ export type Database = {
           id: number
           is_active: boolean
           name: string
+          pix_copy_paste: string | null
+          qr_code_image: string | null
           sort_order: number | null
           total: number
           updated_at: string
+          whatsapp_number: string | null
         }
         Insert: {
           admin_id: number
@@ -465,9 +468,12 @@ export type Database = {
           id?: number
           is_active?: boolean
           name: string
+          pix_copy_paste?: string | null
+          qr_code_image?: string | null
           sort_order?: number | null
           total: number
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Update: {
           admin_id?: number
@@ -480,9 +486,12 @@ export type Database = {
           id?: number
           is_active?: boolean
           name?: string
+          pix_copy_paste?: string | null
+          qr_code_image?: string | null
           sort_order?: number | null
           total?: number
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }

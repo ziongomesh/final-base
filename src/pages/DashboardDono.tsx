@@ -179,9 +179,11 @@ export default function DashboardDono() {
   const [savingNoticia, setSavingNoticia] = useState(false);
 
   // Sub recharge plans state
-  interface SubPlan { id?: number; admin_id?: number; name: string; credits: number; base_credits: number; bonus: number; total: number; badge: string; badge_color: string; sort_order: number; is_active: boolean; }
+  interface SubPlan { id?: number; admin_id?: number; name: string; credits: number; base_credits: number; bonus: number; total: number; badge: string; badge_color: string; sort_order: number; is_active: boolean; qr_code_image: string; pix_copy_paste: string; whatsapp_number: string; }
+  const emptySubPlan: SubPlan = { name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true, qr_code_image: '', pix_copy_paste: '', whatsapp_number: '' };
   const [subPlans, setSubPlans] = useState<SubPlan[]>([]);
-  const [subPlanForm, setSubPlanForm] = useState<SubPlan>({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+  const [subPlanForm, setSubPlanForm] = useState<SubPlan>(emptySubPlan);
+  const [showSubPreview, setShowSubPreview] = useState(false);
   const [editingSubPlan, setEditingSubPlan] = useState<SubPlan | null>(null);
   const [savingSubPlan, setSavingSubPlan] = useState(false);
   const [loadingSubPlans, setLoadingSubPlans] = useState(false);
@@ -212,7 +214,7 @@ export default function DashboardDono() {
       });
       if (error) throw error;
       toast.success(editingSubPlan ? 'Plano atualizado!' : 'Plano criado!');
-      setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+      setSubPlanForm(emptySubPlan);
       setEditingSubPlan(null);
       fetchSubPlans();
     } catch (e: any) { toast.error(e.message || 'Erro ao salvar plano'); }
@@ -1287,9 +1289,11 @@ export default function DashboardDono() {
                       <CreditCard className="h-5 w-5 text-primary" />
                       {editingSubPlan ? 'Editar Plano' : 'Criar Novo Plano'}
                     </CardTitle>
-                    <CardDescription>Gerencie os planos de recarga que seus revendedores verão</CardDescription>
+                    <CardDescription>Configure planos de recarga, QR Code PIX e WhatsApp para seus revendedores</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Basic info */}
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Dados do Plano</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       <div className="space-y-1">
                         <Label className="text-xs">Nome do Plano</Label>
@@ -1336,6 +1340,35 @@ export default function DashboardDono() {
                         <Input type="number" value={subPlanForm.sort_order || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, sort_order: Number(e.target.value) }))} placeholder="0" />
                       </div>
                     </div>
+
+                    {/* PIX & WhatsApp */}
+                    <div className="border-t pt-4" />
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">PIX & WhatsApp</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Imagem QR Code (URL)</Label>
+                        <Input value={subPlanForm.qr_code_image} onChange={(e) => setSubPlanForm(f => ({ ...f, qr_code_image: e.target.value }))} placeholder="https://... (cole a URL da imagem do QR)" />
+                        {subPlanForm.qr_code_image && (
+                          <div className="mt-2 flex justify-center">
+                            <img src={subPlanForm.qr_code_image} alt="QR Preview" className="w-24 h-24 rounded-lg border object-contain bg-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">PIX Copia e Cola</Label>
+                        <Textarea
+                          value={subPlanForm.pix_copy_paste}
+                          onChange={(e) => setSubPlanForm(f => ({ ...f, pix_copy_paste: e.target.value }))}
+                          placeholder="Cole o código PIX copia e cola aqui"
+                          className="text-xs min-h-[80px]"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">WhatsApp (número com DDD)</Label>
+                        <Input value={subPlanForm.whatsapp_number} onChange={(e) => setSubPlanForm(f => ({ ...f, whatsapp_number: e.target.value }))} placeholder="11999999999" />
+                      </div>
+                    </div>
+
                     <div className="flex gap-2">
                       <Button onClick={handleSaveSubPlan} disabled={savingSubPlan} className="flex-1">
                         {savingSubPlan ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
@@ -1344,12 +1377,83 @@ export default function DashboardDono() {
                       {editingSubPlan && (
                         <Button variant="outline" onClick={() => {
                           setEditingSubPlan(null);
-                          setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+                          setSubPlanForm(emptySubPlan);
                         }}>Cancelar</Button>
                       )}
+                      <Button variant="outline" onClick={() => setShowSubPreview(!showSubPreview)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Preview */}
+                {showSubPreview && subPlans.length > 0 && (
+                  <Card className="border-primary/30">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Eye className="h-5 w-5 text-primary" />
+                        Preview — Como os revendedores veem
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-2">
+                        {subPlans.filter(p => p.is_active).map((plan) => (
+                          <div
+                            key={plan.id}
+                            className="py-2.5 px-2 rounded-lg border-2 border-border text-center relative bg-card"
+                          >
+                            {plan.badge && (
+                              <Badge className={`${plan.badge_color} text-white text-[8px] px-1.5 py-0 absolute -top-2 left-1/2 -translate-x-1/2`}>
+                                {plan.badge}
+                              </Badge>
+                            )}
+                            <p className="text-sm font-bold text-primary">{plan.credits} créditos</p>
+                            <p className="text-xs text-foreground font-medium">
+                              R$ {Number(plan.total).toFixed(2).replace('.', ',')}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                              R$ {(Number(plan.total) / plan.credits).toFixed(2).replace('.', ',')} /un
+                            </p>
+                            {plan.bonus > 0 && (
+                              <p className="text-[10px] text-green-500 font-medium">+{plan.bonus} bônus</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Show QR & buttons preview for first plan that has QR */}
+                      {(() => {
+                        const planWithQr = subPlans.find(p => p.is_active && (p as any).qr_code_image);
+                        if (!planWithQr) return null;
+                        return (
+                          <div className="border-t pt-4 space-y-3">
+                            <p className="text-xs font-semibold text-muted-foreground">Após selecionar um plano, o revendedor vê:</p>
+                            <div className="flex flex-col items-center gap-3 bg-muted/30 rounded-xl p-4">
+                              {(planWithQr as any).qr_code_image && (
+                                <img src={(planWithQr as any).qr_code_image} alt="QR Code PIX" className="w-32 h-32 rounded-lg border object-contain bg-white" />
+                              )}
+                              {(planWithQr as any).pix_copy_paste && (
+                                <div className="w-full bg-card border rounded-lg p-2 text-center">
+                                  <p className="text-[10px] text-muted-foreground mb-1">Código PIX Copia e Cola</p>
+                                  <p className="text-xs font-mono break-all">{(planWithQr as any).pix_copy_paste.slice(0, 60)}...</p>
+                                </div>
+                              )}
+                              <div className="flex gap-2 w-full">
+                                <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" size="sm">
+                                  ✅ Já enviei
+                                </Button>
+                                <Button variant="outline" className="flex-1" size="sm">
+                                  💬 Falar com Admin
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Plans List */}
                 <Card>
@@ -1371,6 +1475,7 @@ export default function DashboardDono() {
                               <TableHead className="text-xs">Base + Bônus</TableHead>
                               <TableHead className="text-xs">Valor</TableHead>
                               <TableHead className="text-xs">Badge</TableHead>
+                              <TableHead className="text-xs">QR/PIX</TableHead>
                               <TableHead className="text-xs">Status</TableHead>
                               <TableHead className="text-xs">Ações</TableHead>
                             </TableRow>
@@ -1386,6 +1491,13 @@ export default function DashboardDono() {
                                   {plan.badge && <Badge className={`${plan.badge_color} text-white text-[10px]`}>{plan.badge}</Badge>}
                                 </TableCell>
                                 <TableCell>
+                                  <div className="flex gap-1">
+                                    {(plan as any).qr_code_image && <Badge variant="outline" className="text-[8px]">QR</Badge>}
+                                    {(plan as any).pix_copy_paste && <Badge variant="outline" className="text-[8px]">PIX</Badge>}
+                                    {(plan as any).whatsapp_number && <Badge variant="outline" className="text-[8px]">WA</Badge>}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
                                   <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-[10px]">
                                     {plan.is_active ? 'Ativo' : 'Inativo'}
                                   </Badge>
@@ -1398,6 +1510,7 @@ export default function DashboardDono() {
                                         name: plan.name, credits: plan.credits, base_credits: plan.base_credits,
                                         bonus: plan.bonus, total: Number(plan.total), badge: plan.badge,
                                         badge_color: plan.badge_color, sort_order: plan.sort_order, is_active: plan.is_active,
+                                        qr_code_image: (plan as any).qr_code_image || '', pix_copy_paste: (plan as any).pix_copy_paste || '', whatsapp_number: (plan as any).whatsapp_number || '',
                                       });
                                     }}>
                                       <Pencil className="h-3 w-3" />

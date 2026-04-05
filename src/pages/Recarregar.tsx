@@ -836,6 +836,9 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   const [recargaDobro, setRecargaDobro] = useState(false);
   const [customPlans, setCustomPlans] = useState<typeof RESELLER_PACKAGES>([]);
   const [customPromoPlans, setCustomPromoPlans] = useState<typeof RESELLER_PROMO_PACKAGES>([]);
+  const [customPlansRaw, setCustomPlansRaw] = useState<any[]>([]);
+  const [selectedCustomPlan, setSelectedCustomPlan] = useState<any>(null);
+  const [pixCopied, setPixCopied] = useState(false);
 
   const hasPlayedSound = useRef(false);
   const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -931,6 +934,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                     badge: p.badge || '',
                     badgeColor: p.badge_color || 'bg-blue-500',
                   }));
+                  setCustomPlansRaw(plansData.plans);
                   // Split: first 4 as regular, rest as promo
                   setCustomPlans(mapped.slice(0, 4));
                   if (mapped.length > 4) setCustomPromoPlans(mapped.slice(4));
@@ -980,6 +984,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   }, []);
 
   const canRechargeDirectly = creatorId === 3;
+  const hasCustomPlans = customPlansRaw.length > 0;
 
   const startPaymentVerification = (transactionId: string) => {
     if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
@@ -1094,7 +1099,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
     );
   }
 
-  if (!canRechargeDirectly) {
+  if (!canRechargeDirectly && !hasCustomPlans) {
     return (
       <DashboardLayout>
         <div className="space-y-6 animate-fade-in max-w-2xl mx-auto">
@@ -1168,6 +1173,180 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
               </div>
             </CardContent>
           </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // ===== REVENDEDOR COM PLANOS CUSTOMIZADOS (Sub-Dono) =====
+  if (!canRechargeDirectly && hasCustomPlans) {
+    const getWhatsappUrl = (plan?: any) => {
+      const waNumber = plan?.whatsapp_number || customPlansRaw[0]?.whatsapp_number || '';
+      if (!waNumber) return null;
+      const digits = waNumber.replace(/\D/g, '');
+      return `https://wa.me/55${digits}`;
+    };
+
+    return (
+      <DashboardLayout>
+        <div className="space-y-4 animate-fade-in max-w-2xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-extrabold text-foreground tracking-tight">Recarregar Créditos</h1>
+              <p className="text-xs text-muted-foreground">Escolha um plano e realize o pagamento via PIX</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground">Saldo atual</p>
+              <p className="text-lg font-bold text-primary">{credits} créditos</p>
+            </div>
+          </div>
+
+          {/* Plans grid */}
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Tag className="h-5 w-5 text-primary" />
+                Planos Disponíveis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 pt-0 space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                {customPlansRaw.filter(p => p.is_active).map((plan) => {
+                  const isSelected = selectedCustomPlan?.id === plan.id;
+                  return (
+                    <button
+                      key={plan.id}
+                      onClick={() => setSelectedCustomPlan(plan)}
+                      className={`py-2.5 px-2 rounded-lg border-2 transition-all text-center relative bg-card hover:bg-muted/30 ${
+                        isSelected ? 'border-primary bg-primary/5 ring-2 ring-primary/30' : 'border-border hover:border-primary/60'
+                      }`}
+                    >
+                      {plan.badge && (
+                        <Badge className={`${plan.badge_color} text-white text-[8px] px-1.5 py-0 absolute -top-2 left-1/2 -translate-x-1/2`}>
+                          {plan.badge}
+                        </Badge>
+                      )}
+                      <p className="text-sm font-bold text-primary">{plan.credits} créditos</p>
+                      <p className="text-xs text-foreground font-medium">
+                        R$ {Number(plan.total).toFixed(2).replace('.', ',')}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        R$ {(Number(plan.total) / plan.credits).toFixed(2).replace('.', ',')} /un
+                      </p>
+                      {plan.bonus > 0 && (
+                        <p className="text-[10px] text-green-500 font-medium">+{plan.bonus} bônus</p>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Payment details when plan selected */}
+          {selectedCustomPlan && (
+            <Card className="border-primary/30">
+              <CardHeader className="p-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <QrCode className="h-5 w-5 text-primary" />
+                  Pagamento — {selectedCustomPlan.name}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {selectedCustomPlan.credits} créditos por R$ {Number(selectedCustomPlan.total).toFixed(2).replace('.', ',')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* QR Code */}
+                {selectedCustomPlan.qr_code_image && (
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={selectedCustomPlan.qr_code_image}
+                      alt="QR Code PIX"
+                      className="w-48 h-48 rounded-xl border-2 border-border object-contain bg-white p-2"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-2">Escaneie o QR Code com o app do seu banco</p>
+                  </div>
+                )}
+
+                {/* PIX Copy Paste */}
+                {selectedCustomPlan.pix_copy_paste && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">Código PIX Copia e Cola:</p>
+                    <div className="relative">
+                      <div className="bg-muted/50 rounded-lg p-3 pr-20 text-xs font-mono break-all max-h-20 overflow-y-auto border">
+                        {selectedCustomPlan.pix_copy_paste}
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="absolute top-1.5 right-1.5 text-[10px] h-7"
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedCustomPlan.pix_copy_paste);
+                          setPixCopied(true);
+                          toast.success('Código PIX copiado!');
+                          setTimeout(() => setPixCopied(false), 3000);
+                        }}
+                      >
+                        {pixCopied ? '✅ Copiado' : '📋 Copiar'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action buttons */}
+                <div className="flex gap-2 pt-2">
+                  {getWhatsappUrl(selectedCustomPlan) && (
+                    <>
+                      <Button
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => {
+                          const url = getWhatsappUrl(selectedCustomPlan);
+                          if (url) {
+                            const msg = encodeURIComponent(`Olá! Acabei de enviar o PIX de R$ ${Number(selectedCustomPlan.total).toFixed(2)} referente ao plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos). Aguardo a confirmação!`);
+                            window.open(`${url}?text=${msg}`, '_blank');
+                          }
+                        }}
+                      >
+                        ✅ Já enviei
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const url = getWhatsappUrl(selectedCustomPlan);
+                          if (url) window.open(url, '_blank');
+                        }}
+                      >
+                        💬 Falar com Admin
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Creator info */}
+          {creatorName && (
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <User className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground">Seu Admin</p>
+                  <p className="font-semibold text-sm text-foreground">{creatorName}</p>
+                </div>
+                {creatorPhone && (
+                  <a href={`https://wa.me/55${creatorPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" size="sm">
+                      <Smartphone className="h-4 w-4 mr-1" /> WhatsApp
+                    </Button>
+                  </a>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </DashboardLayout>
     );
