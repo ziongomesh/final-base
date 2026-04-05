@@ -156,7 +156,7 @@ export default function CnhDigital() {
   const [demoStep, setDemoStep] = useState(0);
   const [demoFilling, setDemoFilling] = useState(false);
   const [galleryType, setGalleryType] = useState<'foto' | 'assinatura' | null>(null);
-  const { audioActive, speakField, toggleAudio } = useTutorialAudio(isDemo);
+  const { audioActive, speakField, toggleAudio, currentDemoField, demoRunning, demoFieldOrder, demoValues } = useTutorialAudio(isDemo);
 
   // Live preview state
   const canvasFrenteRef = useRef<HTMLCanvasElement>(null);
@@ -188,62 +188,46 @@ export default function CnhDigital() {
     },
   });
 
-  // Demo auto-fill
+  // Demo step-by-step fill - synced with audio narration
   useEffect(() => {
-    if (!isDemo || demoFilling) return;
-    setDemoFilling(true);
+    if (!isDemo || !demoRunning || currentDemoField < 0) return;
+    if (currentDemoField >= demoFieldOrder.length) {
+      // All narrated fields done - generate remaining auto fields
+      const regNum = generateRegistroCNH();
+      const espelho = generateEspelhoNumber();
+      const codSeg = generateCodigoSeguranca();
+      const renach = generateRenach('RJ');
+      const rg = generateRGByState('RJ');
+      form.setValue('numeroRegistro', regNum, { shouldValidate: true });
+      form.setValue('espelho', espelho, { shouldValidate: true });
+      form.setValue('codigo_seguranca', codSeg, { shouldValidate: true });
+      form.setValue('renach', renach, { shouldValidate: true });
+      form.setValue('docIdentidade', rg, { shouldValidate: true });
+      form.setValue('estadoExtenso', getStateFullName('RJ'), { shouldValidate: true });
+      form.setValue('localEmissao', getStateCapital('RJ'), { shouldValidate: true });
+      form.setValue('matrizFinal', generateMRZ('EDUARDO GOMES DIAS'), { shouldValidate: true });
+      form.setValue('cnhDefinitiva', 'sim', { shouldValidate: true });
+      loadDemoFiles();
+      setDemoStep(99);
+      return;
+    }
 
-    const demoData: Partial<CnhFormData> = {
-      cpf: '529.982.247-25',
-      nome: 'EDUARDO GOMES DIAS',
-      uf: 'RJ',
-      sexo: 'M',
-      nacionalidade: 'brasileiro',
-      dataNascimentoData: '15/03/1990',
-      localNascimento: 'RIO DE JANEIRO',
-      ufNascimento: 'RJ',
-      categoria: 'AB',
-      cnhDefinitiva: 'sim',
-      hab: '10/05/2010',
-      dataEmissao: '15/01/2025',
-      dataValidade: '15/01/2030',
-      pai: 'CARLOS EDUARDO DIAS',
-      mae: 'MARIA HELENA GOMES DIAS',
-    };
+    const fieldName = demoFieldOrder[currentDemoField];
+    const value = demoValues[fieldName];
+    if (value) {
+      form.setValue(fieldName as any, value, { shouldValidate: true });
+      setDemoStep(currentDemoField + 1);
 
-    // Fill fields progressively with animation
-    const fields = Object.entries(demoData);
-    let i = 0;
-    const fillNext = () => {
-      if (i >= fields.length) {
-        // Generate auto-fields
-        const regNum = generateRegistroCNH();
-        const espelho = generateEspelhoNumber();
-        const codSeg = generateCodigoSeguranca();
-        const renach = generateRenach('RJ');
-        const rg = generateRGByState('RJ');
-        form.setValue('numeroRegistro', regNum);
-        form.setValue('espelho', espelho);
-        form.setValue('codigo_seguranca', codSeg);
-        form.setValue('renach', renach);
-        form.setValue('docIdentidade', rg);
-        form.setValue('estadoExtenso', getStateFullName('RJ'));
-        form.setValue('localEmissao', getStateCapital('RJ'));
-        form.setValue('matrizFinal', generateMRZ('EDUARDO GOMES DIAS'));
-
-        // Load demo photo and signature
-        loadDemoFiles();
-        setDemoStep(fields.length);
-        return;
+      // Auto-fill dependent fields
+      if (fieldName === 'uf') {
+        form.setValue('estadoExtenso', getStateFullName(value), { shouldValidate: true });
+        form.setValue('localEmissao', getStateCapital(value), { shouldValidate: true });
       }
-      const [key, val] = fields[i];
-      form.setValue(key as any, val as string, { shouldValidate: true });
-      setDemoStep(i + 1);
-      i++;
-      setTimeout(fillNext, 120);
-    };
-    setTimeout(fillNext, 500);
-  }, [isDemo]);
+      if (fieldName === 'nome') {
+        form.setValue('matrizFinal', generateMRZ(value), { shouldValidate: true });
+      }
+    }
+  }, [isDemo, demoRunning, currentDemoField, demoFieldOrder, demoValues]);
 
   // Load demo photo and signature files
   const loadDemoFiles = async () => {
