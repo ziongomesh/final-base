@@ -115,6 +115,7 @@ interface SectionTitle {
 
 const SECTION_TITLES: SectionTitle[] = [
   { text: 'Dados de quem pagou', x: pdfPx(79), y: pdfPx(570), size: FONT_SIZE, bold: true },
+  { text: 'Dados da Transação', x: pdfPx(79), y: pdfPx(1020), size: FONT_SIZE, bold: true },
 ];
 
 function drawFormFields(ctx: CanvasRenderingContext2D, formData: BradescoFormData) {
