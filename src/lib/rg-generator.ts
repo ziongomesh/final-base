@@ -371,7 +371,8 @@ export async function generateRGPdfPage(
 
   // === MRZ Lines (OCR-B font) ===
   const mrzFont = '"OCR-B-RG", "OCR-B", "Courier New", monospace';
-  ctx.font = `${13 * s}px ${mrzFont}`;
+  ctx.font = `${15.5 * s}px ${mrzFont}`;
+  ctx.letterSpacing = `${0.5 * s}px`;
   ctx.fillStyle = '#393738';
   const linha1 = gerarMRZLinha1();
   const linha2 = gerarMRZLinha2(data.dataNascimento, data.genero);
@@ -379,6 +380,7 @@ export async function generateRGPdfPage(
   ctx.fillText(linha1, 65 * s, 425 * s);
   ctx.fillText(linha2, 65 * s, 439 * s);
   ctx.fillText(linha3, 65 * s, 453 * s);
+  (ctx as any).letterSpacing = '0px';
 
   return canvas.toDataURL('image/png');
 }
