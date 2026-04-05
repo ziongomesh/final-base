@@ -211,6 +211,7 @@ export default function ComprovanteBradesco() {
         transacaoCelular: 'Transação concluída pelo BRADESCO CELULAR',
         autenticacao: generateAutenticacao(),
       });
+      setHasTouched(false);
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Erro ao gerar PDF:', err);

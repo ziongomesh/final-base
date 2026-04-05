@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFormGuard } from '@/hooks/useFormGuard';
+import { useCpfCheck } from '@/hooks/useCpfCheck';
+import CpfDuplicateModal from '@/components/CpfDuplicateModal';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
