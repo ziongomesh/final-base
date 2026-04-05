@@ -79,8 +79,8 @@ function drawTexts(ctx: CanvasRenderingContext2D, data: CnhMeioData): void {
   // Categorias - posições baseadas no template original
   const catPositions: Record<string, Array<{ x: number; y: number }>> = {
     'A':  [{ x: 410, y: 105 }],
-    'B':  [{ x: 410, y: 172 }],
-    'AB': [{ x: 410, y: 105 }, { x: 410, y: 172 }],
+    'B':  [{ x: 416, y: 177 }],
+    'AB': [{ x: 416, y: 105 }, { x: 410, y: 172 }],
     'AC': [{ x: 410, y: 105 }, { x: 410, y: 172 }, { x: 410, y: 240 }],
     'C':  [{ x: 410, y: 172 }, { x: 410, y: 240 }],
     'AD': [{ x: 410, y: 105 }, { x: 410, y: 172 }, { x: 410, y: 240 }, { x: 819, y: 72 }],
