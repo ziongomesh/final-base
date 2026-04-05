@@ -1,74 +1,96 @@
 /**
- * Text-to-Speech service using ElevenLabs via edge function
+ * Text-to-Speech service using browser Web Speech API (free, no API key needed)
+ * Falls back gracefully if not supported
  */
 
-const TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`;
-const audioCache = new Map<string, string>();
+let currentUtterance: SpeechSynthesisUtterance | null = null;
+let resolveCallback: (() => void) | null = null;
 
-export async function speakText(text: string, voiceId?: string): Promise<HTMLAudioElement | null> {
+function getPortugueseVoice(): SpeechSynthesisVoice | null {
+  const voices = window.speechSynthesis.getVoices();
+  // Prefer Brazilian Portuguese
+  const ptBR = voices.find(v => v.lang === 'pt-BR');
+  if (ptBR) return ptBR;
+  // Fallback to any Portuguese
+  const pt = voices.find(v => v.lang.startsWith('pt'));
+  if (pt) return pt;
+  // Fallback to first available
+  return voices[0] || null;
+}
+
+// Ensure voices are loaded
+function loadVoices(): Promise<void> {
+  return new Promise((resolve) => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      resolve();
+      return;
+    }
+    window.speechSynthesis.onvoiceschanged = () => resolve();
+    // Timeout fallback
+    setTimeout(resolve, 1000);
+  });
+}
+
+export async function speakText(text: string, _voiceId?: string): Promise<null> {
   try {
-    const cacheKey = `${text}_${voiceId || 'default'}`;
-    
-    let audioUrl = audioCache.get(cacheKey);
-    
-    if (!audioUrl) {
-      const response = await fetch(TTS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ text, voiceId }),
-      });
-
-      if (!response.ok) {
-        console.error("TTS failed:", response.status);
-        return null;
-      }
-
-      const audioBlob = await response.blob();
-      audioUrl = URL.createObjectURL(audioBlob);
-      audioCache.set(cacheKey, audioUrl);
+    if (!window.speechSynthesis) {
+      console.warn('Speech synthesis not supported');
+      return null;
     }
 
-    const audio = new Audio(audioUrl);
-    await audio.play();
-    return audio;
+    await loadVoices();
+
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = getPortugueseVoice();
+    if (voice) utterance.voice = voice;
+    utterance.lang = 'pt-BR';
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    currentUtterance = utterance;
+
+    return new Promise((resolve) => {
+      utterance.onend = () => {
+        currentUtterance = null;
+        resolve(null);
+      };
+      utterance.onerror = () => {
+        currentUtterance = null;
+        resolve(null);
+      };
+      window.speechSynthesis.speak(utterance);
+    });
   } catch (error) {
-    console.error("TTS error:", error);
+    console.error('TTS error:', error);
     return null;
   }
 }
 
 // Play welcome message on login
-export async function playWelcomeAudio(userName: string): Promise<HTMLAudioElement | null> {
+export async function playWelcomeAudio(userName: string): Promise<null> {
   const text = `Opa ${userName}! Bem-vindo de volta à base. Bom trabalho!`;
-  return speakText(text, 'k3f7zOv6LF88v78QHCNh');
+  return speakText(text);
 }
 
-// Stop any playing audio
-let currentAudio: HTMLAudioElement | null = null;
-
-export async function speakAndTrack(text: string, voiceId?: string): Promise<void> {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-  }
-  currentAudio = await speakText(text, voiceId);
+// Speak and track (waits for completion)
+export async function speakAndTrack(text: string, _voiceId?: string): Promise<void> {
+  stopCurrentAudio();
+  await speakText(text);
 }
 
 export function stopCurrentAudio(): void {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio = null;
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
   }
+  currentUtterance = null;
 }
 
 // Clear TTS cache (on logout)
 export function clearTTSCache(): void {
-  audioCache.forEach((url) => URL.revokeObjectURL(url));
-  audioCache.clear();
   stopCurrentAudio();
 }
