@@ -674,29 +674,9 @@ export default function HapvidaPositionTool() {
           }
 
           // ── MARCA D'ÁGUA PREVIEW ─────────────────────────────────────────────
-          const wmText = 'PREVIEW - DATA SISTEMAS';
-          const wmFontSize = Math.round(90 * SCALE);
-          const wmAngle = -Math.PI / 6;
-          const wmSpacingX = CANVAS_W * 0.65;
-          const wmSpacingY = CANVAS_H * 0.18;
-          ctx.save();
-          ctx.globalAlpha = 0.10;
-          ctx.fillStyle = '#000000';
-          ctx.font = `bold ${wmFontSize}px Arial`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          for (let row = -1; row <= 6; row++) {
-            for (let col = -1; col <= 2; col++) {
-              ctx.save();
-              const cx = col * wmSpacingX + (row % 2 === 0 ? 0 : wmSpacingX * 0.5);
-              const cy = row * wmSpacingY;
-              ctx.translate(cx, cy);
-              ctx.rotate(wmAngle);
-              ctx.fillText(wmText, 0, 0);
-              ctx.restore();
-            }
-          }
-          ctx.restore();
+          loadWatermarkLogo().then(logo => {
+            drawLogoWatermarks(ctx, CANVAS_W, CANVAS_H, logo, { opacity: 0.08 });
+          });
         };
 
         if (assinaturaUrl) {

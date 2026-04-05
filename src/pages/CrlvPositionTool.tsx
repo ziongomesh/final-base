@@ -243,28 +243,9 @@ const CrlvCanvas = forwardRef<CrlvCanvasRef, { values: Record<string, string>; q
 
     // Watermark - marca d'água (apenas no preview visual)
     if (withWatermark) {
-      const wmText = 'PREVIEW - DATA SISTEMAS';
-      const wmFontSize = Math.round(canvas.width * 0.04);
-      const wmSpacingX = canvas.width * 0.65;
-      const wmSpacingY = canvas.height * 0.18;
-      ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.fillStyle = '#000';
-      ctx.font = `bold ${wmFontSize}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      for (let row = -1; row <= 6; row++) {
-        for (let col = -1; col <= 2; col++) {
-          ctx.save();
-          const cx = col * wmSpacingX + (row % 2 === 0 ? 0 : wmSpacingX * 0.5);
-          const cy = row * wmSpacingY;
-          ctx.translate(cx, cy);
-          ctx.rotate(-Math.PI / 6);
-          ctx.fillText(wmText, 0, 0);
-          ctx.restore();
-        }
-      }
-      ctx.restore();
+      loadWatermarkLogo().then(logo => {
+        drawLogoWatermarks(ctx, canvas.width, canvas.height, logo);
+      });
     }
   }, [values, bgImage, fontLoaded, defaultQr, customQr]);
 
