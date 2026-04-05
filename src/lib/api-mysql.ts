@@ -210,6 +210,10 @@ export const mysqlApi = {
       return fetchAPI(`/admins/stats/my-documents/${adminId}`);
     },
 
+    completeTutorial: async (adminId: number) => {
+      return fetchAPI(`/admins/${adminId}/complete-tutorial`, { method: 'POST' });
+    },
+
     getMasterDailyHistory: async (masterId: number, filters?: { adminId?: number; module?: string; date?: string }) => {
       const params = new URLSearchParams();
       if (filters?.adminId) params.set('adminId', String(filters.adminId));
