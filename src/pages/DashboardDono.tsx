@@ -1278,6 +1278,146 @@ export default function DashboardDono() {
                 </div>
               </TabsContent>
 
+              {/* ===== PLANOS DE RECARGA (SUB) ===== */}
+              {isSub && (
+              <TabsContent value="plans" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <CreditCard className="h-5 w-5 text-primary" />
+                      {editingSubPlan ? 'Editar Plano' : 'Criar Novo Plano'}
+                    </CardTitle>
+                    <CardDescription>Gerencie os planos de recarga que seus revendedores verão</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Nome do Plano</Label>
+                        <Input value={subPlanForm.name} onChange={(e) => setSubPlanForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Pacote Básico" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Total Créditos</Label>
+                        <Input type="number" value={subPlanForm.credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, credits: Number(e.target.value) }))} placeholder="10" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Créditos Base</Label>
+                        <Input type="number" value={subPlanForm.base_credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, base_credits: Number(e.target.value) }))} placeholder="8" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Bônus</Label>
+                        <Input type="number" value={subPlanForm.bonus || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, bonus: Number(e.target.value) }))} placeholder="2" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Valor Total (R$)</Label>
+                        <Input type="number" step="0.01" value={subPlanForm.total || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, total: Number(e.target.value) }))} placeholder="100.00" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Badge</Label>
+                        <Input value={subPlanForm.badge} onChange={(e) => setSubPlanForm(f => ({ ...f, badge: e.target.value }))} placeholder="POPULAR" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Cor Badge</Label>
+                        <Select value={subPlanForm.badge_color} onValueChange={(v) => setSubPlanForm(f => ({ ...f, badge_color: v }))}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bg-blue-500">Azul</SelectItem>
+                            <SelectItem value="bg-green-500">Verde</SelectItem>
+                            <SelectItem value="bg-purple-500">Roxo</SelectItem>
+                            <SelectItem value="bg-orange-500">Laranja</SelectItem>
+                            <SelectItem value="bg-red-500">Vermelho</SelectItem>
+                            <SelectItem value="bg-emerald-500">Esmeralda</SelectItem>
+                            <SelectItem value="bg-gradient-to-r from-orange-500 to-red-500">Gradiente Quente</SelectItem>
+                            <SelectItem value="bg-gradient-to-r from-purple-500 to-pink-500">Gradiente Roxo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Ordem</Label>
+                        <Input type="number" value={subPlanForm.sort_order || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, sort_order: Number(e.target.value) }))} placeholder="0" />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={handleSaveSubPlan} disabled={savingSubPlan} className="flex-1">
+                        {savingSubPlan ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                        {editingSubPlan ? 'Atualizar' : 'Criar Plano'}
+                      </Button>
+                      {editingSubPlan && (
+                        <Button variant="outline" onClick={() => {
+                          setEditingSubPlan(null);
+                          setSubPlanForm({ name: '', credits: 0, base_credits: 0, bonus: 0, total: 0, badge: '', badge_color: 'bg-blue-500', sort_order: 0, is_active: true });
+                        }}>Cancelar</Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Plans List */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Planos Cadastrados ({subPlans.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingSubPlans ? (
+                      <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+                    ) : subPlans.length === 0 ? (
+                      <p className="text-center text-sm text-muted-foreground py-8">Nenhum plano cadastrado. Crie seu primeiro plano acima.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">Nome</TableHead>
+                              <TableHead className="text-xs">Créditos</TableHead>
+                              <TableHead className="text-xs">Base + Bônus</TableHead>
+                              <TableHead className="text-xs">Valor</TableHead>
+                              <TableHead className="text-xs">Badge</TableHead>
+                              <TableHead className="text-xs">Status</TableHead>
+                              <TableHead className="text-xs">Ações</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {subPlans.map((plan) => (
+                              <TableRow key={plan.id}>
+                                <TableCell className="text-sm font-medium">{plan.name}</TableCell>
+                                <TableCell className="text-sm">{plan.credits}</TableCell>
+                                <TableCell className="text-sm">{plan.base_credits} + {plan.bonus}</TableCell>
+                                <TableCell className="text-sm">R$ {Number(plan.total).toFixed(2)}</TableCell>
+                                <TableCell>
+                                  {plan.badge && <Badge className={`${plan.badge_color} text-white text-[10px]`}>{plan.badge}</Badge>}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-[10px]">
+                                    {plan.is_active ? 'Ativo' : 'Inativo'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-1">
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                      setEditingSubPlan(plan);
+                                      setSubPlanForm({
+                                        name: plan.name, credits: plan.credits, base_credits: plan.base_credits,
+                                        bonus: plan.bonus, total: Number(plan.total), badge: plan.badge,
+                                        badge_color: plan.badge_color, sort_order: plan.sort_order, is_active: plan.is_active,
+                                      });
+                                    }}>
+                                      <Pencil className="h-3 w-3" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="text-destructive" onClick={() => plan.id && handleDeleteSubPlan(plan.id)}>
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              )}
+
               {/* ===== GERENCIAR ===== */}
               <TabsContent value="manage" className="space-y-6">
                 {/* Create Master/Reseller */}
