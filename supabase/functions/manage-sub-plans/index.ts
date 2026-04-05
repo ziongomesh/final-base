@@ -19,11 +19,15 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action, admin_id, session_token, plan } = body;
 
+    console.log("manage-sub-plans called:", { action, admin_id });
+
     // Validate session
-    const { data: valid } = await supabase.rpc("is_valid_admin", {
+    const { data: valid, error: validError } = await supabase.rpc("is_valid_admin", {
       p_admin_id: admin_id,
       p_session_token: session_token,
     });
+
+    console.log("Session validation:", { valid, validError });
 
     if (!valid) {
       return new Response(
@@ -54,11 +58,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // All other actions require sub rank
-    const { data: rankData } = await supabase.rpc("get_admin_rank", { p_admin_id: admin_id });
-    if (rankData !== "sub") {
+    // All other actions require sub or dono rank
+    const { data: rankData, error: rankError } = await supabase.rpc("get_admin_rank", { p_admin_id: admin_id });
+    console.log("Rank check:", { rankData, rankError, admin_id });
+    if (rankData !== "sub" && rankData !== "dono") {
       return new Response(
-        JSON.stringify({ error: "Apenas Sub-Donos podem gerenciar planos" }),
+        JSON.stringify({ error: "Apenas Sub-Donos/Donos podem gerenciar planos", rank: rankData }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

@@ -227,10 +227,16 @@ export default function DashboardDono() {
     if (!admin) return;
     setLoadingSubPlans(true);
     try {
-      const { data } = await supabase.functions.invoke('manage-sub-plans', {
+      const { data, error } = await supabase.functions.invoke('manage-sub-plans', {
         body: { action: 'list', admin_id: admin.id, session_token: admin.session_token }
       });
-      if (data?.plans) setSubPlans(data.plans);
+      console.log('fetchSubPlans response:', { data, error });
+      if (error) {
+        console.error('Edge function error:', error);
+        toast.error('Erro ao carregar planos');
+      } else if (data?.plans) {
+        setSubPlans(data.plans);
+      }
     } catch (e) { console.error('Erro ao buscar planos:', e); }
     finally { setLoadingSubPlans(false); }
   };
