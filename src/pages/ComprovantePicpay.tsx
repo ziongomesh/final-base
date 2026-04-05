@@ -36,6 +36,8 @@ export default function ComprovantePicpay() {
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
 
   const [tipoChavePix, setTipoChavePix] = useState<string>('cpf');
+  const [tipoDocRemetente, setTipoDocRemetente] = useState<string>('cpf');
+  const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
   const [formData, setFormData] = useState<PicpayFormData>({
     dataHora: '',
     valor: '',
