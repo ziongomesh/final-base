@@ -335,19 +335,9 @@ export default function ComprovantePicpay() {
                   </div>
                 </div>
 
-                {/* Gerar PDF Button */}
-                <div className="pt-3 border-t border-border">
-                  <Button
-                    onClick={handleGerarPdf}
-                    disabled={generating}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {generating ? (
-                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                    ) : (
-                      <FileDown className="h-5 w-5 mr-2" />
-                    )}
+                <div className="pt-2 border-t border-border">
+                  <Button onClick={handleGerarPdf} disabled={generating} className="w-full" size="default">
+                    {generating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileDown className="h-4 w-4 mr-2" />}
                     {generating ? 'Gerando PDF...' : 'Gerar PDF (1 crédito)'}
                   </Button>
                 </div>
