@@ -158,9 +158,9 @@ export default function OnboardingWizard({ userName, adminId, onClose }: Onboard
     }
   };
 
-  const handleStartDemo = () => {
+  const handleStartDemo = async () => {
     stopCurrentAudio();
-    localStorage.setItem(`tutorial_completed_${adminId}`, 'true');
+    try { await api.admins.completeTutorial(adminId); } catch {}
     navigate('/servicos/cnh-digital?demo=true');
   };
 
