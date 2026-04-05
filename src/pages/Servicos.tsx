@@ -631,13 +631,6 @@ export default function Servicos() {
               </div>
             </div>
 
-            {/* ── CNH NA MESA — Featured ── */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold" style={{ color: 'hsl(43, 80%, 75%)' }}>
-                Serviços VIP Exclusivos
-              </h3>
-              <VipServiceCard service={cnhNaMesa} tier={tier} hasCredits={hasCredits} />
-            </div>
 
             {/* ── Docs em Foto ── */}
             <div className="space-y-2">
