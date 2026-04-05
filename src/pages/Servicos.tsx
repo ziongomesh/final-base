@@ -99,6 +99,17 @@ const categories: ServiceCategory[] = [
       { id: 'atestado-caps', name: 'CAPS', description: 'Atestado médico - Todos os estados', credits: 1, available: false, route: '#', icon: Stethoscope, specs: ['PDF: Sim'], atestadoGroup: 'publico' },
     ],
   },
+  {
+    title: 'Mesa (Foto Documento)',
+    icon: Camera,
+    services: [
+      { id: 'mesa-cnh', name: 'CNH NA MESA', description: 'CNH em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-rg', name: 'RG NA MESA', description: 'RG em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-oab', name: 'OAB NA MESA', description: 'Carteira OAB em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-crm', name: 'CRM NA MESA', description: 'Carteira CRM em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: Camera, specs: ['Foto: Sim'] },
+      { id: 'mesa-cartoes', name: 'CARTÕES NA MESA', description: 'Cartões de crédito em foto sobre mesa/superfície', credits: 1, available: false, route: '#', icon: CreditCard, specs: ['Foto: Sim'] },
+    ],
+  },
 ];
 
 // ─── VIP Services ───
@@ -493,8 +504,9 @@ export default function Servicos() {
             <TabsTrigger value="nacional" className="flex-1 gap-2 text-sm font-semibold">
               <Globe className="h-4 w-4" /> Nacional
             </TabsTrigger>
-            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold">
+            <TabsTrigger value="vip" className="flex-1 gap-2 text-sm font-semibold" disabled>
               <Crown className="h-4 w-4" /> VIP
+              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 ml-1">Em Breve</Badge>
             </TabsTrigger>
           </TabsList>
 
