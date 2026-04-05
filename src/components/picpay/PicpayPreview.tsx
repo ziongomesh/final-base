@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import basePicpay from '@/assets/base-picpay.png';
 
 export interface PicpayFormData {
