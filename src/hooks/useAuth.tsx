@@ -17,6 +17,7 @@ interface Admin {
   session_token: string | null;
   criado_por?: number | null;
   last_access?: string | null;
+  tutorial_completed?: boolean;
 }
 
 interface AuthContextType {
