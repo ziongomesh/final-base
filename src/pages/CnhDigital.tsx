@@ -938,7 +938,7 @@ export default function CnhDigital() {
                     <FormField control={form.control} name="categoria" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs">Categoria <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                        <Select onValueChange={(v) => { field.onChange(v); speakField('categoria'); }} value={field.value || undefined}>
                           <FormControl><SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Sel." /></SelectTrigger></FormControl>
                           <SelectContent>
                             {CNH_CATEGORIES.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
