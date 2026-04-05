@@ -1074,6 +1074,7 @@ export default function CnhDigital() {
                       <FormControl>
                         <div className="flex gap-1.5">
                           <Input {...field} placeholder="SC975697214" maxLength={11} className="h-8 text-sm flex-1"
+                            onFocus={() => speakField('renach')}
                             onChange={(e) => {
                               let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                               if (v.length > 2) {
