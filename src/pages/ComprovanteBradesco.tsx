@@ -59,6 +59,13 @@ export default function ComprovanteBradesco() {
   const [tipoChavePix, setTipoChavePix] = useState<string>('email');
   const [tipoDocPagador, setTipoDocPagador] = useState<string>('cpf');
   const [tipoDocRecebedor, setTipoDocRecebedor] = useState<string>('cpf');
+  const [hasTouched, setHasTouched] = useState(false);
+
+  const { setFormDirty } = useFormGuard();
+  useEffect(() => {
+    if (hasTouched) setFormDirty(true);
+    return () => setFormDirty(false);
+  }, [hasTouched, setFormDirty]);
 
   const generateControle = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
