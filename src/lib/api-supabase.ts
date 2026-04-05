@@ -538,6 +538,53 @@ export const supabaseApi = {
     },
   },
 
+  settings: {
+    get: async () => {
+      const session = getStoredSession();
+      if (!session) return {};
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/manage-settings`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ admin_id: session.adminId, session_token: session.sessionToken, action: 'get' }),
+        }
+      );
+      return res.json();
+    },
+    toggleRecargaDobro: async (enabled: boolean) => {
+      const session = getStoredSession();
+      if (!session) throw new Error('Sessão inválida');
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/manage-settings`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ admin_id: session.adminId, session_token: session.sessionToken, action: 'toggle_recarga_dobro', data: { enabled } }),
+        }
+      );
+      if (!res.ok) throw new Error('Erro ao atualizar');
+      return res.json();
+    },
+    update: async (data: { reseller_price?: number; reseller_credits?: number; credit_packages?: unknown[] }) => {
+      const session = getStoredSession();
+      if (!session) throw new Error('Sessão inválida');
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/manage-settings`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ admin_id: session.adminId, session_token: session.sessionToken, action: 'update', data }),
+        }
+      );
+      if (!res.ok) throw new Error('Erro ao atualizar');
+      return res.json();
+    },
+  },
+
   health: async () => {
     return { status: 'ok', timestamp: new Date().toISOString() };
   },
