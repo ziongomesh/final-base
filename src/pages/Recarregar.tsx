@@ -834,6 +834,8 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   const [activeTab, setActiveTab] = useState<'packages' | 'unit'>('packages');
   const [showHistory, setShowHistory] = useState(false);
   const [recargaDobro, setRecargaDobro] = useState(false);
+  const [customPlans, setCustomPlans] = useState<typeof RESELLER_PACKAGES>([]);
+  const [customPromoPlans, setCustomPromoPlans] = useState<typeof RESELLER_PROMO_PACKAGES>([]);
 
   const hasPlayedSound = useRef(false);
   const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
