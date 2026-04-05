@@ -482,7 +482,7 @@ export default function Servicos() {
     description: 'Geração completa direto na mesa — sem computador',
     credits: tierCredits,
     available: true,
-    route: '/servicos/cnh-digital',
+    route: '/servicos/cnh-mesa',
     icon: Zap,
     iconImage: iconCnh,
     specs: ['QR Code: Sim', 'PDF: Sim', 'Exclusivo VIP'],
