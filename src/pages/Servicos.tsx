@@ -112,7 +112,7 @@ const vipFotoServices: Service[] = [
   { id: 'cc-picpay', name: 'PICPAY', description: 'Cartão de crédito PicPay', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-santander', name: 'SANTANDER', description: 'Cartão de crédito Santander', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
   { id: 'cc-amex', name: 'AMERICAN EXPRESS', description: 'Cartão de crédito Amex', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
-  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, iconImage: iconC6bank, fotoGroup: 'cartoes' },
+  { id: 'cc-c6', name: 'C6 BANK', description: 'Cartão de crédito C6 Bank', credits: 4, available: false, route: '#', icon: CreditCard, fotoGroup: 'cartoes' },
 ];
 
 // ─── VIP tier helpers ───
