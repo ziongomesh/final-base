@@ -189,7 +189,19 @@ export default function ComprovanteBradesco() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <p className="text-xs text-muted-foreground">Em breve — formulário será adicionado.</p>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Número de Controle</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formData.numeroControle}
+                      onChange={e => updateField('numeroControle', e.target.value)}
+                      className="text-xs font-mono"
+                    />
+                    <Button variant="outline" size="sm" onClick={() => updateField('numeroControle', generateControle())}>
+                      Gerar
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
