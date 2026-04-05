@@ -19,6 +19,7 @@ import api from '@/lib/api';
 import { mysqlApi } from '@/lib/api-mysql';
 import { isUsingMySQL } from '@/lib/db-config';
 import { supabase } from '@/integrations/supabase/client';
+import AnnouncementsManager from '@/components/dashboard/AnnouncementsManager';
 import {
   Crown, Users, CreditCard, FileText, Shield, Eye, KeyRound, Send,
   Car, IdCard, GraduationCap, Truck, Ship, Trophy, Medal, Award,
