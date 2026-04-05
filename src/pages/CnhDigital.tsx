@@ -753,6 +753,7 @@ export default function CnhDigital() {
                       <FormLabel className="text-xs">CPF <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="000.000.000-00" maxLength={14} className="h-8 text-sm"
+                          onFocus={() => speakField('cpf')}
                           onChange={(e) => {
                             const formatted = formatCPF(e.target.value);
                             field.onChange(formatted);
