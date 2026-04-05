@@ -33,6 +33,20 @@ export function Sidebar() {
   const { guardedNavigate } = useFormGuard();
   const location = useLocation();
 
+  const [adminName, setAdminName] = useState('');
+  const [adminPhoto, setAdminPhoto] = useState('');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('admin');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setAdminName(parsed.nome || '');
+        setAdminPhoto(parsed.profile_photo || '');
+      }
+    } catch {}
+  }, []);
+
   const filteredItems = navItems.filter(item => 
     role && item.roles.includes(role)
   );
