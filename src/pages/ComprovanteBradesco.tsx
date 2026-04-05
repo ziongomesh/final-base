@@ -14,7 +14,7 @@ import { BradescoPreview, type BradescoPreviewRef, type BradescoFormData } from 
 import api from '@/lib/api';
 
 const BANCOS = [
-  'Nu Pagamentos S.A. - Instituição de Pagamento',
+  'Nu Pagamentos S.A.',
   'Itaú Unibanco S.A.',
   'Banco Bradesco S.A.',
   'Banco do Brasil S.A.',
