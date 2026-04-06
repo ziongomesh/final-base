@@ -3,7 +3,72 @@ import { query } from '../db';
 import fs from 'fs';
 import path from 'path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
+
+// Cache OpenSans fonts in memory
+let openSansRegularBytes: Buffer | null = null;
+let openSansBoldBytes: Buffer | null = null;
+
+async function getOpenSansFonts(): Promise<{ regular: Buffer; bold: Buffer }> {
+  if (openSansRegularBytes && openSansBoldBytes) {
+    return { regular: openSansRegularBytes, bold: openSansBoldBytes };
+  }
+  // Try local files first
+  const fontsDir = path.resolve(process.cwd(), '..', 'public', 'fonts');
+  const localRegular = path.join(fontsDir, 'OpenSans-Regular.ttf');
+  const localBold = path.join(fontsDir, 'OpenSans-Bold.ttf');
+  
+  if (fs.existsSync(localRegular) && fs.existsSync(localBold)) {
+    openSansRegularBytes = fs.readFileSync(localRegular);
+    openSansBoldBytes = fs.readFileSync(localBold);
+  } else {
+    // Fetch from Google Fonts
+    const [regRes, boldRes] = await Promise.all([
+      fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVc.ttf"),
+      fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4gaVc.ttf"),
+    ]);
+    openSansRegularBytes = Buffer.from(await regRes.arrayBuffer());
+    openSansBoldBytes = Buffer.from(await boldRes.arrayBuffer());
+    // Save locally for future use
+    if (!fs.existsSync(fontsDir)) fs.mkdirSync(fontsDir, { recursive: true });
+    fs.writeFileSync(localRegular, openSansRegularBytes);
+    fs.writeFileSync(localBold, openSansBoldBytes);
+  }
+  return { regular: openSansRegularBytes, bold: openSansBoldBytes };
+}
+
+async function drawGovBrText(pdfDoc: any, page: any, pageHeight: number) {
+  try {
+    const { regular, bold } = await getOpenSansFonts();
+    const regularFont = await pdfDoc.embedFont(regular);
+    const boldFont = await pdfDoc.embedFont(bold);
+
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const dateStr = `${day}/${month}/${year}`;
+
+    const fontSize = 25;
+    const textY = pageHeight - 63;
+    const textX = 28;
+    const textColor = rgb(0.22, 0.22, 0.22);
+
+    const part1 = "Compartilhado pelo aplicativo ";
+    const part2 = "gov.br";
+    const part3 = ` em ${dateStr}`;
+
+    const w1 = regularFont.widthOfTextAtSize(part1, fontSize);
+    const w2 = boldFont.widthOfTextAtSize(part2, fontSize);
+
+    page.drawText(part1, { x: textX, y: textY, size: fontSize, font: regularFont, color: textColor });
+    page.drawText(part2, { x: textX + w1, y: textY, size: fontSize, font: boldFont, color: textColor });
+    page.drawText(part3, { x: textX + w1 + w2, y: textY, size: fontSize, font: regularFont, color: textColor });
+  } catch (fontErr) {
+    logger.error("Gov.br text error:", fontErr);
+  }
+}
 
 const router = Router();
 
@@ -171,11 +236,13 @@ router.post('/save', async (req, res) => {
       if (pdfPageBase64) {
         // Use client-rendered full-page image (single PNG = non-editable)
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const cleanB64 = pdfPageBase64.replace(/^data:image\/\w+;base64,/, '');
         const imgBytes = Buffer.from(cleanB64, 'base64');
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(pdfDoc, page, pageHeight);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
@@ -469,11 +536,13 @@ router.post('/update', async (req, res) => {
       if (pdfPageBase64) {
         // Use client-rendered full-page image (single PNG = non-editable)
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const cleanB64 = pdfPageBase64.replace(/^data:image\/\w+;base64,/, '');
         const imgBytes = Buffer.from(cleanB64, 'base64');
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(pdfDoc, page, pageHeight);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
