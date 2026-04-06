@@ -331,9 +331,9 @@ router.post('/save', async (req, res) => {
         const linha1 = 'IDBRA5398762281453987622814<<0';
         const linha2 = '051120M340302BRA<<<<<<<<<<<<<2';
         const linha3 = formatarNomeMRZ(nomeCompleto);
-        drawText(linha1, 65, 423, { font: ocrBFont, size: 9, color: grayColor });
-        drawText(linha2, 65, 435, { font: ocrBFont, size: 9, color: grayColor });
-        drawText(linha3, 62, 447, { font: ocrBFont, size: 9, color: grayColor });
+        drawText(linha1, 65, 423, { font: ocrBFont, size: 7, color: grayColor });
+        drawText(linha2, 65, 435, { font: ocrBFont, size: 7, color: grayColor });
+        drawText(linha3, 62, 447, { font: ocrBFont, size: 7, color: grayColor });
 
         if (assinaturaBase64) {
           try {
