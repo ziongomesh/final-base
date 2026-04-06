@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { rgService, type RgRecord } from '@/lib/rg-service';
 import { generateRGFrente, generateRGVerso, generateRGPdfPage, type RgData } from '@/lib/rg-generator';
+import { clearTemplateCache } from '@/lib/template-loader';
 import {
   ArrowLeft, Save, Loader2, Eye, RefreshCw, User, ClipboardList, Upload
 } from 'lucide-react';
