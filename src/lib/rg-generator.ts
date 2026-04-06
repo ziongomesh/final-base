@@ -371,7 +371,7 @@ export async function generateRGPdfPage(
 
   // === MRZ Lines (OCR-B font) ===
   const mrzFont = '"OCR-B-RG", "OCR-B", "Courier New", monospace';
-  ctx.font = `${11 * s}px ${mrzFont}`;
+  ctx.font = `${9 * s}px ${mrzFont}`;
   ctx.letterSpacing = `${0.5 * s}px`;
   ctx.fillStyle = '#393738';
   const linha1 = gerarMRZLinha1();
