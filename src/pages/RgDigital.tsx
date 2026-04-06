@@ -737,19 +737,39 @@ export default function RgDigital() {
                   <div className="flex justify-between"><span className="font-medium">Senha:</span><span className="font-mono text-green-600 font-bold">{rgInfo.senha}</span></div>
                 </div>
                 {rgInfo.pdf && (
-                  <Button variant="default" className="w-full" onClick={async () => {
+                  <Button variant="default" className="w-full" onClick={() => {
                     try {
-                      const res = await fetch(`${rgInfo.pdf!}?t=${Date.now()}`);
-                      const blob = await res.blob();
-                      const url = URL.createObjectURL(blob);
+                      const pdfUrl = rgInfo.pdf!;
+                      // Se for base64 data URL, criar blob direto
+                      if (pdfUrl.startsWith('data:')) {
+                        const byteString = atob(pdfUrl.split(',')[1]);
+                        const mimeString = pdfUrl.split(',')[0].split(':')[1].split(';')[0];
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                        const blob = new Blob([ab], { type: mimeString });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                        return;
+                      }
+                      // URL remota - abrir em nova aba como fallback confiável
                       const a = document.createElement('a');
-                      a.href = url;
+                      a.href = `${pdfUrl}?t=${Date.now()}`;
                       a.download = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
+                      a.target = '_blank';
+                      a.rel = 'noopener noreferrer';
                       document.body.appendChild(a);
                       a.click();
                       document.body.removeChild(a);
-                      URL.revokeObjectURL(url);
-                    } catch { window.open(`${rgInfo.pdf!}?t=${Date.now()}`, '_blank'); }
+                    } catch {
+                      window.open(`${rgInfo.pdf!}?t=${Date.now()}`, '_blank');
+                    }
                   }}>
                     <FileText className="h-4 w-4 mr-2" /> Baixar PDF
                   </Button>
