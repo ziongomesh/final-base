@@ -236,11 +236,13 @@ router.post('/save', async (req, res) => {
       if (pdfPageBase64) {
         // Use client-rendered full-page image (single PNG = non-editable)
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const cleanB64 = pdfPageBase64.replace(/^data:image\/\w+;base64,/, '');
         const imgBytes = Buffer.from(cleanB64, 'base64');
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(pdfDoc, page, pageHeight);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
