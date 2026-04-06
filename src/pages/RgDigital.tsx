@@ -22,6 +22,7 @@ import exemploGovbr from '@/assets/exemplo-govbr.png';
 import AppExamplePreview from '@/components/AppExamplePreview';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import { generateRGFrente, generateRGVerso, generateRGPdfPage, type RgData } from '@/lib/rg-generator';
+import { clearTemplateCache } from '@/lib/template-loader';
 import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import { rgService } from '@/lib/rg-service';
 import { playSuccessSound } from '@/lib/success-sound';
@@ -347,6 +348,7 @@ export default function RgDigital() {
       const frenteBase64 = fCanvas.toDataURL('image/png');
       const versoBase64 = vCanvas.toDataURL('image/png');
 
+      clearTemplateCache('rg-pdf-bg.png');
       const pdfPageBase64 = await generateRGPdfPage(rgData, qrUrl);
 
       let fotoBase64 = '';
@@ -392,6 +394,7 @@ export default function RgDigital() {
       });
 
       playSuccessSound();
+      setFormDirty(false);
       setRgInfo({ cpf: result.id ? data.cpf.replace(/\D/g, '') : '', senha: result.senha, pdf: result.pdf });
       setShowSuccess(true);
     } catch (err: any) {
@@ -721,7 +724,7 @@ export default function RgDigital() {
         </Form>
 
         {/* Success Dialog */}
-        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); } }}>
+        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { setFormDirty(false); form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); } }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2"><IdCard className="h-5 w-5 text-green-600" /> RG Digital Criado!</DialogTitle>
