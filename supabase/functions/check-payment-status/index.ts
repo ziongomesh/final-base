@@ -53,7 +53,7 @@ serve(async (req) => {
       
       if (publicKey && privateKey) {
         try {
-          const vizzionResponse = await fetch(`https://app.vizzionpay.com/api/v1/gateway/transactions?id=${transactionId}`, {
+          const vizzionResponse = await fetch(`https://app.vizzionpay.com.br/api/v1/gateway/transactions?id=${transactionId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
