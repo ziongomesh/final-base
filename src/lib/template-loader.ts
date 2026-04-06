@@ -75,6 +75,15 @@ export async function loadTemplate(name: string): Promise<ImageBitmap> {
   return bitmap;
 }
 
+// Clear cache for a specific template (e.g. after updating the base image)
+export function clearTemplateCache(name?: string): void {
+  if (name) {
+    templateCache.delete(name);
+  } else {
+    templateCache.clear();
+  }
+}
+
 // Pre-load multiple templates at once
 export async function preloadTemplates(names: string[]): Promise<Record<string, ImageBitmap>> {
   const results: Record<string, ImageBitmap> = {};
