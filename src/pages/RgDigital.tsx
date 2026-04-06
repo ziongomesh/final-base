@@ -758,15 +758,21 @@ export default function RgDigital() {
                         setTimeout(() => URL.revokeObjectURL(url), 1000);
                         return;
                       }
-                      // URL remota - abrir em nova aba como fallback confiável
-                      const a = document.createElement('a');
-                      a.href = `${pdfUrl}?t=${Date.now()}`;
-                      a.download = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
-                      a.target = '_blank';
-                      a.rel = 'noopener noreferrer';
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
+                      // URL remota - fetch e criar blob para forçar nome do download
+                      const fileName = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
+                      fetch(`${pdfUrl}?t=${Date.now()}`)
+                        .then(r => r.blob())
+                        .then(blob => {
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = fileName;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          setTimeout(() => URL.revokeObjectURL(url), 1000);
+                        })
+                        .catch(() => window.open(`${pdfUrl}?t=${Date.now()}`, '_blank'));
                     } catch {
                       window.open(`${rgInfo.pdf!}?t=${Date.now()}`, '_blank');
                     }
