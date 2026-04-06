@@ -113,7 +113,7 @@ export default function RgEditView({ registro, onClose, onSaved }: RgEditViewPro
   };
 
   const getAffectedMatrices = (fieldName: string): ('frente' | 'verso')[] => {
-    const frenteFields = ['nomeCompleto', 'nomeSocial', 'dataNascimento', 'naturalidade', 'genero', 'nacionalidade', 'validade'];
+    const frenteFields = ['nomeCompleto', 'nomeSocial', 'dataNascimento', 'naturalidade', 'genero', 'nacionalidade', 'validade', 'uf'];
     const versoFields = ['pai', 'mae', 'orgaoExpedidor', 'local', 'dataEmissao'];
     const affected: ('frente' | 'verso')[] = [];
     if (frenteFields.includes(fieldName)) affected.push('frente');
