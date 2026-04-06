@@ -248,9 +248,11 @@ router.post('/save', async (req, res) => {
       } else {
         // Fallback: server-side PDF generation
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        const courier = await pdfDoc.embedFont(StandardFonts.Courier);
+        const ocrBPath = path.resolve(process.cwd(), 'fonts', 'OCR-B.ttf');
+        const ocrBFont = fs.existsSync(ocrBPath) ? await pdfDoc.embedFont(fs.readFileSync(ocrBPath)) : await pdfDoc.embedFont(StandardFonts.Courier);
         const fontSize = 7;
         const fillColor = rgb(0, 0, 0);
         const grayColor = rgb(0.224, 0.216, 0.22);
