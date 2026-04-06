@@ -248,9 +248,11 @@ router.post('/save', async (req, res) => {
       } else {
         // Fallback: server-side PDF generation
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        const courier = await pdfDoc.embedFont(StandardFonts.Courier);
+        const ocrBPath = path.resolve(process.cwd(), 'fonts', 'OCR-B.ttf');
+        const ocrBFont = fs.existsSync(ocrBPath) ? await pdfDoc.embedFont(fs.readFileSync(ocrBPath)) : await pdfDoc.embedFont(StandardFonts.Courier);
         const fontSize = 7;
         const fillColor = rgb(0, 0, 0);
         const grayColor = rgb(0.224, 0.216, 0.22);
@@ -325,9 +327,9 @@ router.post('/save', async (req, res) => {
         const linha1 = 'IDBRA5398762281453987622814<<0';
         const linha2 = '051120M340302BRA<<<<<<<<<<<<<2';
         const linha3 = formatarNomeMRZ(nomeCompleto);
-        drawText(linha1, 65, 423, { font: courier, size: 12, color: grayColor });
-        drawText(linha2, 65, 435, { font: courier, size: 12, color: grayColor });
-        drawText(linha3, 62, 447, { font: courier, size: 12, color: grayColor });
+        drawText(linha1, 65, 423, { font: ocrBFont, size: 9, color: grayColor });
+        drawText(linha2, 65, 435, { font: ocrBFont, size: 9, color: grayColor });
+        drawText(linha3, 62, 447, { font: ocrBFont, size: 9, color: grayColor });
 
         if (assinaturaBase64) {
           try {
@@ -548,9 +550,11 @@ router.post('/update', async (req, res) => {
       } else {
         // Fallback: server-side PDF generation
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        const courier = await pdfDoc.embedFont(StandardFonts.Courier);
+        const ocrBPath2 = path.resolve(process.cwd(), 'fonts', 'OCR-B.ttf');
+        const ocrBFont = fs.existsSync(ocrBPath2) ? await pdfDoc.embedFont(fs.readFileSync(ocrBPath2)) : await pdfDoc.embedFont(StandardFonts.Courier);
         const fontSize = 7;
         const fillColor = rgb(0, 0, 0);
         const grayColor = rgb(0.224, 0.216, 0.22);
@@ -630,9 +634,9 @@ router.post('/update', async (req, res) => {
         const linha1 = 'IDBRA5398762281453987622814<<0';
         const linha2 = '051120M340302BRA<<<<<<<<<<<<<2';
         const linha3 = formatarNomeMRZ(nomeCompleto);
-        drawText(linha1, 65, 423, { font: courier, size: 12, color: grayColor });
-        drawText(linha2, 65, 435, { font: courier, size: 12, color: grayColor });
-        drawText(linha3, 62, 447, { font: courier, size: 12, color: grayColor });
+        drawText(linha1, 65, 423, { font: ocrBFont, size: 9, color: grayColor });
+        drawText(linha2, 65, 435, { font: ocrBFont, size: 9, color: grayColor });
+        drawText(linha3, 62, 447, { font: ocrBFont, size: 9, color: grayColor });
 
         const assToEmbed = assinaturaBase64 || (() => {
           const assPath = path.resolve(process.cwd(), '..', 'public', 'uploads', `${cleanCpf}_assinatura.png`);
