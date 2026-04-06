@@ -759,7 +759,7 @@ export default function RgDigital() {
                         return;
                       }
                       // URL remota - fetch e criar blob para forçar nome do download
-                      const fileName = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
+                      const fileName = `Identidade.pdf`;
                       fetch(`${pdfUrl}?t=${Date.now()}`)
                         .then(r => r.blob())
                         .then(blob => {
