@@ -724,7 +724,7 @@ export default function RgDigital() {
         </Form>
 
         {/* Success Dialog */}
-        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { setFormDirty(false); form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); } }}>
+        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); setTimeout(() => setFormDirty(false), 0); } }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2"><IdCard className="h-5 w-5 text-green-600" /> RG Digital Criado!</DialogTitle>
