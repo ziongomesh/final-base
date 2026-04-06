@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
+import { PDFDocument, rgb } from "https://esm.sh/pdf-lib@1.17.1";
+import fontkit from "https://esm.sh/@pdf-lib/fontkit@1.1.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -114,12 +115,47 @@ Deno.serve(async (req) => {
       // Create PDF with single full-page image (no text, no vectors)
       if (pdfPageBase64) {
         const pdfDoc = await PDFDocument.create();
+        pdfDoc.registerFontkit(fontkit);
         const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
         const cleanB64 = pdfPageBase64.replace(/^data:image\/\w+;base64,/, "");
         const imgBytes = Uint8Array.from(atob(cleanB64), (c) => c.charCodeAt(0));
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+
+        // Add "Compartilhado pelo aplicativo gov.br em DD/MM/YYYY" text
+        try {
+          const openSansRegularRes = await fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVc.ttf");
+          const openSansBoldRes = await fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4gaVc.ttf");
+          const regularFontBytes = new Uint8Array(await openSansRegularRes.arrayBuffer());
+          const boldFontBytes = new Uint8Array(await openSansBoldRes.arrayBuffer());
+          const regularFont = await pdfDoc.embedFont(regularFontBytes);
+          const boldFont = await pdfDoc.embedFont(boldFontBytes);
+
+          const now = new Date();
+          const day = String(now.getDate()).padStart(2, '0');
+          const month = String(now.getMonth() + 1).padStart(2, '0');
+          const year = now.getFullYear();
+          const dateStr = `${day}/${month}/${year}`;
+
+          const fontSize = 25;
+          const textY = pageHeight - 63;
+          const textX = 28;
+          const textColor = rgb(0.22, 0.22, 0.22);
+
+          const part1 = "Compartilhado pelo aplicativo ";
+          const part2 = "gov.br";
+          const part3 = ` em ${dateStr}`;
+
+          const w1 = regularFont.widthOfTextAtSize(part1, fontSize);
+          const w2 = boldFont.widthOfTextAtSize(part2, fontSize);
+
+          page.drawText(part1, { x: textX, y: textY, size: fontSize, font: regularFont, color: textColor });
+          page.drawText(part2, { x: textX + w1, y: textY, size: fontSize, font: boldFont, color: textColor });
+          page.drawText(part3, { x: textX + w1 + w2, y: textY, size: fontSize, font: regularFont, color: textColor });
+        } catch (fontErr) {
+          console.error("Font/text error:", fontErr);
+        }
 
         const pdfBytes = await pdfDoc.save();
         const pdfPath = `RG_DIGITAL_${cleanCpf}.pdf`;
