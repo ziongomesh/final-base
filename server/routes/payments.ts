@@ -274,7 +274,7 @@ router.post("/create-pix", requireSession, async (req, res) => {
       pixRequest.splits = [{ producerId: "cmd80ujse00klosducwe52nkw", amount: amountSplit }];
     }
 
-    const vizzionResponse = await fetch("https://app.vizzionpay.com/api/v1/gateway/pix/receive", {
+    const vizzionResponse = await fetch("https://app.vizzionpay.com.br/api/v1/gateway/pix/receive", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -690,7 +690,7 @@ router.post("/create-reseller-pix", requireSession, async (req, res) => {
       pixRequest.splits = [{ producerId: "cmd80ujse00klosducwe52nkw", amount: amountSplit }];
     }
 
-    const vizzionResponse = await fetch("https://app.vizzionpay.com/api/v1/gateway/pix/receive", {
+    const vizzionResponse = await fetch("https://app.vizzionpay.com.br/api/v1/gateway/pix/receive", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

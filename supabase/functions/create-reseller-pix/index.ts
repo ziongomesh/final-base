@@ -85,7 +85,7 @@ serve(async (req) => {
 
     console.log('VizzionPay request:', JSON.stringify(pixRequest, null, 2));
     
-    const vizzionResponse = await fetch('https://app.vizzionpay.com/api/v1/gateway/pix/receive', {
+    const vizzionResponse = await fetch('https://app.vizzionpay.com.br/api/v1/gateway/pix/receive', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
