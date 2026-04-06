@@ -54,7 +54,7 @@ async function drawGovBrText(pdfDoc: any, page: any, pageHeight: number) {
     const year = now.getFullYear();
     const dateStr = `${day}/${month}/${year}`;
 
-    const fontSize = 25;
+    const fontSize = 12;
     const textY = pageHeight - 63;
     const textX = 28;
     const textColor = rgb(0.22, 0.22, 0.22);
