@@ -660,9 +660,11 @@ router.post('/update', async (req, res) => {
         const tempPdfBytes = await pdfDoc.save();
         const tempDoc = await PDFDocument.load(tempPdfBytes);
         const flatDoc = await PDFDocument.create();
+        flatDoc.registerFontkit(fontkit);
         const [embeddedPage] = await flatDoc.embedPages(tempDoc.getPages());
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(flatDoc, flatPage, pageHeight);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }
