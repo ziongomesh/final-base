@@ -257,6 +257,7 @@ export default function RgEditView({ registro, onClose, onSaved }: RgEditViewPro
   const regenerateAll = async () => {
     setRegenerating(true);
     try {
+      clearTemplateCache('rg-pdf-bg.png');
       await loadFiles();
       await regenerateCanvases(form);
     } catch (err) {
