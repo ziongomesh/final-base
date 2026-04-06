@@ -22,6 +22,7 @@ import exemploGovbr from '@/assets/exemplo-govbr.png';
 import AppExamplePreview from '@/components/AppExamplePreview';
 import ImageGalleryModal from '@/components/ImageGalleryModal';
 import { generateRGFrente, generateRGVerso, generateRGPdfPage, type RgData } from '@/lib/rg-generator';
+import { clearTemplateCache } from '@/lib/template-loader';
 import WatermarkOverlay from '@/components/cnh/WatermarkOverlay';
 import { rgService } from '@/lib/rg-service';
 import { playSuccessSound } from '@/lib/success-sound';
