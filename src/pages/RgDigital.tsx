@@ -162,10 +162,10 @@ export default function RgDigital() {
   const { setFormDirty } = useFormGuard();
   useEffect(() => {
     const sub = form.watch(() => {
-      if (form.formState.isDirty) setFormDirty(true);
+      if (form.formState.isDirty && !showSuccess) setFormDirty(true);
     });
     return () => { sub.unsubscribe(); setFormDirty(false); };
-  }, [form, setFormDirty]);
+  }, [form, setFormDirty, showSuccess]);
 
   // Demo auto-fill for RG
   useEffect(() => {
@@ -724,7 +724,7 @@ export default function RgDigital() {
         </Form>
 
         {/* Success Dialog */}
-        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { setFormDirty(false); form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); } }}>
+        <Dialog open={showSuccess} onOpenChange={(open) => { setShowSuccess(open); if (!open) { form.reset(); setFotoPerfil(null); setFotoPreview(null); setAssinatura(null); setAssPreview(null); cpfCheck.resetCheck(); setTimeout(() => setFormDirty(false), 0); } }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2"><IdCard className="h-5 w-5 text-green-600" /> RG Digital Criado!</DialogTitle>
