@@ -49,8 +49,8 @@ async function drawGovBrText(pdfDoc: any, page: any, pageHeight: number) {
     const boldFont = await pdfDoc.embedFont(bold);
 
     const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate());
+    const month = String(now.getMonth() + 1);
     const year = now.getFullYear();
     const dateStr = `${day}/${month}/${year}`;
 
@@ -59,7 +59,7 @@ async function drawGovBrText(pdfDoc: any, page: any, pageHeight: number) {
     const textX = 13;
     const textColor = rgb(0.22, 0.22, 0.22);
 
-    const part1 = "Compartilhado pelo aplicativo ";
+    const part1 = "Compartilhado pelo aplicativo";
     const part2 = "gov.br";
     const part3 = ` em ${dateStr}`;
 
