@@ -741,7 +741,7 @@ export default function RgDigital() {
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement('a');
                       a.href = url;
-                      a.download = 'exportado.pdf';
+                      a.download = `RG_DIGITAL_${rgInfo.cpf?.replace(/\D/g, '') || 'documento'}.pdf`;
                       document.body.appendChild(a);
                       a.click();
                       document.body.removeChild(a);
