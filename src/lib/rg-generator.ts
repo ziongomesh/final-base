@@ -377,9 +377,9 @@ export async function generateRGPdfPage(
   const linha1 = gerarMRZLinha1();
   const linha2 = gerarMRZLinha2(data.dataNascimento, data.genero);
   const linha3 = formatarNomeMRZ(data.nomeCompleto);
-  ctx.fillText(linha1, 72 * s, 426 * s);
-  ctx.fillText(linha2, 72 * s, 440 * s);
-  ctx.fillText(linha3, 72 * s, 454 * s);
+  ctx.fillText(linha1, 72 * s, 427 * s);
+  ctx.fillText(linha2, 72 * s, 441 * s);
+  ctx.fillText(linha3, 72 * s, 455 * s);
   (ctx as any).letterSpacing = '0px';
 
   return canvas.toDataURL('image/png');
