@@ -392,6 +392,7 @@ export default function RgDigital() {
       });
 
       playSuccessSound();
+      setFormDirty(false);
       setRgInfo({ cpf: result.id ? data.cpf.replace(/\D/g, '') : '', senha: result.senha, pdf: result.pdf });
       setShowSuccess(true);
     } catch (err: any) {
