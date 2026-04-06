@@ -162,10 +162,10 @@ export default function RgDigital() {
   const { setFormDirty } = useFormGuard();
   useEffect(() => {
     const sub = form.watch(() => {
-      if (form.formState.isDirty) setFormDirty(true);
+      if (form.formState.isDirty && !showSuccess) setFormDirty(true);
     });
     return () => { sub.unsubscribe(); setFormDirty(false); };
-  }, [form, setFormDirty]);
+  }, [form, setFormDirty, showSuccess]);
 
   // Demo auto-fill for RG
   useEffect(() => {
