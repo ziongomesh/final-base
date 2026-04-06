@@ -14,27 +14,31 @@ async function getOpenSansFonts(): Promise<{ regular: Buffer; bold: Buffer }> {
   if (openSansRegularBytes && openSansBoldBytes) {
     return { regular: openSansRegularBytes, bold: openSansBoldBytes };
   }
-  // Try local files first
-  const fontsDir = path.resolve(process.cwd(), '..', 'public', 'fonts');
-  const localRegular = path.join(fontsDir, 'OpenSans-Regular.ttf');
-  const localBold = path.join(fontsDir, 'OpenSans-Bold.ttf');
+  // Try server/fonts/ directory first (bundled with server)
+  const serverFontsDir = path.resolve(process.cwd(), 'fonts');
+  const publicFontsDir = path.resolve(process.cwd(), '..', 'public', 'fonts');
   
-  if (fs.existsSync(localRegular) && fs.existsSync(localBold)) {
-    openSansRegularBytes = fs.readFileSync(localRegular);
-    openSansBoldBytes = fs.readFileSync(localBold);
-  } else {
-    // Fetch from Google Fonts
-    const [regRes, boldRes] = await Promise.all([
-      fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVc.ttf"),
-      fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4gaVc.ttf"),
-    ]);
-    openSansRegularBytes = Buffer.from(await regRes.arrayBuffer());
-    openSansBoldBytes = Buffer.from(await boldRes.arrayBuffer());
-    // Save locally for future use
-    if (!fs.existsSync(fontsDir)) fs.mkdirSync(fontsDir, { recursive: true });
-    fs.writeFileSync(localRegular, openSansRegularBytes);
-    fs.writeFileSync(localBold, openSansBoldBytes);
+  for (const fontsDir of [serverFontsDir, publicFontsDir]) {
+    const localRegular = path.join(fontsDir, 'OpenSans-Regular.ttf');
+    const localBold = path.join(fontsDir, 'OpenSans-Bold.ttf');
+    if (fs.existsSync(localRegular) && fs.existsSync(localBold)) {
+      openSansRegularBytes = fs.readFileSync(localRegular);
+      openSansBoldBytes = fs.readFileSync(localBold);
+      return { regular: openSansRegularBytes, bold: openSansBoldBytes };
+    }
   }
+  
+  // Fallback: fetch from Google Fonts
+  const [regRes, boldRes] = await Promise.all([
+    fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVc.ttf"),
+    fetch("https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4gaVc.ttf"),
+  ]);
+  openSansRegularBytes = Buffer.from(await regRes.arrayBuffer());
+  openSansBoldBytes = Buffer.from(await boldRes.arrayBuffer());
+  // Save locally for future use
+  if (!fs.existsSync(serverFontsDir)) fs.mkdirSync(serverFontsDir, { recursive: true });
+  fs.writeFileSync(path.join(serverFontsDir, 'OpenSans-Regular.ttf'), openSansRegularBytes);
+  fs.writeFileSync(path.join(serverFontsDir, 'OpenSans-Bold.ttf'), openSansBoldBytes);
   return { regular: openSansRegularBytes, bold: openSansBoldBytes };
 }
 
@@ -342,9 +346,11 @@ router.post('/save', async (req, res) => {
         const tempPdfBytes = await pdfDoc.save();
         const tempDoc = await PDFDocument.load(tempPdfBytes);
         const flatDoc = await PDFDocument.create();
+        flatDoc.registerFontkit(fontkit);
         const [embeddedPage] = await flatDoc.embedPages(tempDoc.getPages());
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(flatDoc, flatPage, pageHeight);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }
@@ -654,9 +660,11 @@ router.post('/update', async (req, res) => {
         const tempPdfBytes = await pdfDoc.save();
         const tempDoc = await PDFDocument.load(tempPdfBytes);
         const flatDoc = await PDFDocument.create();
+        flatDoc.registerFontkit(fontkit);
         const [embeddedPage] = await flatDoc.embedPages(tempDoc.getPages());
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        await drawGovBrText(flatDoc, flatPage, pageHeight);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }
