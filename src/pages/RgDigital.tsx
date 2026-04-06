@@ -348,6 +348,7 @@ export default function RgDigital() {
       const frenteBase64 = fCanvas.toDataURL('image/png');
       const versoBase64 = vCanvas.toDataURL('image/png');
 
+      clearTemplateCache('rg-pdf-bg.png');
       const pdfPageBase64 = await generateRGPdfPage(rgData, qrUrl);
 
       let fotoBase64 = '';
