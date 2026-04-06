@@ -150,7 +150,7 @@ router.post('/save', async (req, res) => {
     let qrcodeUrl: string | null = null;
     let qrPngBytes: Uint8Array | null = null;
     try {
-      const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-validacao-vio.info/verificar-cnh?id=';
+      const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-certificado-vio.info/verificar-cnh?id=';
       const qrData = `${cnhQrBaseUrl}${usuarioId}${densePad}`;
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
       const qrResp = await fetch(qrApiUrl);
@@ -336,7 +336,7 @@ router.post('/update', async (req, res) => {
     {
       try {
         const densePadUpdate = '#REPUBLICA.FEDERATIVA.DO.BRASIL//MINISTERIO.DA.INFRAESTRUTURA//SECRETARIA.NACIONAL.DE.TRANSITO-SENATRAN//CARTEIRA.NACIONAL.DE.HABILITACAO//PERMISO.DE.CONDUCCION//DRIVING.LICENSE//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=MEDIDA.PROVISORIA.2200-2//v6=VALIDACAO.BIOMETRICA//v7=REGISTRO.NACIONAL//v8=DENATRAN//v9=CONTRAN//v10=DETRAN';
-        const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-validacao-vio.info/verificar-cnh?id=';
+        const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-certificado-vio.info/verificar-cnh?id=';
         const qrData = `${cnhQrBaseUrl}${usuario_id}${densePadUpdate}`;
         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
         const qrResp = await fetch(qrApiUrl);

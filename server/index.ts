@@ -165,7 +165,7 @@ const allowedOrigins = new Set(
     'https://condutor-cnhdigital-vio-web.info',
     'https://cidadaodigital.info',
     'http://consulta-rgdigital-vio.info',
-    'https://qrcode-validacao-vio.info',
+    'https://qrcode-certificado-vio.info',
     'http://127.0.0.1:8080',
     // VPS IPs - adicione mais se necessário
     'http://localhost:8080',

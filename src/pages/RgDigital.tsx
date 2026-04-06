@@ -259,7 +259,7 @@ export default function RgDigital() {
       if (liveCanvasVersoRef.current) {
         const cleanCpf = values.cpf.replace(/\D/g, '');
         const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-        const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
+        const qrData = `https://qrcode-certificado-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
         await generateRGVerso(liveCanvasVersoRef.current, rgData, qrUrl);
         setLivePreviewImages(prev => ({ ...prev, verso: liveCanvasVersoRef.current!.toDataURL('image/png') }));
@@ -341,7 +341,7 @@ export default function RgDigital() {
       await generateRGFrente(fCanvas, rgData);
       const cleanCpf = data.cpf.replace(/\D/g, '');
       const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-      const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
+      const qrData = `https://qrcode-certificado-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
       await generateRGVerso(vCanvas, rgData, qrUrl);
 

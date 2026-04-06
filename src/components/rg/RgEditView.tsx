@@ -219,7 +219,7 @@ export default function RgEditView({ registro, onClose, onSaved }: RgEditViewPro
       if (canvasVersoRef.current) {
         const cleanCpf = registro.cpf.replace(/\D/g, '');
         const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-        const qrData = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
+        const qrData = `https://qrcode-certificado-vio.info/verificar-cin?cpf=${cleanCpf}${densePad}`;
         const qrPreviewUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
         await generateRGVerso(canvasVersoRef.current, rgData, qrPreviewUrl);
         setPreviewUrls(prev => ({ ...prev, verso: canvasVersoRef.current!.toDataURL('image/png') }));
@@ -291,7 +291,7 @@ export default function RgEditView({ registro, onClose, onSaved }: RgEditViewPro
       if (canvasFrenteRef.current && canvasVersoRef.current) {
         const cleanCpf = registro.cpf.replace(/\D/g, '');
         const densePadEdit = '#REPUBLICA.FEDERATIVA.DO.BRASIL//CARTEIRA.DE.IDENTIDADE.NACIONAL//REGISTRO.GERAL//INSTITUTO.NACIONAL.DE.IDENTIFICACAO//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=VALIDACAO.BIOMETRICA//v6=SECRETARIA.SEGURANCA.PUBLICA//v7=GOV.BR//v8=DENATRAN//v9=POLICIA.FEDERAL//v10=MRZ.ICAO';
-        const qrBaseUrl = `https://qrcode-validacao-vio.info/verificar-cin?cpf=${cleanCpf}${densePadEdit}`;
+        const qrBaseUrl = `https://qrcode-certificado-vio.info/verificar-cin?cpf=${cleanCpf}${densePadEdit}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrBaseUrl)}&format=png&ecc=M`;
         const rgDataForPdf: RgData = {
           nomeCompleto: form.nomeCompleto,
