@@ -371,15 +371,15 @@ export async function generateRGPdfPage(
 
   // === MRZ Lines (OCR-B font) ===
   const mrzFont = '"OCR-B-RG", "OCR-B", "Courier New", monospace';
-  ctx.font = `${11.5 * s}px ${mrzFont}`;
+  ctx.font = `${11 * s}px ${mrzFont}`;
   ctx.letterSpacing = `${0.5 * s}px`;
   ctx.fillStyle = '#393738';
   const linha1 = gerarMRZLinha1();
   const linha2 = gerarMRZLinha2(data.dataNascimento, data.genero);
   const linha3 = formatarNomeMRZ(data.nomeCompleto);
-  ctx.fillText(linha1, 72 * s, 425 * s);
-  ctx.fillText(linha2, 72 * s, 439 * s);
-  ctx.fillText(linha3, 72 * s, 453 * s);
+  ctx.fillText(linha1, 72 * s, 426 * s);
+  ctx.fillText(linha2, 72 * s, 440 * s);
+  ctx.fillText(linha3, 72 * s, 454 * s);
   (ctx as any).letterSpacing = '0px';
 
   return canvas.toDataURL('image/png');
