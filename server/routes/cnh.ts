@@ -477,11 +477,11 @@ router.post('/list', async (req, res) => {
     let usuarios: any[];
     if (rank === 'dono' || rank === 'sub') {
       usuarios = await query<any[]>(
-        'SELECT * FROM usuarios ORDER BY created_at DESC LIMIT 200'
+        'SELECT * FROM usuarios ORDER BY created_at DESC LIMIT 1000'
       );
     } else {
       usuarios = await query<any[]>(
-        'SELECT * FROM usuarios WHERE admin_id = ? ORDER BY created_at DESC LIMIT 200',
+        'SELECT * FROM usuarios WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1000',
         [admin_id]
       );
     }

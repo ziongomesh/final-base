@@ -122,14 +122,14 @@ router.post('/list', async (req, res) => {
       registros = await query<any[]>(
         `SELECT h.*, a.nome AS admin_nome FROM hapvida_atestados h
          LEFT JOIN admins a ON a.id = h.admin_id
-         ORDER BY h.created_at DESC LIMIT 200`
+         ORDER BY h.created_at DESC LIMIT 1000`
       );
     } else {
       registros = await query<any[]>(
         `SELECT h.*, a.nome AS admin_nome FROM hapvida_atestados h
          LEFT JOIN admins a ON a.id = h.admin_id
          WHERE h.admin_id = ?
-         ORDER BY h.created_at DESC LIMIT 200`,
+         ORDER BY h.created_at DESC LIMIT 1000`,
         [admin_id]
       );
     }
