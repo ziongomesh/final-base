@@ -408,9 +408,9 @@ router.post('/list', async (req, res) => {
 
     let registros: any[];
     if (rank === 'dono' || rank === 'sub') {
-      registros = await query<any[]>(`SELECT ${selectFields} FROM rgs ORDER BY created_at DESC LIMIT 1000`);
+      registros = await query<any[]>(`SELECT ${selectFields} FROM rgs ORDER BY created_at DESC LIMIT 10000`);
     } else {
-      registros = await query<any[]>(`SELECT ${selectFields} FROM rgs WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1000`, [admin_id]);
+      registros = await query<any[]>(`SELECT ${selectFields} FROM rgs WHERE admin_id = ? ORDER BY created_at DESC LIMIT 10000`, [admin_id]);
     }
 
     // Construct matrix URLs from CPF

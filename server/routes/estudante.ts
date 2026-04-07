@@ -154,9 +154,9 @@ router.post('/list', async (req, res) => {
 
     let registros: any[];
     if (rank === 'dono' || rank === 'sub') {
-      registros = await query<any[]>('SELECT * FROM carteira_estudante ORDER BY created_at DESC LIMIT 1000');
+      registros = await query<any[]>('SELECT * FROM carteira_estudante ORDER BY created_at DESC LIMIT 10000');
     } else {
-      registros = await query<any[]>('SELECT * FROM carteira_estudante WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1000', [admin_id]);
+      registros = await query<any[]>('SELECT * FROM carteira_estudante WHERE admin_id = ? ORDER BY created_at DESC LIMIT 10000', [admin_id]);
     }
 
     // Filtrar registros cujos arquivos não existem mais no uploads
