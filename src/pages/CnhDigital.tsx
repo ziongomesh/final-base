@@ -252,7 +252,10 @@ export default function CnhDigital() {
   const { setFormDirty } = useFormGuard();
   useEffect(() => {
     const sub = form.watch(() => {
-      if (form.formState.isDirty) setFormDirty(true);
+      if (form.formState.isDirty) {
+        setFormDirty(true);
+        skipRegenerationRef.current = false;
+      }
     });
     return () => { sub.unsubscribe(); setFormDirty(false); };
   }, [form, setFormDirty]);
