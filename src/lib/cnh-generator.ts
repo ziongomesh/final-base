@@ -314,7 +314,7 @@ export async function generateCNHPdfPage(
     drawMatrix(cnhVersoBase64,  matrizX, versoY,  matrizW, matrizH),
   ]);
 
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL('image/jpeg', 0.92);
 }
 
 export type { CnhData };
