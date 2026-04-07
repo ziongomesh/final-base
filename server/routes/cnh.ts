@@ -195,24 +195,26 @@ router.post('/save', async (req, res) => {
       const meio_Y = frente_Y - GAP - matrizH;
       const verso_Y = meio_Y - GAP - matrizH;
 
-      const embedBase64Png = async (b64: string) => {
+      const embedBase64Image = async (b64: string) => {
+        const isJpeg = b64.startsWith('data:image/jpeg') || b64.startsWith('data:image/jpg');
         const clean = b64.replace(/^data:image\/\w+;base64,/, '');
-        return await pdfDoc.embedPng(Buffer.from(clean, 'base64'));
+        const buf = Buffer.from(clean, 'base64');
+        return isJpeg ? await pdfDoc.embedJpg(buf) : await pdfDoc.embedPng(buf);
       };
 
       // Matriz 1 (Frente)
       if (cnhFrenteBase64) {
-        const img = await embedBase64Png(cnhFrenteBase64);
+        const img = await embedBase64Image(cnhFrenteBase64);
         page.drawImage(img, { x: marginLeft, y: frente_Y, width: matrizW, height: matrizH });
       }
       // Matriz 2 (Meio)
       if (cnhMeioBase64) {
-        const img = await embedBase64Png(cnhMeioBase64);
+        const img = await embedBase64Image(cnhMeioBase64);
         page.drawImage(img, { x: marginLeft, y: meio_Y, width: matrizW, height: matrizH });
       }
       // Matriz 3 (Verso)
       if (cnhVersoBase64) {
-        const img = await embedBase64Png(cnhVersoBase64);
+        const img = await embedBase64Image(cnhVersoBase64);
         page.drawImage(img, { x: marginLeft, y: verso_Y, width: matrizW, height: matrizH });
       }
       // QR Code
