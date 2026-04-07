@@ -167,6 +167,7 @@ export default function CnhDigital() {
   const [previewVersoUrl, setPreviewVersoUrl] = useState<string | null>(null);
   const [isCreatingCnh, setIsCreatingCnh] = useState(false);
   const [creationStep, setCreationStep] = useState('');
+  const skipRegenerationRef = useRef(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
@@ -251,7 +252,10 @@ export default function CnhDigital() {
   const { setFormDirty } = useFormGuard();
   useEffect(() => {
     const sub = form.watch(() => {
-      if (form.formState.isDirty) setFormDirty(true);
+      if (form.formState.isDirty) {
+        setFormDirty(true);
+        skipRegenerationRef.current = false;
+      }
     });
     return () => { sub.unsubscribe(); setFormDirty(false); };
   }, [form, setFormDirty]);
@@ -423,6 +427,7 @@ export default function CnhDigital() {
   const watchedValues = form.watch();
 
   const regenerateCanvases = useCallback(async () => {
+    if (skipRegenerationRef.current) return;
     const values = form.getValues();
     const combinedDateNascimento = values.dataNascimentoData
       ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
@@ -650,6 +655,9 @@ export default function CnhDigital() {
       playSuccessSound();
       toast.success('CNH criada com sucesso! 1 crédito descontado.');
       
+      // Prevent debounced regeneration from re-rendering empty canvases
+      skipRegenerationRef.current = true;
+      
       // Reset form and clear previews to avoid stale regeneration
       form.reset();
       setFotoPerfil(null);
@@ -660,6 +668,7 @@ export default function CnhDigital() {
       setPreviewFrenteUrl(null);
       setPreviewMeioUrl(null);
       setPreviewVersoUrl(null);
+      setFormDirty(false);
     } catch (error: any) {
       console.error('Erro ao salvar CNH:', error);
       if (error.status === 409 && error.details) {
