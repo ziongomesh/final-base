@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { playSuccessSound } from '@/lib/success-sound';
-import { playWelcomeAudio, clearTTSCache, speakText } from '@/lib/tts-service';
+import { playWelcomeAudio, playGoodbyeAudio, clearTTSCache } from '@/lib/tts-service';
 
 type AppRole = 'dono' | 'sub' | 'master' | 'revendedor' | null;
 
@@ -173,8 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Play goodbye audio AFTER logout (non-blocking)
     if (nome) {
-      const firstName = nome.split(' ')[0];
-      speakText(`Até mais, ${firstName}! Volte sempre, chefe!`).catch(() => {});
+      playGoodbyeAudio(nome).catch(() => {});
     }
   };
 
