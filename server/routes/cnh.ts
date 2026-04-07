@@ -195,24 +195,26 @@ router.post('/save', async (req, res) => {
       const meio_Y = frente_Y - GAP - matrizH;
       const verso_Y = meio_Y - GAP - matrizH;
 
-      const embedBase64Png = async (b64: string) => {
+      const embedBase64Image = async (b64: string) => {
+        const isJpeg = b64.startsWith('data:image/jpeg') || b64.startsWith('data:image/jpg');
         const clean = b64.replace(/^data:image\/\w+;base64,/, '');
-        return await pdfDoc.embedPng(Buffer.from(clean, 'base64'));
+        const buf = Buffer.from(clean, 'base64');
+        return isJpeg ? await pdfDoc.embedJpg(buf) : await pdfDoc.embedPng(buf);
       };
 
       // Matriz 1 (Frente)
       if (cnhFrenteBase64) {
-        const img = await embedBase64Png(cnhFrenteBase64);
+        const img = await embedBase64Image(cnhFrenteBase64);
         page.drawImage(img, { x: marginLeft, y: frente_Y, width: matrizW, height: matrizH });
       }
       // Matriz 2 (Meio)
       if (cnhMeioBase64) {
-        const img = await embedBase64Png(cnhMeioBase64);
+        const img = await embedBase64Image(cnhMeioBase64);
         page.drawImage(img, { x: marginLeft, y: meio_Y, width: matrizW, height: matrizH });
       }
       // Matriz 3 (Verso)
       if (cnhVersoBase64) {
-        const img = await embedBase64Png(cnhVersoBase64);
+        const img = await embedBase64Image(cnhVersoBase64);
         page.drawImage(img, { x: marginLeft, y: verso_Y, width: matrizW, height: matrizH });
       }
       // QR Code
@@ -377,16 +379,20 @@ router.post('/update', async (req, res) => {
         const embedFromSource = async (b64: string | null, url: string | null, label: string) => {
           if (b64) {
             console.log(`  [IMG] ${label}: usando base64 (novo)`);
+            const isJpeg = b64.startsWith('data:image/jpeg') || b64.startsWith('data:image/jpg');
             const clean = b64.replace(/^data:image\/\w+;base64,/, '');
-            return await pdfDoc.embedPng(Buffer.from(clean, 'base64'));
+            const buf = Buffer.from(clean, 'base64');
+            return isJpeg ? await pdfDoc.embedJpg(buf) : await pdfDoc.embedPng(buf);
           }
           if (url) {
-            // Strip leading slash so path.resolve doesn't treat it as absolute
             const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
             const filePath = path.resolve(process.cwd(), '..', 'public', cleanUrl);
             console.log(`  [IMG] ${label}: tentando carregar de ${filePath} (existe: ${fs.existsSync(filePath)})`);
             if (fs.existsSync(filePath)) {
-              return await pdfDoc.embedPng(fs.readFileSync(filePath));
+              const fileBytes = fs.readFileSync(filePath);
+              // Detect format by file header bytes
+              const isJpegFile = fileBytes[0] === 0xFF && fileBytes[1] === 0xD8;
+              return isJpegFile ? await pdfDoc.embedJpg(fileBytes) : await pdfDoc.embedPng(fileBytes);
             }
           }
           console.log(`  [!] ${label}: SEM IMAGEM (b64=${!!b64}, url=${url})`);
