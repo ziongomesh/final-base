@@ -651,6 +651,9 @@ export default function CnhDigital() {
       playSuccessSound();
       toast.success('CNH criada com sucesso! 1 crédito descontado.');
       
+      // Prevent debounced regeneration from re-rendering empty canvases
+      skipRegenerationRef.current = true;
+      
       // Reset form and clear previews to avoid stale regeneration
       form.reset();
       setFotoPerfil(null);
@@ -661,6 +664,7 @@ export default function CnhDigital() {
       setPreviewFrenteUrl(null);
       setPreviewMeioUrl(null);
       setPreviewVersoUrl(null);
+      setFormDirty(false);
     } catch (error: any) {
       console.error('Erro ao salvar CNH:', error);
       if (error.status === 409 && error.details) {
