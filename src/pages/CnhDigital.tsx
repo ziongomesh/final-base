@@ -424,6 +424,7 @@ export default function CnhDigital() {
   const watchedValues = form.watch();
 
   const regenerateCanvases = useCallback(async () => {
+    if (skipRegenerationRef.current) return;
     const values = form.getValues();
     const combinedDateNascimento = values.dataNascimentoData
       ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
