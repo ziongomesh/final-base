@@ -655,13 +655,16 @@ export default function CnhDigital() {
       playSuccessSound();
       toast.success('CNH criada com sucesso! 1 crédito descontado.');
       
-      // Reset form
+      // Reset form and clear previews to avoid stale regeneration
       form.reset();
       setFotoPerfil(null);
       setAssinatura(null);
       setSelectedObs([]);
       setCustomObs('');
       setTriedSubmit(false);
+      setPreviewFrenteUrl(null);
+      setPreviewMeioUrl(null);
+      setPreviewVersoUrl(null);
     } catch (error: any) {
       console.error('Erro ao salvar CNH:', error);
       if (error.status === 409 && error.details) {
