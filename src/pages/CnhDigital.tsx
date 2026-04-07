@@ -545,9 +545,8 @@ export default function CnhDigital() {
     setCreationStep('Preparando dados da CNH...');
 
     try {
-      setCreationStep('Gerando imagens em alta resolução...');
+      setCreationStep('Gerando imagens...');
       
-      // Render at 1x for preview (already done), now render HD for PDF
       const values = form.getValues();
       const combinedDateNascimento = values.dataNascimentoData
         ? `${values.dataNascimentoData}${values.localNascimento ? ', ' + values.localNascimento : ''}${values.ufNascimento ? ', ' + values.ufNascimento : ''}`
@@ -559,12 +558,23 @@ export default function CnhDigital() {
         assinatura: assinatura,
       };
 
-      const HD_SCALE = 3;
+      // Read foto/assinatura in parallel with canvas rendering
+      const readFile = (file: File | null): Promise<string> => {
+        if (!file) return Promise.resolve('');
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+      };
+
+      const HD_SCALE = 2;
       const hdFronte = document.createElement('canvas');
       const hdMeio = document.createElement('canvas');
       const hdVerso = document.createElement('canvas');
 
-      await Promise.all([
+      // Run ALL heavy operations in parallel: 3 canvas renders + 2 file reads
+      const [,,,fotoBase64, assinaturaBase64] = await Promise.all([
         generateCNH(hdFronte, cnhData, values.cnhDefinitiva || 'sim', HD_SCALE),
         generateCNHMeio(hdMeio, {
           ...cnhData,
@@ -572,11 +582,14 @@ export default function CnhDigital() {
           estadoExtenso: values.estadoExtenso || getStateFullName(values.uf),
         }, HD_SCALE),
         generateCNHVerso(hdVerso, cnhData, HD_SCALE),
+        readFile(fotoPerfil),
+        readFile(assinatura),
       ]);
 
-      const cnhFrenteBase64 = hdFronte.toDataURL('image/png');
-      const cnhMeioBase64 = hdMeio.toDataURL('image/png');
-      const cnhVersoBase64 = hdVerso.toDataURL('image/png');
+      // Use JPEG for much faster encoding and smaller payload
+      const cnhFrenteBase64 = hdFronte.toDataURL('image/jpeg', 0.92);
+      const cnhMeioBase64 = hdMeio.toDataURL('image/jpeg', 0.92);
+      const cnhVersoBase64 = hdVerso.toDataURL('image/jpeg', 0.92);
 
       setCreationStep('Montando PDF...');
       let pdfPageBase64 = '';
@@ -584,24 +597,6 @@ export default function CnhDigital() {
         pdfPageBase64 = await generateCNHPdfPage(cnhFrenteBase64, cnhMeioBase64, cnhVersoBase64);
       } catch (pdfErr) {
         console.warn('Erro ao gerar página PDF:', pdfErr);
-      }
-
-      let fotoBase64 = '';
-      if (fotoPerfil) {
-        fotoBase64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(fotoPerfil);
-        });
-      }
-
-      let assinaturaBase64 = '';
-      if (assinatura) {
-        assinaturaBase64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(assinatura);
-        });
       }
 
       setCreationStep('Salvando no servidor...');
@@ -655,13 +650,16 @@ export default function CnhDigital() {
       playSuccessSound();
       toast.success('CNH criada com sucesso! 1 crédito descontado.');
       
-      // Reset form
+      // Reset form and clear previews to avoid stale regeneration
       form.reset();
       setFotoPerfil(null);
       setAssinatura(null);
       setSelectedObs([]);
       setCustomObs('');
       setTriedSubmit(false);
+      setPreviewFrenteUrl(null);
+      setPreviewMeioUrl(null);
+      setPreviewVersoUrl(null);
     } catch (error: any) {
       console.error('Erro ao salvar CNH:', error);
       if (error.status === 409 && error.details) {
