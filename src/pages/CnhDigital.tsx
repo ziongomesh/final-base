@@ -167,6 +167,7 @@ export default function CnhDigital() {
   const [previewVersoUrl, setPreviewVersoUrl] = useState<string | null>(null);
   const [isCreatingCnh, setIsCreatingCnh] = useState(false);
   const [creationStep, setCreationStep] = useState('');
+  const skipRegenerationRef = useRef(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
