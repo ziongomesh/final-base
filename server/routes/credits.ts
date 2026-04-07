@@ -427,7 +427,7 @@ router.get('/all-transfers', requireSession, requireDono, async (req, res) => {
       params.push(masterId);
     }
     
-    sql += ' ORDER BY ct.created_at DESC LIMIT 200';
+    sql += ' ORDER BY ct.created_at DESC LIMIT 1000';
     
     const transfers = await query<any[]>(sql, params);
     res.json(transfers);
