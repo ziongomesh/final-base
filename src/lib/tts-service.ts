@@ -71,10 +71,46 @@ export async function speakText(text: string, _voiceId?: string): Promise<null> 
   }
 }
 
+function getTimeGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Bom dia';
+  if (h < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 // Play welcome message on login
 export async function playWelcomeAudio(userName: string): Promise<null> {
-  const text = `Opa ${userName}! Bem-vindo de volta à base. Bom trabalho!`;
-  return speakText(text);
+  const firstName = userName.split(' ')[0];
+  const greeting = getTimeGreeting();
+  const variations = [
+    `${greeting}, ${firstName}! Bem-vindo de volta à base. Bom trabalho!`,
+    `E aí ${firstName}! ${greeting}. Tudo certo por aí? Vamos trabalhar!`,
+    `Opa ${firstName}! ${greeting}. Que bom te ver de volta!`,
+    `${greeting}, ${firstName}! A base tava te esperando, chefe!`,
+    `Fala ${firstName}! ${greeting}. Mais um dia de produção, bora!`,
+    `${greeting} ${firstName}! Bem-vindo, parceiro. Vamos nessa!`,
+    `Salve ${firstName}! ${greeting}. Pronto pra mais uma?`,
+  ];
+  return speakText(pickRandom(variations));
+}
+
+// Play goodbye message on logout
+export async function playGoodbyeAudio(userName: string): Promise<null> {
+  const firstName = userName.split(' ')[0];
+  const variations = [
+    `Até mais, ${firstName}! Volte sempre, chefe!`,
+    `Falou ${firstName}! Até a próxima, parceiro!`,
+    `Valeu ${firstName}! Descansa que você merece!`,
+    `Até logo, ${firstName}! Foi bom te ver por aqui!`,
+    `Tchau ${firstName}! Bom descanso e até breve!`,
+    `Até mais, ${firstName}! A base vai ficar te esperando!`,
+    `Falou, ${firstName}! Boa sorte e até a volta!`,
+  ];
+  return speakText(pickRandom(variations));
 }
 
 // Speak and track (waits for completion)
