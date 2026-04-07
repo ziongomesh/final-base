@@ -61,7 +61,7 @@ export function generateRenach(uf: string): string {
   return `${uf || 'SP'}${randomDigits(9)}`;
 }
 
-export function generateMRZ(nome: string, maxLen: number = 27): string {
+export function generateMRZ(nome: string, maxLen: number = 30): string {
   if (!nome) return '';
   const parts = nome.toUpperCase().trim().split(/\s+/).filter(p => p.length > 0);
   if (parts.length === 0) return '';

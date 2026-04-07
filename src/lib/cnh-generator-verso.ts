@@ -49,7 +49,13 @@ function drawMrzText(ctx: CanvasRenderingContext2D, data: CnhVersoData, s: numbe
   ctx.fillText('I<BRA069082717<432<<<<<<<<<<<<', 205 * s, 427 * s);
   ctx.fillText('9405253M1206157BRA<<<<<<<<<<<4', 205 * s, 474 * s);
 
-  const mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<<<<<<<<<<';
+  let mrzText = data.matrizFinal || 'NOME<<COMPLETO<<<<<<<<<<<<<<<<';
+  // Garantir que a 3ª linha tenha exatamente 30 caracteres
+  if (mrzText.length < 30) {
+    mrzText = mrzText + '<'.repeat(30 - mrzText.length);
+  } else if (mrzText.length > 30) {
+    mrzText = mrzText.substring(0, 30);
+  }
   ctx.fillText(mrzText, 205 * s, 521 * s);
 }
 
