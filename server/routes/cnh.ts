@@ -486,24 +486,9 @@ router.post('/list', async (req, res) => {
       );
     }
 
-    // Filtrar registros cujos arquivos não existem mais no uploads
-    const uploadsDir = process.env.UPLOADS_PATH || path.resolve(process.cwd(), '..', 'public', 'uploads');
-    const filteredUsuarios = usuarios.filter((u: any) => {
-      const cpf = (u.cpf || '').replace(/\D/g, '');
-      if (!cpf) return false;
-      const pdfFile = u.pdf_url ? path.join(uploadsDir, path.basename(u.pdf_url)) : null;
-      const frenteFile = path.join(uploadsDir, `${cpf}img1.png`);
-      if (pdfFile && fs.existsSync(pdfFile)) return true;
-      if (fs.existsSync(frenteFile)) return true;
-      if (u.foto_url && !u.foto_url.startsWith('data:') && !u.foto_url.startsWith('http')) {
-        if (fs.existsSync(path.join(uploadsDir, path.basename(u.foto_url)))) return true;
-      }
-      return false;
-    });
+    logger.cnhListed(admin_id, usuarios.length);
 
-    logger.cnhListed(admin_id, filteredUsuarios.length);
-
-    res.json({ usuarios: filteredUsuarios });
+    res.json({ usuarios });
   } catch (error: any) {
     console.error('Erro ao listar CNH:', error);
     res.status(500).json({ error: 'Erro interno do servidor', details: error.message });
