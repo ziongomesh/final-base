@@ -14,7 +14,8 @@ router.post('/upload-qrcode', requireSession, requireDonoOrSub, async (req, res)
       return res.status(400).json({ error: 'Imagem é obrigatória' });
     }
 
-    const uploadsDir = path.join(process.cwd(), 'uploads', 'qrcodes');
+    const uploadsBase = process.env.UPLOADS_PATH || path.resolve(process.cwd(), '..', 'public', 'uploads');
+    const uploadsDir = path.join(uploadsBase, 'qrcodes');
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
