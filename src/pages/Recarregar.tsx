@@ -1414,11 +1414,9 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                     variant="outline"
                     className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
                     onClick={() => {
-                      const url = getWhatsappUrl(selectedCustomPlan);
-                      if (url) {
-                        const msg = encodeURIComponent(`Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`);
-                        window.open(`${url}?text=${msg}`, '_blank');
-                      }
+                      const msg = `Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`;
+                      const url = getWhatsappUrl(selectedCustomPlan, msg);
+                      if (url) window.open(url, '_blank');
                     }}
                   >
                     💬 Falar com Admin
