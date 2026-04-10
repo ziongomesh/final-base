@@ -1105,7 +1105,61 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
     }
   };
 
-  // Se não é do admin 3, mostrar view padrão de contato com master
+  // Effect: show attach receipt button after 10 seconds when plan is selected
+  useEffect(() => {
+    if (selectedCustomPlan) {
+      setShowAttachReceipt(false);
+      setReceiptSent(false);
+      if (attachTimerRef.current) clearTimeout(attachTimerRef.current);
+      attachTimerRef.current = setTimeout(() => {
+        setShowAttachReceipt(true);
+      }, 10000);
+    } else {
+      setShowAttachReceipt(false);
+      if (attachTimerRef.current) clearTimeout(attachTimerRef.current);
+    }
+    return () => { if (attachTimerRef.current) clearTimeout(attachTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCustomPlan?.id]);
+
+  const handleUploadReceipt = async (file: File) => {
+    if (!admin || !selectedCustomPlan) return;
+    setUploadingReceipt(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data, error } = await supabase.functions.invoke('upload-receipt', {
+        body: {
+          admin_id: admin.id,
+          session_token: admin.session_token,
+          plan_id: selectedCustomPlan.id,
+          plan_name: selectedCustomPlan.name,
+          credits: selectedCustomPlan.credits,
+          amount: Number(selectedCustomPlan.total),
+          receipt_base64: base64,
+        }
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setReceiptSent(true);
+      toast.success('Comprovante enviado!', { description: 'Seu admin será notificado para confirmar.' });
+    } catch (err: any) {
+      toast.error('Erro ao enviar comprovante', { description: err.message });
+    } finally {
+      setUploadingReceipt(false);
+    }
+  };
+
   if (loadingCreator) {
     return (
       <DashboardLayout>
