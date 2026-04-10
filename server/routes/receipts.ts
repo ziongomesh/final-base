@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import db from '../db/index.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { query } from '../db';
+import { requireSession } from '../middleware/auth';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const router = Router();
 
 // Upload receipt
-router.post('/upload', authMiddleware, async (req, res) => {
+router.post('/upload', requireSession, async (req, res) => {
   try {
     const { admin_id, plan_id, plan_name, credits, amount, receipt_base64 } = req.body;
 
@@ -32,13 +32,13 @@ router.post('/upload', authMiddleware, async (req, res) => {
     const receiptUrl = `${domainUrl}/uploads/receipts/${fileName}`;
 
     // Insert record
-    const [result] = await db.query(
+    const result = await query<any>(
       `INSERT INTO recharge_receipts (admin_id, plan_id, plan_name, credits, amount, receipt_url, status, created_at)
        VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
       [admin_id, plan_id || null, plan_name || '', credits || 0, amount || 0, receiptUrl]
     );
 
-    const insertId = (result as any).insertId;
+    const insertId = result.insertId;
 
     res.json({
       success: true,

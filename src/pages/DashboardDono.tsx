@@ -243,12 +243,13 @@ export default function DashboardDono() {
     if (!admin) return;
     setLoadingSubPlans(true);
     try {
-      const { data, error } = await supabase.functions.invoke('manage-sub-plans', {
-        body: { action: 'list', admin_id: admin.id, session_token: admin.session_token }
+      const resp = await fetch(`${getApiBase()}/sub-plans/list`, {
+        headers: { 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' }
       });
-      console.log('fetchSubPlans response:', { data, error });
-      if (error) {
-        console.error('Edge function error:', error);
+      const data = await resp.json();
+      console.log('fetchSubPlans response:', data);
+      if (!resp.ok) {
+        console.error('Sub plans error:', data);
         toast.error('Erro ao carregar planos');
       } else if (data?.plans) {
         setSubPlans(data.plans);
@@ -264,12 +265,16 @@ export default function DashboardDono() {
     }
     setSavingSubPlan(true);
     try {
-      const action = editingSubPlan ? 'update' : 'create';
-      const plan = editingSubPlan ? { ...subPlanForm, id: editingSubPlan.id } : subPlanForm;
-      const { error } = await supabase.functions.invoke('manage-sub-plans', {
-        body: { action, admin_id: admin.id, session_token: admin.session_token, plan }
+      const isUpdate = !!editingSubPlan;
+      const plan = isUpdate ? { ...subPlanForm, id: editingSubPlan.id } : subPlanForm;
+      const endpoint = isUpdate ? 'update' : 'create';
+      const method = isUpdate ? 'PUT' : 'POST';
+      const resp = await fetch(`${getApiBase()}/sub-plans/${endpoint}`, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' },
+        body: JSON.stringify({ plan })
       });
-      if (error) throw error;
+      if (!resp.ok) { const d = await resp.json(); throw new Error(d.error); }
       toast.success(editingSubPlan ? 'Plano atualizado!' : 'Plano criado!');
       setSubPlanForm(emptySubPlan);
       setEditingSubPlan(null);
@@ -281,8 +286,9 @@ export default function DashboardDono() {
   const handleDeleteSubPlan = async (planId: number) => {
     if (!admin) return;
     try {
-      await supabase.functions.invoke('manage-sub-plans', {
-        body: { action: 'delete', admin_id: admin.id, session_token: admin.session_token, plan_id: planId }
+      await fetch(`${getApiBase()}/sub-plans/delete/${planId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' }
       });
       toast.success('Plano removido!');
       fetchSubPlans();
