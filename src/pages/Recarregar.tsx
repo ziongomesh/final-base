@@ -926,9 +926,12 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
             // Try to load custom sub plans for this creator
             if (data.creator_id) {
               try {
-                const { data: plansData } = await supabase.functions.invoke('manage-sub-plans', {
-                  body: { action: 'list_for_reseller', admin_id: adminId, session_token: sessionToken, creator_id: data.creator_id }
+                const plansResp = await fetch(`${apiBase}/sub-plans/list-for-reseller`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'x-admin-id': String(adminId), 'x-session-token': sessionToken || '' },
+                  body: JSON.stringify({ creator_id: data.creator_id })
                 });
+                const plansData = await plansResp.json();
                 if (plansData?.plans?.length > 0) {
                   const mapped = plansData.plans.map((p: any) => ({
                     name: p.name,
