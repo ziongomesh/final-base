@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Cropper from 'react-easy-crop';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { playSuccessSound } from '@/lib/success-sound';
@@ -183,6 +185,49 @@ export default function DashboardDono() {
   const [editingSubPlan, setEditingSubPlan] = useState<SubPlan | null>(null);
   const [savingSubPlan, setSavingSubPlan] = useState(false);
   const [loadingSubPlans, setLoadingSubPlans] = useState(false);
+
+  // QR Code crop state
+  const [qrCropImage, setQrCropImage] = useState<string | null>(null);
+  const [qrCrop, setQrCrop] = useState({ x: 0, y: 0 });
+  const [qrZoom, setQrZoom] = useState(1);
+  const [qrCroppedArea, setQrCroppedArea] = useState<any>(null);
+  const qrFileRef = useRef<HTMLInputElement>(null);
+
+  const onQrCropComplete = useCallback((_: any, croppedAreaPixels: any) => {
+    setQrCroppedArea(croppedAreaPixels);
+  }, []);
+
+  const getCroppedImg = useCallback(async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; image.src = imageSrc; });
+    const canvas = document.createElement('canvas');
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return canvas.toDataURL('image/png').split(',')[1];
+  }, []);
+
+  const handleQrCropConfirm = useCallback(async () => {
+    if (!qrCropImage || !qrCroppedArea) return;
+    try {
+      const base64 = await getCroppedImg(qrCropImage, qrCroppedArea);
+      const stored = localStorage.getItem('admin');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (stored) { const parsed = JSON.parse(stored); headers['x-admin-id'] = String(parsed.id); headers['x-session-token'] = parsed.session_token; }
+      const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+      let apiBase = envUrl ? envUrl.replace(/\/+$/, '') : (window.location.origin + '/api');
+      if (!apiBase.endsWith('/api')) apiBase += '/api';
+      const resp = await fetch(`${apiBase}/sub-plans/upload-qrcode`, { method: 'POST', headers, body: JSON.stringify({ image_base64: base64 }) });
+      const data = await resp.json();
+      if (data?.url) { setSubPlanForm(f => ({ ...f, qr_code_image: data.url })); toast.success('QR Code enviado!'); }
+      else throw new Error(data?.error || 'Erro ao enviar');
+    } catch (err: any) { toast.error('Erro ao enviar QR Code', { description: err.message }); }
+    setQrCropImage(null);
+    setQrZoom(1);
+    setQrCrop({ x: 0, y: 0 });
+  }, [qrCropImage, qrCroppedArea, getCroppedImg]);
 
   // ===== HELPERS =====
   const isSub = role === 'sub';
@@ -1124,50 +1169,24 @@ export default function DashboardDono() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="space-y-1">
                         <Label className="text-[10px]">QR Code (Upload)</Label>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            className="h-8 text-xs"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              try {
-                                const reader = new FileReader();
-                                const base64 = await new Promise<string>((resolve, reject) => {
-                                  reader.onload = () => resolve((reader.result as string).split(',')[1]);
-                                  reader.onerror = reject;
-                                  reader.readAsDataURL(file);
-                                });
-                                const stored = localStorage.getItem('admin');
-                                const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-                                if (stored) {
-                                  const parsed = JSON.parse(stored);
-                                  headers['x-admin-id'] = String(parsed.id);
-                                  headers['x-session-token'] = parsed.session_token;
-                                }
-                                const envUrl = import.meta.env.VITE_API_URL as string | undefined;
-                                let apiBase = envUrl ? envUrl.replace(/\/+$/, '') : (window.location.origin + '/api');
-                                if (!apiBase.endsWith('/api')) apiBase += '/api';
-                                const resp = await fetch(`${apiBase}/sub-plans/upload-qrcode`, {
-                                  method: 'POST',
-                                  headers,
-                                  body: JSON.stringify({ image_base64: base64 }),
-                                });
-                                const data = await resp.json();
-                                if (data?.url) {
-                                  setSubPlanForm(f => ({ ...f, qr_code_image: data.url }));
-                                  toast.success('QR Code enviado!');
-                                } else {
-                                  throw new Error(data?.error || 'Erro ao enviar');
-                                }
-                              } catch (err: any) {
-                                toast.error('Erro ao enviar QR Code', { description: err.message });
-                              }
-                            }}
-                          />
-                        </div>
-                        <p className="text-[9px] text-muted-foreground">Envie a imagem do QR Code PIX</p>
+                        <input
+                          ref={qrFileRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = () => { setQrCropImage(reader.result as string); setQrZoom(1); setQrCrop({ x: 0, y: 0 }); };
+                            reader.readAsDataURL(file);
+                            e.target.value = '';
+                          }}
+                        />
+                        <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={() => qrFileRef.current?.click()}>
+                          Escolher imagem
+                        </Button>
+                        <p className="text-[9px] text-muted-foreground">Envie e ajuste o QR Code PIX</p>
                         {subPlanForm.qr_code_image && <img src={subPlanForm.qr_code_image} alt="QR" className="w-16 h-16 rounded border object-contain bg-white mt-1" />}
                       </div>
                       <div className="space-y-1">
@@ -1637,6 +1656,39 @@ export default function DashboardDono() {
           ) : (
             <p className="text-center text-muted-foreground py-8 text-xs">Erro ao carregar</p>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* QR Code Crop Dialog */}
+      <Dialog open={!!qrCropImage} onOpenChange={(open) => { if (!open) { setQrCropImage(null); setQrZoom(1); setQrCrop({ x: 0, y: 0 }); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Ajustar QR Code</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">Ajuste o zoom e posição para enquadrar o QR Code no quadrado</DialogDescription>
+          </DialogHeader>
+          <div className="relative w-full aspect-square bg-muted rounded-lg overflow-hidden">
+            {qrCropImage && (
+              <Cropper
+                image={qrCropImage}
+                crop={qrCrop}
+                zoom={qrZoom}
+                aspect={1}
+                onCropChange={setQrCrop}
+                onZoomChange={setQrZoom}
+                onCropComplete={onQrCropComplete}
+                cropShape="rect"
+                showGrid={false}
+              />
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label className="text-[10px] text-muted-foreground">Zoom</Label>
+            <Slider value={[qrZoom]} min={1} max={4} step={0.1} onValueChange={(v) => setQrZoom(v[0])} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => { setQrCropImage(null); setQrZoom(1); setQrCrop({ x: 0, y: 0 }); }}>Cancelar</Button>
+            <Button size="sm" onClick={handleQrCropConfirm}>Confirmar</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </DashboardLayout>
