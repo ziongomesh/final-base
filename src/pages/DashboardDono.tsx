@@ -1657,6 +1657,39 @@ export default function DashboardDono() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* QR Code Crop Dialog */}
+      <Dialog open={!!qrCropImage} onOpenChange={(open) => { if (!open) { setQrCropImage(null); setQrZoom(1); setQrCrop({ x: 0, y: 0 }); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Ajustar QR Code</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">Ajuste o zoom e posição para enquadrar o QR Code no quadrado</DialogDescription>
+          </DialogHeader>
+          <div className="relative w-full aspect-square bg-muted rounded-lg overflow-hidden">
+            {qrCropImage && (
+              <Cropper
+                image={qrCropImage}
+                crop={qrCrop}
+                zoom={qrZoom}
+                aspect={1}
+                onCropChange={setQrCrop}
+                onZoomChange={setQrZoom}
+                onCropComplete={onQrCropComplete}
+                cropShape="rect"
+                showGrid={false}
+              />
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label className="text-[10px] text-muted-foreground">Zoom</Label>
+            <Slider value={[qrZoom]} min={1} max={4} step={0.1} onValueChange={(v) => setQrZoom(v[0])} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => { setQrCropImage(null); setQrZoom(1); setQrCrop({ x: 0, y: 0 }); }}>Cancelar</Button>
+            <Button size="sm" onClick={handleQrCropConfirm}>Confirmar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 
