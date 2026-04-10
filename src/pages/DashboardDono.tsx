@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Cropper from 'react-easy-crop';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -183,6 +184,49 @@ export default function DashboardDono() {
   const [editingSubPlan, setEditingSubPlan] = useState<SubPlan | null>(null);
   const [savingSubPlan, setSavingSubPlan] = useState(false);
   const [loadingSubPlans, setLoadingSubPlans] = useState(false);
+
+  // QR Code crop state
+  const [qrCropImage, setQrCropImage] = useState<string | null>(null);
+  const [qrCrop, setQrCrop] = useState({ x: 0, y: 0 });
+  const [qrZoom, setQrZoom] = useState(1);
+  const [qrCroppedArea, setQrCroppedArea] = useState<any>(null);
+  const qrFileRef = useRef<HTMLInputElement>(null);
+
+  const onQrCropComplete = useCallback((_: any, croppedAreaPixels: any) => {
+    setQrCroppedArea(croppedAreaPixels);
+  }, []);
+
+  const getCroppedImg = useCallback(async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; image.src = imageSrc; });
+    const canvas = document.createElement('canvas');
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return canvas.toDataURL('image/png').split(',')[1];
+  }, []);
+
+  const handleQrCropConfirm = useCallback(async () => {
+    if (!qrCropImage || !qrCroppedArea) return;
+    try {
+      const base64 = await getCroppedImg(qrCropImage, qrCroppedArea);
+      const stored = localStorage.getItem('admin');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (stored) { const parsed = JSON.parse(stored); headers['x-admin-id'] = String(parsed.id); headers['x-session-token'] = parsed.session_token; }
+      const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+      let apiBase = envUrl ? envUrl.replace(/\/+$/, '') : (window.location.origin + '/api');
+      if (!apiBase.endsWith('/api')) apiBase += '/api';
+      const resp = await fetch(`${apiBase}/sub-plans/upload-qrcode`, { method: 'POST', headers, body: JSON.stringify({ image_base64: base64 }) });
+      const data = await resp.json();
+      if (data?.url) { setSubPlanForm(f => ({ ...f, qr_code_image: data.url })); toast.success('QR Code enviado!'); }
+      else throw new Error(data?.error || 'Erro ao enviar');
+    } catch (err: any) { toast.error('Erro ao enviar QR Code', { description: err.message }); }
+    setQrCropImage(null);
+    setQrZoom(1);
+    setQrCrop({ x: 0, y: 0 });
+  }, [qrCropImage, qrCroppedArea, getCroppedImg]);
 
   // ===== HELPERS =====
   const isSub = role === 'sub';
