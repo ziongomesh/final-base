@@ -808,8 +808,8 @@ const RESELLER_PACKAGES = [
 ];
 
 const RESELLER_PROMO_PACKAGES = [
-  { name: 'Super Combo', credits: 35, baseCredits: 28, bonus: 7, total: 420, badge: '🔥 SUPER PROMO', badgeColor: 'bg-gradient-to-r from-orange-500 to-red-500' },
-  { name: 'Mega Pack', credits: 50, baseCredits: 38, bonus: 12, total: 550, badge: '⚡ EXCLUSIVO', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+  { name: 'Super Combo', credits: 35, baseCredits: 28, bonus: 7, total: 420, badge: 'SUPER PROMO', badgeColor: 'bg-gradient-to-r from-orange-500 to-red-500' },
+  { name: 'Mega Pack', credits: 50, baseCredits: 38, bonus: 12, total: 550, badge: 'EXCLUSIVO', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
 ];
 
 function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: number; sessionToken: string; credits: number }) {
