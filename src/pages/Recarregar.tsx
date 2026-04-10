@@ -1251,18 +1251,20 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
 
   // ===== REVENDEDOR COM PLANOS CUSTOMIZADOS (Sub-Dono) =====
   if (!canRechargeDirectly && hasCustomPlans) {
-    const getWhatsappUrl = (plan?: any) => {
+    const getWhatsappUrl = (plan?: any, message?: string) => {
       const waNumber = plan?.whatsapp_number || customPlansRaw[0]?.whatsapp_number || '';
+      let digits = '';
       if (!waNumber) {
-        // Fallback to creator phone
         if (creatorPhone) {
-          const digits = creatorPhone.replace(/\D/g, '');
-          return `https://api.whatsapp.com/send/?phone=${digits}&text&type=phone_number&app_absent=0`;
+          digits = creatorPhone.replace(/\D/g, '');
+        } else {
+          return null;
         }
-        return null;
+      } else {
+        digits = waNumber.replace(/\D/g, '');
       }
-      const digits = waNumber.replace(/\D/g, '');
-      return `https://api.whatsapp.com/send/?phone=${digits}&text&type=phone_number&app_absent=0`;
+      const textParam = message ? `&text=${encodeURIComponent(message)}` : '';
+      return `https://api.whatsapp.com/send/?phone=${digits}${textParam}&type=phone_number&app_absent=0`;
     };
 
     return (
