@@ -504,6 +504,56 @@ export type Database = {
         }
         Relationships: []
       }
+      recharge_receipts: {
+        Row: {
+          admin_id: number
+          amount: number
+          created_at: string
+          credits: number
+          id: number
+          plan_id: number | null
+          plan_name: string
+          receipt_url: string
+          reviewed_at: string | null
+          reviewed_by: number | null
+          status: string
+        }
+        Insert: {
+          admin_id: number
+          amount?: number
+          created_at?: string
+          credits?: number
+          id?: number
+          plan_id?: number | null
+          plan_name?: string
+          receipt_url: string
+          reviewed_at?: string | null
+          reviewed_by?: number | null
+          status?: string
+        }
+        Update: {
+          admin_id?: number
+          amount?: number
+          created_at?: string
+          credits?: number
+          id?: number
+          plan_id?: number | null
+          plan_name?: string
+          receipt_url?: string
+          reviewed_at?: string | null
+          reviewed_by?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recharge_receipts_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "sub_recharge_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sub_recharge_plans: {
         Row: {
           admin_id: number
