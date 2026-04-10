@@ -1,8 +1,39 @@
 import { Router } from 'express';
 import { query } from '../db';
 import { requireSession, requireDonoOrSub } from '../middleware/auth';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
+
+// Upload QR code image
+router.post('/upload-qrcode', requireSession, requireDonoOrSub, async (req, res) => {
+  try {
+    const { image_base64 } = req.body;
+    if (!image_base64) {
+      return res.status(400).json({ error: 'Imagem é obrigatória' });
+    }
+
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'qrcodes');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const adminId = (req as any).adminId;
+    const fileName = `qr_${adminId}_${Date.now()}.png`;
+    const filePath = path.join(uploadsDir, fileName);
+    const imageBuffer = Buffer.from(image_base64, 'base64');
+    fs.writeFileSync(filePath, imageBuffer);
+
+    const domainUrl = process.env.DOMAIN_URL || `http://localhost:${process.env.PORT || 4011}`;
+    const imageUrl = `${domainUrl}/uploads/qrcodes/${fileName}`;
+
+    res.json({ url: imageUrl });
+  } catch (err: any) {
+    console.error('Error uploading qrcode:', err);
+    res.status(500).json({ error: err.message || 'Erro interno' });
+  }
+});
 
 // LIST plans for the authenticated admin (sub/dono only)
 router.get('/list', requireSession, requireDonoOrSub, async (req, res) => {
