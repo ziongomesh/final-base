@@ -597,6 +597,12 @@ export const supabaseApi = {
     },
   },
 
+  receipts: {
+    upload: async (_data: any) => {
+      throw new Error('Receipts upload not supported in Supabase mode');
+    },
+  },
+
   health: async () => {
     return { status: 'ok', timestamp: new Date().toISOString() };
   },
