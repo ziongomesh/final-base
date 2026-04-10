@@ -839,6 +839,11 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   const [customPlansRaw, setCustomPlansRaw] = useState<any[]>([]);
   const [selectedCustomPlan, setSelectedCustomPlan] = useState<any>(null);
   const [pixCopied, setPixCopied] = useState(false);
+  const [showAttachReceipt, setShowAttachReceipt] = useState(false);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptSent, setReceiptSent] = useState(false);
+  const receiptInputRef = useRef<HTMLInputElement>(null);
+  const attachTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasPlayedSound = useRef(false);
   const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
