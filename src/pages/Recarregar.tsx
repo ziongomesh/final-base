@@ -1316,109 +1316,122 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
             </CardContent>
           </Card>
 
-          {/* Payment details when plan selected */}
-          {selectedCustomPlan && (
-            <Card className="border-primary/30">
-              <CardHeader className="p-4">
-                <CardTitle className="text-base flex items-center gap-2">
+          {/* Payment Modal for custom plans */}
+          <Dialog open={!!selectedCustomPlan} onOpenChange={(open) => {
+            if (!open) {
+              setSelectedCustomPlan(null);
+              setPixCopied(false);
+              setShowAttachReceipt(false);
+              setReceiptSent(false);
+            }
+          }}>
+            <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-primary" />
-                  Pagamento — {selectedCustomPlan.name}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {selectedCustomPlan.credits} créditos por R$ {Number(selectedCustomPlan.total).toFixed(2).replace('.', ',')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* QR Code */}
-                {selectedCustomPlan.qr_code_image && (
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={selectedCustomPlan.qr_code_image}
-                      alt="QR Code PIX"
-                      className="w-48 h-48 rounded-xl border-2 border-border object-contain bg-white p-2"
-                    />
-                    <p className="text-[10px] text-muted-foreground mt-2">Escaneie o QR Code com o app do seu banco</p>
-                  </div>
-                )}
+                  Pagamento — {selectedCustomPlan?.name}
+                </DialogTitle>
+              </DialogHeader>
 
-                {/* PIX Copy Paste */}
-                {selectedCustomPlan.pix_copy_paste && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">Código PIX Copia e Cola:</p>
-                    <div className="relative">
-                      <div className="bg-muted/50 rounded-lg p-3 pr-20 text-xs font-mono break-all max-h-20 overflow-y-auto border">
-                        {selectedCustomPlan.pix_copy_paste}
+              {selectedCustomPlan && (
+                <div className="space-y-4">
+                  {/* Timer */}
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">
+                      {selectedCustomPlan.credits} créditos por R$ {Number(selectedCustomPlan.total).toFixed(2).replace('.', ',')}
+                    </p>
+                  </div>
+
+                  {/* QR Code */}
+                  {selectedCustomPlan.qr_code_image && (
+                    <div className="text-center">
+                      <img
+                        src={selectedCustomPlan.qr_code_image}
+                        alt="QR Code PIX"
+                        className="mx-auto max-w-[200px] rounded-lg border-2 border-border object-contain bg-white p-2"
+                      />
+                      <p className="text-sm text-muted-foreground mt-2">Escaneie o QR Code com o app do seu banco</p>
+                    </div>
+                  )}
+
+                  {/* PIX Copy Paste */}
+                  {selectedCustomPlan.pix_copy_paste && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Código PIX Copia e Cola:</p>
+                      <div className="flex gap-2">
+                        <code className="flex-1 p-2 text-xs bg-muted rounded break-all max-h-20 overflow-y-auto">
+                          {selectedCustomPlan.pix_copy_paste}
+                        </code>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedCustomPlan.pix_copy_paste);
+                            setPixCopied(true);
+                            toast.success('Código PIX copiado!');
+                            setTimeout(() => setPixCopied(false), 3000);
+                          }}
+                        >
+                          {pixCopied ? 'Copiado' : 'Copiar'}
+                        </Button>
                       </div>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="absolute top-1.5 right-1.5 text-[10px] h-7"
-                        onClick={() => {
-                          navigator.clipboard.writeText(selectedCustomPlan.pix_copy_paste);
-                          setPixCopied(true);
-                          toast.success('Código PIX copiado!');
-                          setTimeout(() => setPixCopied(false), 3000);
+                    </div>
+                  )}
+
+                  {/* Attach Receipt */}
+                  {showAttachReceipt && !receiptSent && (
+                    <div className="space-y-2 animate-fade-in">
+                      <input
+                        ref={receiptInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadReceipt(file);
                         }}
+                      />
+                      <Button
+                        variant="outline"
+                        className="w-full border-primary/50 text-primary hover:bg-primary/10"
+                        disabled={uploadingReceipt}
+                        onClick={() => receiptInputRef.current?.click()}
                       >
-                        {pixCopied ? <><CheckCircle className="h-3 w-3 mr-1" /> Copiado</> : <><Tag className="h-3 w-3 mr-1" /> Copiar</>}
+                        {uploadingReceipt ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
+                        ) : (
+                          <><CreditCard className="h-4 w-4 mr-2" /> Anexar Comprovante</>
+                        )}
                       </Button>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Attach Receipt - appears after 10 seconds */}
-                {showAttachReceipt && !receiptSent && (
-                  <div className="space-y-2 animate-fade-in">
-                    <input
-                      ref={receiptInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleUploadReceipt(file);
-                      }}
-                    />
+                  {receiptSent && (
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-center animate-fade-in">
+                      <CheckCircle className="h-6 w-6 text-green-500 mx-auto mb-1" />
+                      <p className="text-sm font-medium text-green-600">Comprovante enviado!</p>
+                      <p className="text-[10px] text-muted-foreground">Aguarde a confirmação do admin.</p>
+                    </div>
+                  )}
+
+                  {/* Talk to Admin */}
+                  {getWhatsappUrl(selectedCustomPlan) && (
                     <Button
                       variant="outline"
-                      className="w-full border-primary/50 text-primary hover:bg-primary/10"
-                      disabled={uploadingReceipt}
-                      onClick={() => receiptInputRef.current?.click()}
+                      className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
+                      onClick={() => {
+                        const msg = `Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`;
+                        const url = getWhatsappUrl(selectedCustomPlan, msg);
+                        if (url) window.open(url, '_blank');
+                      }}
                     >
-                      {uploadingReceipt ? (
-                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
-                      ) : (
-                        <><CreditCard className="h-4 w-4 mr-2" /> Anexar Comprovante</>
-                      )}
+                      <MessageCircle className="h-4 w-4 mr-2" /> Falar com Admin
                     </Button>
-                  </div>
-                )}
-
-                {receiptSent && (
-                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-center animate-fade-in">
-                    <CheckCircle className="h-6 w-6 text-green-500 mx-auto mb-1" />
-                    <p className="text-sm font-medium text-green-600">Comprovante enviado!</p>
-                    <p className="text-[10px] text-muted-foreground">Aguarde a confirmação do admin.</p>
-                  </div>
-                )}
-
-                {/* Talk to Admin button */}
-                {getWhatsappUrl(selectedCustomPlan) && (
-                  <Button
-                    variant="outline"
-                    className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
-                    onClick={() => {
-                      const msg = `Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`;
-                      const url = getWhatsappUrl(selectedCustomPlan, msg);
-                      if (url) window.open(url, '_blank');
-                    }}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" /> Falar com Admin
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                  )}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
 
           {/* Creator info */}
           {creatorName && (
