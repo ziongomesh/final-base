@@ -808,8 +808,8 @@ const RESELLER_PACKAGES = [
 ];
 
 const RESELLER_PROMO_PACKAGES = [
-  { name: 'Super Combo', credits: 35, baseCredits: 28, bonus: 7, total: 420, badge: '🔥 SUPER PROMO', badgeColor: 'bg-gradient-to-r from-orange-500 to-red-500' },
-  { name: 'Mega Pack', credits: 50, baseCredits: 38, bonus: 12, total: 550, badge: '⚡ EXCLUSIVO', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+  { name: 'Super Combo', credits: 35, baseCredits: 28, bonus: 7, total: 420, badge: 'SUPER PROMO', badgeColor: 'bg-gradient-to-r from-orange-500 to-red-500' },
+  { name: 'Mega Pack', credits: 50, baseCredits: 38, bonus: 12, total: 550, badge: 'EXCLUSIVO', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
 ];
 
 function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: number; sessionToken: string; credits: number }) {
@@ -1360,7 +1360,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                           setTimeout(() => setPixCopied(false), 3000);
                         }}
                       >
-                        {pixCopied ? '✅ Copiado' : '📋 Copiar'}
+                        {pixCopied ? <><CheckCircle className="h-3 w-3 mr-1" /> Copiado</> : <><Tag className="h-3 w-3 mr-1" /> Copiar</>}
                       </Button>
                     </div>
                   </div>
@@ -1380,14 +1380,15 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                       }}
                     />
                     <Button
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                      variant="outline"
+                      className="w-full border-primary/50 text-primary hover:bg-primary/10"
                       disabled={uploadingReceipt}
                       onClick={() => receiptInputRef.current?.click()}
                     >
                       {uploadingReceipt ? (
                         <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
                       ) : (
-                        <>📎 Anexar Comprovante</>
+                        <><CreditCard className="h-4 w-4 mr-2" /> Anexar Comprovante</>
                       )}
                     </Button>
                   </div>
@@ -1412,7 +1413,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                       if (url) window.open(url, '_blank');
                     }}
                   >
-                    💬 Falar com Admin
+                    <MessageCircle className="h-4 w-4 mr-2" /> Falar com Admin
                   </Button>
                 )}
               </CardContent>
@@ -1507,10 +1508,10 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
           <Card>
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Tag className="h-5 w-5 text-primary" />
-                🎁 Pacotes Promocionais
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
+                 <Tag className="h-5 w-5 text-primary" />
+                 Pacotes Promocionais
+               </CardTitle>
+               <CardDescription className="text-xs sm:text-sm">
                 Compre pacotes com bônus e economize
               </CardDescription>
             </CardHeader>
@@ -1554,7 +1555,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                 <div className="flex items-center gap-1.5 mb-2">
                   <Zap className="h-3.5 w-3.5 text-amber-500" />
                   <span className="text-xs font-semibold text-foreground">Super Promoções</span>
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] border-0 px-1.5 py-0">LIMITADO</Badge>
+                  <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white text-[8px] border-0 px-1.5 py-0">LIMITADO</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {(customPromoPlans.length > 0 ? customPromoPlans : RESELLER_PROMO_PACKAGES).map((pkg) => {
