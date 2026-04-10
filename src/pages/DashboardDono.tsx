@@ -26,7 +26,7 @@ import {
   TrendingUp, DollarSign, Activity,
   Search, RefreshCw, Clock, AlertTriangle, Zap, ChevronRight,
   UserPlus, Download, Save, Loader2, Trash2, Megaphone, Plus, Pencil,
-  WifiOff, CircleDot
+  WifiOff, CircleDot, Wrench, Power
 } from 'lucide-react';
 
 // ===== TYPES =====
