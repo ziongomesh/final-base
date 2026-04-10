@@ -1136,20 +1136,16 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
         reader.readAsDataURL(file);
       });
 
-      const { data, error } = await supabase.functions.invoke('upload-receipt', {
-        body: {
-          admin_id: admin.id,
-          session_token: admin.session_token,
-          plan_id: selectedCustomPlan.id,
-          plan_name: selectedCustomPlan.name,
-          credits: selectedCustomPlan.credits,
-          amount: Number(selectedCustomPlan.total),
-          receipt_base64: base64,
-        }
+      const result = await api.receipts.upload({
+        admin_id: admin.id,
+        plan_id: selectedCustomPlan.id,
+        plan_name: selectedCustomPlan.name,
+        credits: selectedCustomPlan.credits,
+        amount: Number(selectedCustomPlan.total),
+        receipt_base64: base64,
       });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (result?.error) throw new Error(result.error);
 
       setReceiptSent(true);
       toast.success('Comprovante enviado!', { description: 'Seu admin será notificado para confirmar.' });
