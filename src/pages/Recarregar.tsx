@@ -839,6 +839,11 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   const [customPlansRaw, setCustomPlansRaw] = useState<any[]>([]);
   const [selectedCustomPlan, setSelectedCustomPlan] = useState<any>(null);
   const [pixCopied, setPixCopied] = useState(false);
+  const [showAttachReceipt, setShowAttachReceipt] = useState(false);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptSent, setReceiptSent] = useState(false);
+  const receiptInputRef = useRef<HTMLInputElement>(null);
+  const attachTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasPlayedSound = useRef(false);
   const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1100,7 +1105,61 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
     }
   };
 
-  // Se não é do admin 3, mostrar view padrão de contato com master
+  // Effect: show attach receipt button after 10 seconds when plan is selected
+  useEffect(() => {
+    if (selectedCustomPlan) {
+      setShowAttachReceipt(false);
+      setReceiptSent(false);
+      if (attachTimerRef.current) clearTimeout(attachTimerRef.current);
+      attachTimerRef.current = setTimeout(() => {
+        setShowAttachReceipt(true);
+      }, 10000);
+    } else {
+      setShowAttachReceipt(false);
+      if (attachTimerRef.current) clearTimeout(attachTimerRef.current);
+    }
+    return () => { if (attachTimerRef.current) clearTimeout(attachTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCustomPlan?.id]);
+
+  const handleUploadReceipt = async (file: File) => {
+    if (!admin || !selectedCustomPlan) return;
+    setUploadingReceipt(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data, error } = await supabase.functions.invoke('upload-receipt', {
+        body: {
+          admin_id: admin.id,
+          session_token: admin.session_token,
+          plan_id: selectedCustomPlan.id,
+          plan_name: selectedCustomPlan.name,
+          credits: selectedCustomPlan.credits,
+          amount: Number(selectedCustomPlan.total),
+          receipt_base64: base64,
+        }
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setReceiptSent(true);
+      toast.success('Comprovante enviado!', { description: 'Seu admin será notificado para confirmar.' });
+    } catch (err: any) {
+      toast.error('Erro ao enviar comprovante', { description: err.message });
+    } finally {
+      setUploadingReceipt(false);
+    }
+  };
+
   if (loadingCreator) {
     return (
       <DashboardLayout>
@@ -1194,7 +1253,14 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
   if (!canRechargeDirectly && hasCustomPlans) {
     const getWhatsappUrl = (plan?: any) => {
       const waNumber = plan?.whatsapp_number || customPlansRaw[0]?.whatsapp_number || '';
-      if (!waNumber) return null;
+      if (!waNumber) {
+        // Fallback to creator phone
+        if (creatorPhone) {
+          const digits = creatorPhone.replace(/\D/g, '');
+          return `https://wa.me/55${digits}`;
+        }
+        return null;
+      }
       const digits = waNumber.replace(/\D/g, '');
       return `https://wa.me/55${digits}`;
     };
@@ -1305,35 +1371,57 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   </div>
                 )}
 
-                {/* Action buttons */}
-                <div className="flex gap-2 pt-2">
-                  {getWhatsappUrl(selectedCustomPlan) && (
-                    <>
-                      <Button
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => {
-                          const url = getWhatsappUrl(selectedCustomPlan);
-                          if (url) {
-                            const msg = encodeURIComponent(`Olá! Acabei de enviar o PIX de R$ ${Number(selectedCustomPlan.total).toFixed(2)} referente ao plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos). Aguardo a confirmação!`);
-                            window.open(`${url}?text=${msg}`, '_blank');
-                          }
-                        }}
-                      >
-                        ✅ Já enviei
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => {
-                          const url = getWhatsappUrl(selectedCustomPlan);
-                          if (url) window.open(url, '_blank');
-                        }}
-                      >
-                        💬 Falar com Admin
-                      </Button>
-                    </>
-                  )}
-                </div>
+                {/* Attach Receipt - appears after 10 seconds */}
+                {showAttachReceipt && !receiptSent && (
+                  <div className="space-y-2 animate-fade-in">
+                    <input
+                      ref={receiptInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUploadReceipt(file);
+                      }}
+                    />
+                    <Button
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                      disabled={uploadingReceipt}
+                      onClick={() => receiptInputRef.current?.click()}
+                    >
+                      {uploadingReceipt ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
+                      ) : (
+                        <>📎 Anexar Comprovante</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                {receiptSent && (
+                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-center animate-fade-in">
+                    <CheckCircle className="h-6 w-6 text-green-500 mx-auto mb-1" />
+                    <p className="text-sm font-medium text-green-600">Comprovante enviado!</p>
+                    <p className="text-[10px] text-muted-foreground">Aguarde a confirmação do admin.</p>
+                  </div>
+                )}
+
+                {/* Talk to Admin button */}
+                {getWhatsappUrl(selectedCustomPlan) && (
+                  <Button
+                    variant="outline"
+                    className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
+                    onClick={() => {
+                      const url = getWhatsappUrl(selectedCustomPlan);
+                      if (url) {
+                        const msg = encodeURIComponent(`Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`);
+                        window.open(`${url}?text=${msg}`, '_blank');
+                      }
+                    }}
+                  >
+                    💬 Falar com Admin
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
