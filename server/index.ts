@@ -29,6 +29,7 @@ import hapvidaRoutes from './routes/hapvida.ts';
 import verifyHapvidaRoutes from './routes/verify-hapvida.ts';
 import alertRoutes from './routes/alerts.ts';
 import suggestionsRoutes from './routes/suggestions.ts';
+import receiptsRoutes from './routes/receipts.ts';
 import maintenanceRoutes from './routes/maintenance.ts';
 
 // Carrega variáveis de ambiente (prioridade: .env.local > .env)
@@ -228,6 +229,7 @@ app.use('/api/hapvida', hapvidaRoutes);
 app.use('/api/verify-hapvida', verifyHapvidaRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/suggestions', suggestionsRoutes);
+app.use('/api/receipts', receiptsRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {

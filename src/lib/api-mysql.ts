@@ -514,6 +514,10 @@ export const mysqlApi = {
   picpay: {
     save: async (data: any) => fetchAPI('/picpay/save', { method: 'POST', body: JSON.stringify(data) }),
   },
-};
 
-export default mysqlApi;
+  receipts: {
+    upload: async (data: { admin_id: number; plan_id: number; plan_name: string; credits: number; amount: number; receipt_base64: string }) => {
+      return fetchAPI('/receipts/upload', { method: 'POST', body: JSON.stringify(data) });
+    },
+  },
+};
