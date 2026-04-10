@@ -963,20 +963,14 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
     fetchCreator();
     fetchPaymentHistory();
     // Load recarga em dobro setting
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    if (projectId && adminId && sessionToken) {
-      fetch(`https://${projectId}.supabase.co/functions/v1/get-public-settings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ admin_id: adminId, session_token: sessionToken }),
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (apiUrl && adminId && sessionToken) {
+      fetch(`${apiUrl}/settings`, {
+        headers: { 'x-admin-id': String(adminId), 'x-session-token': sessionToken },
       })
         .then(r => r.json())
         .then(s => { if (s?.recarga_em_dobro) setRecargaDobro(true); })
         .catch(() => {});
-    } else {
-      (api as any).settings?.get?.().then((s: any) => {
-        if (s?.recarga_em_dobro) setRecargaDobro(true);
-      }).catch(() => {});
     }
   }, [adminId, sessionToken, fetchPaymentHistory]);
 
