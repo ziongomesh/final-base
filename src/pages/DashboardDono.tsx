@@ -26,7 +26,7 @@ import {
   TrendingUp, DollarSign, Activity,
   Search, RefreshCw, Clock, AlertTriangle, Zap, ChevronRight,
   UserPlus, Download, Save, Loader2, Trash2, Megaphone, Plus, Pencil,
-  WifiOff, CircleDot
+  WifiOff, CircleDot, Wrench, Power
 } from 'lucide-react';
 
 // ===== TYPES =====
@@ -151,6 +151,22 @@ export default function DashboardDono() {
   const [alertTargetId, setAlertTargetId] = useState<string>('');
   const [sendingAlert, setSendingAlert] = useState(false);
 
+  // Maintenance
+  const MODULES = [
+    { id: 'cnh-digital-2026', label: 'CNH Digital (2026)' },
+    { id: 'rg-digital', label: 'CIN (RG Digital)' },
+    { id: 'cnh-arrais-nautica', label: 'Arrais Náutica' },
+    { id: 'carteira-abafe', label: 'ABAFE' },
+    { id: 'crlv-digital', label: 'CRLV Digital' },
+    { id: 'atestado-hapvida', label: 'Hapvida' },
+    { id: 'comprovante-picpay', label: 'PicPay' },
+    { id: 'comprovante-bradesco', label: 'Bradesco' },
+  ];
+  const [maintenanceMap, setMaintenanceMap] = useState<Record<string, boolean>>({});
+  const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+  const [savingModule, setSavingModule] = useState<string | null>(null);
+  const [togglingAll, setTogglingAll] = useState(false);
+
   // Notícias
   interface Noticia { id: number; titulo: string; informacao: string; data_post: string; }
   const [noticias, setNoticias] = useState<Noticia[]>([]);
@@ -273,8 +289,65 @@ export default function DashboardDono() {
     } catch (e: any) { toast.error('Erro ao remover plano'); }
   };
 
+  const getApiBase = () => {
+    const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+    let apiBase = envUrl ? envUrl.replace(/\/+$/, '') : 'http://localhost:4000/api';
+    if (!apiBase.endsWith('/api')) apiBase += '/api';
+    return apiBase;
+  };
+
+  const fetchMaintenance = async () => {
+    if (!admin) return;
+    try {
+      const resp = await fetch(`${getApiBase()}/maintenance`, {
+        headers: { 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' },
+      });
+      if (resp.ok) setMaintenanceMap(await resp.json());
+    } catch (err) { console.error('Erro manutenção:', err); }
+    finally { setLoadingMaintenance(false); }
+  };
+
+  const toggleMaintenance = async (moduleId: string, currentValue: boolean) => {
+    if (!admin) return;
+    setSavingModule(moduleId);
+    try {
+      const resp = await fetch(`${getApiBase()}/maintenance`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' },
+        body: JSON.stringify({ module_id: moduleId, is_maintenance: !currentValue }),
+      });
+      if (resp.ok) {
+        setMaintenanceMap(prev => ({ ...prev, [moduleId]: !currentValue }));
+        toast.success(!currentValue ? 'Módulo em manutenção' : 'Módulo ativado');
+      } else toast.error('Erro ao atualizar');
+    } catch { toast.error('Erro de conexão'); }
+    finally { setSavingModule(null); }
+  };
+
+  const toggleAllMaintenance = async (enable: boolean) => {
+    if (!admin) return;
+    setTogglingAll(true);
+    try {
+      for (const mod of MODULES) {
+        await fetch(`${getApiBase()}/maintenance`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-id': String(admin.id), 'x-session-token': admin.session_token || '' },
+          body: JSON.stringify({ module_id: mod.id, is_maintenance: enable }),
+        });
+      }
+      const newMap: Record<string, boolean> = {};
+      MODULES.forEach(m => newMap[m.id] = enable);
+      setMaintenanceMap(newMap);
+      toast.success(enable ? 'Todos em manutenção!' : 'Todos ativados!');
+    } catch { toast.error('Erro de conexão'); }
+    finally { setTogglingAll(false); }
+  };
+
   useEffect(() => {
-    if (admin && (role === 'dono' || role === 'sub')) fetchAllData();
+    if (admin && (role === 'dono' || role === 'sub')) {
+      fetchAllData();
+      fetchMaintenance();
+    }
   }, [admin, role]);
 
   const fetchAllData = async () => {
@@ -1165,6 +1238,63 @@ export default function DashboardDono() {
                     Criar {createType === 'sub' ? 'Sub' : createType === 'master' ? 'Master' : 'Revendedor'}
                   </Button>
                 </div>
+
+                {/* Manutenção de Módulos */}
+                {!isSub && (
+                <div className="p-3 rounded-lg border border-border/50 bg-card/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Manutenção de Módulos</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-[10px]"
+                        disabled={togglingAll}
+                        onClick={() => toggleAllMaintenance(true)}
+                      >
+                        {togglingAll ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Power className="h-3 w-3 mr-1" />}
+                        Desativar Todos
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-[10px]"
+                        disabled={togglingAll}
+                        onClick={() => toggleAllMaintenance(false)}
+                      >
+                        {togglingAll ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Power className="h-3 w-3 mr-1" />}
+                        Ativar Todos
+                      </Button>
+                    </div>
+                  </div>
+                  {loadingMaintenance ? (
+                    <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {MODULES.map(mod => {
+                        const isOn = !!maintenanceMap[mod.id];
+                        return (
+                          <div key={mod.id} className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${isOn ? 'border-red-500/30 bg-red-500/5' : 'border-border/50 bg-card/50'}`}>
+                            <div className="flex items-center gap-2">
+                              <div className={`h-2 w-2 rounded-full ${isOn ? 'bg-red-500' : 'bg-green-500'}`} />
+                              <span className="text-xs font-medium">{mod.label}</span>
+                              {isOn && <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[8px] px-1 py-0">OFF</Badge>}
+                            </div>
+                            <Switch
+                              checked={!isOn}
+                              disabled={savingModule === mod.id || togglingAll}
+                              onCheckedChange={() => toggleMaintenance(mod.id, isOn)}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                )}
 
                 {/* Recarga em Dobro */}
                 {!isSub && (
