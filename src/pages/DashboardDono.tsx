@@ -1123,9 +1123,51 @@ export default function DashboardDono() {
                     <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">PIX & WhatsApp</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="space-y-1">
-                        <Label className="text-[10px]">QR Code (URL)</Label>
-                        <Input value={subPlanForm.qr_code_image} onChange={(e) => setSubPlanForm(f => ({ ...f, qr_code_image: e.target.value }))} placeholder="https://link-da-imagem-qrcode.png" className="h-8 text-xs" />
-                        <p className="text-[9px] text-muted-foreground">Link da imagem do QR Code PIX</p>
+                        <Label className="text-[10px]">QR Code (Upload)</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="h-8 text-xs"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const reader = new FileReader();
+                                const base64 = await new Promise<string>((resolve, reject) => {
+                                  reader.onload = () => resolve((reader.result as string).split(',')[1]);
+                                  reader.onerror = reject;
+                                  reader.readAsDataURL(file);
+                                });
+                                const stored = localStorage.getItem('admin');
+                                const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+                                if (stored) {
+                                  const parsed = JSON.parse(stored);
+                                  headers['x-admin-id'] = String(parsed.id);
+                                  headers['x-session-token'] = parsed.session_token;
+                                }
+                                const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+                                let apiBase = envUrl ? envUrl.replace(/\/+$/, '') : (window.location.origin + '/api');
+                                if (!apiBase.endsWith('/api')) apiBase += '/api';
+                                const resp = await fetch(`${apiBase}/sub-plans/upload-qrcode`, {
+                                  method: 'POST',
+                                  headers,
+                                  body: JSON.stringify({ image_base64: base64 }),
+                                });
+                                const data = await resp.json();
+                                if (data?.url) {
+                                  setSubPlanForm(f => ({ ...f, qr_code_image: data.url }));
+                                  toast.success('QR Code enviado!');
+                                } else {
+                                  throw new Error(data?.error || 'Erro ao enviar');
+                                }
+                              } catch (err: any) {
+                                toast.error('Erro ao enviar QR Code', { description: err.message });
+                              }
+                            }}
+                          />
+                        </div>
+                        <p className="text-[9px] text-muted-foreground">Envie a imagem do QR Code PIX</p>
                         {subPlanForm.qr_code_image && <img src={subPlanForm.qr_code_image} alt="QR" className="w-16 h-16 rounded border object-contain bg-white mt-1" />}
                       </div>
                       <div className="space-y-1">
