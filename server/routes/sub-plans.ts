@@ -46,7 +46,7 @@ router.post('/create', requireSession, requireDonoOrSub, async (req, res) => {
       return res.status(400).json({ error: 'Dados do plano incompletos' });
     }
 
-    const [result] = await query<any>(
+    const result = await query<any>(
       `INSERT INTO sub_recharge_plans 
        (admin_id, name, credits, base_credits, bonus, total, badge, badge_color, sort_order, is_active, qr_code_image, pix_copy_paste, whatsapp_number, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
