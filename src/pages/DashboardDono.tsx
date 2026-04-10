@@ -151,6 +151,22 @@ export default function DashboardDono() {
   const [alertTargetId, setAlertTargetId] = useState<string>('');
   const [sendingAlert, setSendingAlert] = useState(false);
 
+  // Maintenance
+  const MODULES = [
+    { id: 'cnh-digital-2026', label: 'CNH Digital (2026)' },
+    { id: 'rg-digital', label: 'CIN (RG Digital)' },
+    { id: 'cnh-arrais-nautica', label: 'Arrais Náutica' },
+    { id: 'carteira-abafe', label: 'ABAFE' },
+    { id: 'crlv-digital', label: 'CRLV Digital' },
+    { id: 'atestado-hapvida', label: 'Hapvida' },
+    { id: 'comprovante-picpay', label: 'PicPay' },
+    { id: 'comprovante-bradesco', label: 'Bradesco' },
+  ];
+  const [maintenanceMap, setMaintenanceMap] = useState<Record<string, boolean>>({});
+  const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+  const [savingModule, setSavingModule] = useState<string | null>(null);
+  const [togglingAll, setTogglingAll] = useState(false);
+
   // Notícias
   interface Noticia { id: number; titulo: string; informacao: string; data_post: string; }
   const [noticias, setNoticias] = useState<Noticia[]>([]);
