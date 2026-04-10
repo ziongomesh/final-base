@@ -32,13 +32,13 @@ router.post('/upload', requireSession, async (req, res) => {
     const receiptUrl = `${domainUrl}/uploads/receipts/${fileName}`;
 
     // Insert record
-    const [result] = await query(
+    const result = await query<any>(
       `INSERT INTO recharge_receipts (admin_id, plan_id, plan_name, credits, amount, receipt_url, status, created_at)
        VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
       [admin_id, plan_id || null, plan_name || '', credits || 0, amount || 0, receiptUrl]
     );
 
-    const insertId = (result as any).insertId;
+    const insertId = result.insertId;
 
     res.json({
       success: true,
