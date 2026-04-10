@@ -1070,27 +1070,33 @@ export default function DashboardDono() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <div className="space-y-1">
                       <Label className="text-[10px]">Nome</Label>
-                      <Input value={subPlanForm.name} onChange={(e) => setSubPlanForm(f => ({ ...f, name: e.target.value }))} placeholder="Pacote Básico" className="h-8 text-xs" />
+                      <Input value={subPlanForm.name} onChange={(e) => setSubPlanForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Pacote Básico" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Nome exibido para o revendedor</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Créditos</Label>
-                      <Input type="number" value={subPlanForm.credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, credits: Number(e.target.value) }))} className="h-8 text-xs" />
+                      <Input type="number" value={subPlanForm.credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, credits: Number(e.target.value) }))} placeholder="Ex: 3" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Total de créditos que o revendedor recebe</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Bônus</Label>
-                      <Input type="number" value={subPlanForm.bonus || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, bonus: Number(e.target.value) }))} className="h-8 text-xs" />
+                      <Input type="number" value={subPlanForm.bonus || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, bonus: Number(e.target.value) }))} placeholder="Ex: 0" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Créditos extras de bonificação</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Valor (R$)</Label>
-                      <Input type="number" step="0.01" value={subPlanForm.total || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, total: Number(e.target.value) }))} className="h-8 text-xs" />
+                      <Input type="number" step="0.01" value={subPlanForm.total || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, total: Number(e.target.value) }))} placeholder="Ex: 60.00" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Preço cobrado do revendedor</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Base</Label>
-                      <Input type="number" value={subPlanForm.base_credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, base_credits: Number(e.target.value) }))} className="h-8 text-xs" />
+                      <Input type="number" value={subPlanForm.base_credits || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, base_credits: Number(e.target.value) }))} placeholder="Ex: 3" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Créditos base (sem bônus)</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Badge</Label>
-                      <Input value={subPlanForm.badge} onChange={(e) => setSubPlanForm(f => ({ ...f, badge: e.target.value }))} placeholder="POPULAR" className="h-8 text-xs" />
+                      <Input value={subPlanForm.badge} onChange={(e) => setSubPlanForm(f => ({ ...f, badge: e.target.value }))} placeholder="Ex: POPULAR" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Etiqueta destaque (opcional)</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Cor Badge</Label>
@@ -1104,10 +1110,12 @@ export default function DashboardDono() {
                           <SelectItem value="bg-red-500">Vermelho</SelectItem>
                         </SelectContent>
                       </Select>
+                      <p className="text-[9px] text-muted-foreground">Cor da etiqueta destaque</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px]">Ordem</Label>
-                      <Input type="number" value={subPlanForm.sort_order || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, sort_order: Number(e.target.value) }))} className="h-8 text-xs" />
+                      <Input type="number" value={subPlanForm.sort_order || ''} onChange={(e) => setSubPlanForm(f => ({ ...f, sort_order: Number(e.target.value) }))} placeholder="Ex: 1" className="h-8 text-xs" />
+                      <p className="text-[9px] text-muted-foreground">Posição na lista (menor = primeiro)</p>
                     </div>
                   </div>
 
@@ -1116,16 +1124,19 @@ export default function DashboardDono() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="space-y-1">
                         <Label className="text-[10px]">QR Code (URL)</Label>
-                        <Input value={subPlanForm.qr_code_image} onChange={(e) => setSubPlanForm(f => ({ ...f, qr_code_image: e.target.value }))} placeholder="https://..." className="h-8 text-xs" />
+                        <Input value={subPlanForm.qr_code_image} onChange={(e) => setSubPlanForm(f => ({ ...f, qr_code_image: e.target.value }))} placeholder="https://link-da-imagem-qrcode.png" className="h-8 text-xs" />
+                        <p className="text-[9px] text-muted-foreground">Link da imagem do QR Code PIX</p>
                         {subPlanForm.qr_code_image && <img src={subPlanForm.qr_code_image} alt="QR" className="w-16 h-16 rounded border object-contain bg-white mt-1" />}
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[10px]">PIX Copia e Cola</Label>
-                        <Textarea value={subPlanForm.pix_copy_paste} onChange={(e) => setSubPlanForm(f => ({ ...f, pix_copy_paste: e.target.value }))} className="text-xs min-h-[60px]" />
+                        <Textarea value={subPlanForm.pix_copy_paste} onChange={(e) => setSubPlanForm(f => ({ ...f, pix_copy_paste: e.target.value }))} placeholder="Cole aqui o código PIX copia e cola" className="text-xs min-h-[60px]" />
+                        <p className="text-[9px] text-muted-foreground">Código PIX que o revendedor vai copiar</p>
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[10px]">WhatsApp (DDD + número)</Label>
-                        <Input value={subPlanForm.whatsapp_number} onChange={(e) => setSubPlanForm(f => ({ ...f, whatsapp_number: e.target.value }))} placeholder="11999999999" className="h-8 text-xs" />
+                        <Input value={subPlanForm.whatsapp_number} onChange={(e) => setSubPlanForm(f => ({ ...f, whatsapp_number: e.target.value }))} placeholder="Ex: 83999999999" className="h-8 text-xs" />
+                        <p className="text-[9px] text-muted-foreground">Número para o revendedor confirmar pagamento</p>
                       </div>
                     </div>
                   </div>
