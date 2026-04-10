@@ -1251,18 +1251,20 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
 
   // ===== REVENDEDOR COM PLANOS CUSTOMIZADOS (Sub-Dono) =====
   if (!canRechargeDirectly && hasCustomPlans) {
-    const getWhatsappUrl = (plan?: any) => {
+    const getWhatsappUrl = (plan?: any, message?: string) => {
       const waNumber = plan?.whatsapp_number || customPlansRaw[0]?.whatsapp_number || '';
+      let digits = '';
       if (!waNumber) {
-        // Fallback to creator phone
         if (creatorPhone) {
-          const digits = creatorPhone.replace(/\D/g, '');
-          return `https://wa.me/55${digits}`;
+          digits = creatorPhone.replace(/\D/g, '');
+        } else {
+          return null;
         }
-        return null;
+      } else {
+        digits = waNumber.replace(/\D/g, '');
       }
-      const digits = waNumber.replace(/\D/g, '');
-      return `https://wa.me/55${digits}`;
+      const textParam = message ? `&text=${encodeURIComponent(message)}` : '';
+      return `https://api.whatsapp.com/send/?phone=${digits}${textParam}&type=phone_number&app_absent=0`;
     };
 
     return (
@@ -1412,11 +1414,9 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                     variant="outline"
                     className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
                     onClick={() => {
-                      const url = getWhatsappUrl(selectedCustomPlan);
-                      if (url) {
-                        const msg = encodeURIComponent(`Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`);
-                        window.open(`${url}?text=${msg}`, '_blank');
-                      }
+                      const msg = `Olá! Gostaria de recarregar o plano "${selectedCustomPlan.name}" (${selectedCustomPlan.credits} créditos - R$ ${Number(selectedCustomPlan.total).toFixed(2)}).`;
+                      const url = getWhatsappUrl(selectedCustomPlan, msg);
+                      if (url) window.open(url, '_blank');
                     }}
                   >
                     💬 Falar com Admin
@@ -1438,7 +1438,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   <p className="font-semibold text-sm text-foreground">{creatorName}</p>
                 </div>
                 {creatorPhone && (
-                  <a href={`https://wa.me/55${creatorPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`https://api.whatsapp.com/send/?phone=${creatorPhone.replace(/\D/g, '')}&type=phone_number&app_absent=0`} target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" size="sm">
                       <Smartphone className="h-4 w-4 mr-1" /> WhatsApp
                     </Button>
