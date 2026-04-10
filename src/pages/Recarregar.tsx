@@ -1438,7 +1438,7 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                   <p className="font-semibold text-sm text-foreground">{creatorName}</p>
                 </div>
                 {creatorPhone && (
-                  <a href={`https://wa.me/55${creatorPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`https://api.whatsapp.com/send/?phone=${creatorPhone.replace(/\D/g, '')}&type=phone_number&app_absent=0`} target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" size="sm">
                       <Smartphone className="h-4 w-4 mr-1" /> WhatsApp
                     </Button>
