@@ -1257,12 +1257,12 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
         // Fallback to creator phone
         if (creatorPhone) {
           const digits = creatorPhone.replace(/\D/g, '');
-          return `https://wa.me/55${digits}`;
+          return `https://api.whatsapp.com/send/?phone=${digits}&text&type=phone_number&app_absent=0`;
         }
         return null;
       }
       const digits = waNumber.replace(/\D/g, '');
-      return `https://wa.me/55${digits}`;
+      return `https://api.whatsapp.com/send/?phone=${digits}&text&type=phone_number&app_absent=0`;
     };
 
     return (
