@@ -249,7 +249,7 @@ router.get('/:id', requireSession, async (req, res) => {
 router.get('/resellers/:masterId', requireSession, requireMasterOrAbove, async (req, res) => {
   try {
     const resellers = await query<any[]>(
-      'SELECT id, nome, email, creditos, `rank`, profile_photo, created_at FROM admins WHERE criado_por = ?',
+      'SELECT id, nome, email, creditos, `rank`, profile_photo, created_at, last_active FROM admins WHERE criado_por = ?',
       [req.params.masterId]
     );
 
