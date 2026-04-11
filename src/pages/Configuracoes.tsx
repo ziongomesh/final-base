@@ -141,8 +141,12 @@ export default function Configuracoes() {
         if (!apiBase.endsWith('/api')) apiBase += '/api';
         const resp = await fetch(`${apiBase}/admins/${admin.id}/telefone`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telefone, session_token: admin.session_token }),
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-id': String(admin.id),
+            'x-session-token': admin.session_token || '',
+          },
+          body: JSON.stringify({ telefone }),
         });
         const data = await resp.json();
         if (!resp.ok) throw new Error(data.error || 'Erro ao salvar');

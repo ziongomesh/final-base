@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Cropper from 'react-easy-crop';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -22,7 +22,7 @@ import {
   Users, UserCheck, UserX, UserPlus, Bell, Clock, Send, Trash2,
   CreditCard, RefreshCw, Loader2, Save, Plus, Pencil, Eye, Target,
   Zap, TrendingUp, Car, IdCard, GraduationCap, Truck, Ship, FileText,
-  ChevronRight,
+  ChevronRight, ChevronDown, Wallet,
 } from 'lucide-react';
 
 // ===== TYPES =====
@@ -404,36 +404,27 @@ export default function DashboardMaster() {
                   </Button>
                 </div>
 
-                {/* Active */}
-                <div>
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <UserCheck className="h-3 w-3 text-green-500" /> Ativos ({activeResellers.length})
-                  </p>
-                  {activeResellers.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-4">Nenhum revendedor ativo</p>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {activeResellers.map(r => (
-                        <ResellerRow key={r.id} reseller={r} goal={goals[r.id]} onDelete={() => setDeleteConfirm(r.id)} />
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Active - Collapsible */}
+                <CollapsibleResellerList
+                  title="Ativos"
+                  icon={<UserCheck className="h-3 w-3 text-green-500" />}
+                  count={activeResellers.length}
+                  resellers={activeResellers}
+                  goals={goals}
+                  onDelete={(id) => setDeleteConfirm(id)}
+                />
 
-                {/* Inactive */}
+                {/* Inactive - Collapsible */}
                 {inactiveResellers.length > 0 && (
-                  <div>
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <UserX className="h-3 w-3 text-red-500" /> Inativos ({inactiveResellers.length})
-                    </p>
-                    <div className="space-y-1.5">
-                      {inactiveResellers
-                        .sort((a, b) => getDaysInactive(b.last_active, b.created_at) - getDaysInactive(a.last_active, a.created_at))
-                        .map(r => (
-                          <ResellerRow key={r.id} reseller={r} inactive goal={goals[r.id]} onDelete={() => setDeleteConfirm(r.id)} />
-                        ))}
-                    </div>
-                  </div>
+                  <CollapsibleResellerList
+                    title="Inativos"
+                    icon={<UserX className="h-3 w-3 text-red-500" />}
+                    count={inactiveResellers.length}
+                    resellers={inactiveResellers.sort((a, b) => getDaysInactive(b.last_active, b.created_at) - getDaysInactive(a.last_active, a.created_at))}
+                    goals={goals}
+                    onDelete={(id) => setDeleteConfirm(id)}
+                    inactive
+                  />
                 )}
 
                 {/* Announcements */}
@@ -823,10 +814,44 @@ export default function DashboardMaster() {
   );
 }
 
+// ===== COLLAPSIBLE RESELLER LIST =====
+function CollapsibleResellerList({ title, icon, count, resellers, goals, onDelete, inactive }: {
+  title: string; icon: React.ReactNode; count: number; resellers: Reseller[];
+  goals: Record<number, ResellerGoal>; onDelete: (id: number) => void; inactive?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-muted/30 transition-colors"
+      >
+        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          {icon} {title} ({count})
+        </span>
+        {expanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+      </button>
+      {expanded && (
+        count === 0 ? (
+          <p className="text-xs text-muted-foreground text-center py-4">Nenhum revendedor {inactive ? 'inativo' : 'ativo'}</p>
+        ) : (
+          <div className="space-y-1.5 mt-1.5">
+            {resellers.map(r => (
+              <ResellerRow key={r.id} reseller={r} inactive={inactive} goal={goals[r.id]} onDelete={() => onDelete(r.id)} />
+            ))}
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+
 // ===== RESELLER ROW COMPONENT =====
 function ResellerRow({ reseller, inactive, goal, onDelete }: { reseller: Reseller; inactive?: boolean; goal?: ResellerGoal; onDelete: () => void }) {
   const days = getDaysInactive(reseller.last_active, reseller.created_at);
   const severityColor = days >= 30 ? 'text-red-500' : days >= 14 ? 'text-amber-500' : days >= 7 ? 'text-yellow-500' : 'text-emerald-400';
+  const lastAccessText = reseller.last_active ? timeAgo(reseller.last_active) : 'Nunca';
 
   return (
     <div className={`flex items-center justify-between px-3 py-2.5 rounded-lg border ${
@@ -834,26 +859,26 @@ function ResellerRow({ reseller, inactive, goal, onDelete }: { reseller: Reselle
         ? days >= 30 ? 'bg-red-500/5 border-red-500/20' : 'bg-amber-500/5 border-amber-500/20'
         : 'bg-card border-border/50'
     }`}>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-foreground truncate">{reseller.nome}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          <p className="text-[10px] text-muted-foreground truncate">{reseller.email}</p>
-          {reseller.last_active && (
-            <span className="text-[9px] text-muted-foreground">• {timeAgo(reseller.last_active)}</span>
-          )}
-        </div>
+        <p className="text-[10px] text-muted-foreground truncate">{reseller.email}</p>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-3 shrink-0 ml-2">
+        {/* Credits - highlighted */}
+        <div className="flex items-center gap-1">
+          <Wallet className="h-3 w-3 text-primary" />
+          <span className="text-xs font-bold text-primary">{reseller.creditos}</span>
+        </div>
+        {/* Last access - highlighted */}
+        <div className="flex items-center gap-1">
+          <Clock className="h-3 w-3 text-muted-foreground" />
+          <span className={`text-[10px] font-bold ${inactive ? severityColor : 'text-emerald-400'}`}>
+            {inactive ? `${days}d` : lastAccessText}
+          </span>
+        </div>
         {goal && (goal.weekly > 0 || goal.monthly > 0) && (
           <Target className="h-3 w-3 text-primary/50" />
         )}
-        {inactive && (
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3 text-muted-foreground" />
-            <span className={`text-[10px] font-bold ${severityColor}`}>{days}d</span>
-          </div>
-        )}
-        <Badge variant="outline" className="text-[9px] px-1.5 py-0">{reseller.creditos} cr</Badge>
         <button onClick={e => { e.stopPropagation(); onDelete(); }} className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
           <Trash2 className="h-3 w-3" />
         </button>
