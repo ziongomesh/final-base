@@ -364,7 +364,7 @@ export default function DashboardMaster() {
             <TabsTrigger value="equipe" className="text-[10px] px-2.5 shrink-0 h-7">Equipe</TabsTrigger>
             <TabsTrigger value="metas" className="text-[10px] px-2.5 shrink-0 h-7">Metas</TabsTrigger>
             <TabsTrigger value="historico" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
-            <TabsTrigger value="planos" className="text-[10px] px-2.5 shrink-0 h-7">Planos</TabsTrigger>
+            
             <TabsTrigger value="criar" className="text-[10px] px-2.5 shrink-0 h-7">Criar</TabsTrigger>
             <TabsTrigger value="recarregar" className="text-[10px] px-2.5 shrink-0 h-7">Recarregar</TabsTrigger>
           </TabsList>
@@ -548,108 +548,7 @@ export default function DashboardMaster() {
               </TabsContent>
 
               {/* ===== PLANOS ===== */}
-              <TabsContent value="planos" className="space-y-4 mt-4">
-                {/* Form */}
-                <div className="p-3 rounded-lg border border-border/50 bg-card/50 space-y-3">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
-                    {editingSubPlan ? 'Editar Plano' : 'Novo Plano'}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">Nome</Label>
-                      <Input value={subPlanForm.name} onChange={e => setSubPlanForm(f => ({ ...f, name: e.target.value }))} className="h-8 text-xs" placeholder="Ex: Plano Bronze" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">Créditos</Label>
-                      <Input type="number" value={subPlanForm.credits || ''} onChange={e => { const v = parseInt(e.target.value) || 0; setSubPlanForm(f => ({ ...f, credits: v, base_credits: v })); }} className="h-8 text-xs" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">Bônus</Label>
-                      <Input type="number" value={subPlanForm.bonus || ''} onChange={e => setSubPlanForm(f => ({ ...f, bonus: parseInt(e.target.value) || 0 }))} className="h-8 text-xs" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">Valor (R$)</Label>
-                      <Input type="number" step="0.01" value={subPlanForm.total || ''} onChange={e => setSubPlanForm(f => ({ ...f, total: parseFloat(e.target.value) || 0 }))} className="h-8 text-xs" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">PIX Copia e Cola</Label>
-                      <Input value={subPlanForm.pix_copy_paste} onChange={e => setSubPlanForm(f => ({ ...f, pix_copy_paste: e.target.value }))} className="h-8 text-xs" placeholder="Chave PIX..." />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">WhatsApp</Label>
-                      <Input value={subPlanForm.whatsapp_number} onChange={e => setSubPlanForm(f => ({ ...f, whatsapp_number: e.target.value }))} className="h-8 text-xs" placeholder="5511999..." />
-                    </div>
-                  </div>
-
-                  {/* QR Code upload */}
-                  <div className="space-y-1">
-                    <Label className="text-[10px]">QR Code (upload)</Label>
-                    <input ref={qrFileRef} type="file" accept="image/*" className="hidden" onChange={e => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = () => setQrCropImage(reader.result as string);
-                      reader.readAsDataURL(file);
-                      e.target.value = '';
-                    }} />
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => qrFileRef.current?.click()}>
-                        <Plus className="h-3 w-3 mr-1" /> Upload QR
-                      </Button>
-                      {subPlanForm.qr_code_image && (
-                        <img src={subPlanForm.qr_code_image} alt="QR" className="h-10 w-10 rounded border border-border object-contain" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={handleSaveSubPlan} disabled={savingSubPlan} className="flex-1 h-8 text-xs">
-                      {savingSubPlan ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Save className="h-3.5 w-3.5 mr-1" />}
-                      {editingSubPlan ? 'Atualizar' : 'Criar'}
-                    </Button>
-                    {editingSubPlan && <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => { setEditingSubPlan(null); setSubPlanForm(emptySubPlan); }}>Cancelar</Button>}
-                  </div>
-                </div>
-
-                {/* Plans list */}
-                <div className="rounded-lg border border-border/50 overflow-hidden">
-                  <div className="px-3 py-2 bg-muted/30">
-                    <span className="text-xs font-semibold">Meus Planos ({subPlans.length})</span>
-                  </div>
-                  {loadingSubPlans ? (
-                    <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
-                  ) : subPlans.length === 0 ? (
-                    <p className="text-center text-xs text-muted-foreground py-8">Nenhum plano</p>
-                  ) : (
-                    <div className="divide-y divide-border/30">
-                      {subPlans.map(plan => (
-                        <div key={plan.id} className="flex items-center gap-3 px-3 py-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-medium">{plan.name}</span>
-                              {plan.badge && <Badge className={`${plan.badge_color} text-white text-[7px] px-1 py-0`}>{plan.badge}</Badge>}
-                              {!plan.is_active && <Badge variant="outline" className="text-[8px] text-muted-foreground">OFF</Badge>}
-                            </div>
-                            <p className="text-[10px] text-muted-foreground">{plan.credits} cr • R$ {Number(plan.total).toFixed(2)}{plan.bonus > 0 ? ` • +${plan.bonus} bônus` : ''}</p>
-                          </div>
-                          <div className="flex gap-0.5 shrink-0">
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setEditingSubPlan(plan); setSubPlanForm(plan); }}>
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => plan.id && handleDeleteSubPlan(plan.id)}>
-                              <Trash2 className="h-3 w-3 text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              {/* ===== CRIAR ===== */}
+               {/* ===== CRIAR ===== */}
               <TabsContent value="criar" className="space-y-4 mt-4">
                 <div className="p-3 rounded-lg border border-border/50 bg-card/50 space-y-3">
                   <div className="flex items-center gap-2">
