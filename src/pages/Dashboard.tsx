@@ -6,7 +6,8 @@ import api from '@/lib/api';
 import OnboardingWizard from '@/components/tutorial/OnboardingWizard';
 import MasterOnboardingWizard from '@/components/tutorial/MasterOnboardingWizard';
 import DashboardDono from './DashboardDono';
-import MasterTeamTabs from '@/components/dashboard/MasterTeamTabs';
+import DashboardMaster from './DashboardMaster';
+
 import AlertNotification from '@/components/dashboard/AlertNotification';
 
 import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
@@ -90,6 +91,7 @@ export default function Dashboard() {
 
   if (!admin) return <Navigate to="/login" replace />;
   if (role === 'dono' || role === 'sub') return <DashboardDono />;
+  if (role === 'master') return <DashboardMaster />;
 
   const firstName = admin.nome?.split(' ')[0] || 'Usuário';
 
@@ -147,18 +149,11 @@ export default function Dashboard() {
           </button>
         )}
 
-        {role === 'master' ? (
-          <div className="space-y-5">
-            <MasterTeamTabs adminId={admin.id} />
-            <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
-          </div>
-        ) : (
-          <div className="space-y-6">
+        <div className="space-y-6">
             <AnnouncementsFeed />
             <StatisticsChart adminId={admin.id} docStats={myDocStats} />
             <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
           </div>
-        )}
       </div>
 
       <style>{`
