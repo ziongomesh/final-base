@@ -178,7 +178,7 @@ export default function DashboardMaster() {
       const filters: any = {};
       if (dailyFilterAdmin !== 'all') filters.adminId = parseInt(dailyFilterAdmin);
       if (dailyFilterModule !== 'all') filters.module = dailyFilterModule;
-      const data = await api.admins.getMasterDailyHistory(admin.id, filters);
+      const data = await (api as any).admins.getMasterDailyHistory(admin.id, filters);
       setDailyHistory(data.grouped || {});
       setDailyTotal(data.total || 0);
     } catch (e) { console.error(e); }

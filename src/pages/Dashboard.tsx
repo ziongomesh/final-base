@@ -91,6 +91,7 @@ export default function Dashboard() {
 
   if (!admin) return <Navigate to="/login" replace />;
   if (role === 'dono' || role === 'sub') return <DashboardDono />;
+  if (role === 'master') return <DashboardMaster />;
 
   const firstName = admin.nome?.split(' ')[0] || 'Usuário';
 
