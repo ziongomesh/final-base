@@ -149,18 +149,11 @@ export default function Dashboard() {
           </button>
         )}
 
-        {role === 'master' ? (
-          <div className="space-y-5">
-            <MasterTeamTabs adminId={admin.id} />
-            <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
-          </div>
-        ) : (
-          <div className="space-y-6">
+        <div className="space-y-6">
             <AnnouncementsFeed />
             <StatisticsChart adminId={admin.id} docStats={myDocStats} />
             <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
           </div>
-        )}
       </div>
 
       <style>{`
