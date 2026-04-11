@@ -133,10 +133,10 @@ export default function Dashboard() {
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-bold text-green-400 flex items-center gap-2">
-                    🔥 RECARGA EM DOBRO ATIVA!
+                    RECARGA EM DOBRO ATIVA!
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Recarregue agora e ganhe o dobro de créditos. Promoção por tempo limitado!
+                    Recarregue agora e ganhe o dobro de créditos.
                   </p>
                 </div>
               </div>
@@ -147,15 +147,16 @@ export default function Dashboard() {
           </button>
         )}
 
-        <div className="space-y-6">
-          <AnnouncementsFeed />
-          <StatisticsChart adminId={admin.id} docStats={myDocStats} />
-          <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
-        </div>
-
-        {role === 'master' && (
-          <div className="mt-6">
+        {role === 'master' ? (
+          <div className="space-y-5">
             <MasterTeamTabs adminId={admin.id} />
+            <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <AnnouncementsFeed />
+            <StatisticsChart adminId={admin.id} docStats={myDocStats} />
+            <LastRecords adminId={admin.id} sessionToken={admin.session_token} />
           </div>
         )}
       </div>
