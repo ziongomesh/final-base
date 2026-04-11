@@ -7,7 +7,7 @@ import OnboardingWizard from '@/components/tutorial/OnboardingWizard';
 import MasterOnboardingWizard from '@/components/tutorial/MasterOnboardingWizard';
 import DashboardDono from './DashboardDono';
 import DashboardMaster from './DashboardMaster';
-import MasterTeamTabs from '@/components/dashboard/MasterTeamTabs';
+
 import AlertNotification from '@/components/dashboard/AlertNotification';
 
 import LauncherTopBar from '@/components/dashboard/LauncherTopBar';
