@@ -419,15 +419,38 @@ router.put('/:id', requireSession, async (req, res) => {
   }
 });
 
-// Deletar admin (requer sessão + dono)
-router.delete('/:id', requireSession, requireDono, async (req, res) => {
+// Deletar admin (requer sessão + dono ou master deletando seu próprio revendedor)
+router.delete('/:id', requireSession, async (req, res) => {
   try {
+    const targetId = parseInt(req.params.id);
+    const requesterId = (req as any).adminId;
+    const requesterRank = (req as any).adminRank;
+
     // Impedir deletar a si mesmo
-    if ((req as any).adminId === parseInt(req.params.id)) {
+    if (requesterId === targetId) {
       return res.status(400).json({ error: 'Não é possível deletar a si mesmo' });
     }
-    await query('DELETE FROM admins WHERE id = ?', [req.params.id]);
-    res.json({ success: true });
+
+    // Dono pode deletar qualquer um
+    if (requesterRank === 'dono' || requesterRank === 'sub') {
+      await query('DELETE FROM admins WHERE id = ?', [targetId]);
+      return res.json({ success: true });
+    }
+
+    // Master pode deletar apenas revendedores que criou
+    if (requesterRank === 'master') {
+      const rows = await query<any[]>(
+        'SELECT id FROM admins WHERE id = ? AND criado_por = ? AND `rank` = ?',
+        [targetId, requesterId, 'revendedor']
+      );
+      if (rows.length === 0) {
+        return res.status(403).json({ error: 'Sem permissão para deletar este usuário' });
+      }
+      await query('DELETE FROM admins WHERE id = ?', [targetId]);
+      return res.json({ success: true });
+    }
+
+    return res.status(403).json({ error: 'Sem permissão' });
   } catch (error) {
     console.error('Erro ao deletar admin:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });

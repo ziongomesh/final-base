@@ -1,185 +1,21 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, QrCode, Copy, Check, Clock, ArrowLeft, XCircle } from 'lucide-react';
-import ReactCanvasConfetti from 'react-canvas-confetti';
-import type { CreateTypes } from 'canvas-confetti';
+import { UserPlus, Loader2, Check } from 'lucide-react';
 import api from '@/lib/api';
-import { mysqlApi } from '@/lib/api-mysql';
-
-type Step = 'form' | 'payment' | 'success';
-
-interface PixData {
-  transactionId: string;
-  qrCode: string;
-  qrCodeBase64?: string;
-  copyPaste: string;
-  amount: number;
-  credits: number;
-}
 
 export default function CriarRevendedor() {
   const { admin, role, loading } = useAuth();
-  const [step, setStep] = useState<Step>('form');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [isCreating, setIsCreating] = useState(false);
-  const [pixData, setPixData] = useState<PixData | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [paymentExpired, setPaymentExpired] = useState(false);
-  const [checkingPayment, setCheckingPayment] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(600);
-
-  // Dynamic settings from API
-  const [resellerPrice, setResellerPrice] = useState(90);
-  const [resellerCredits, setResellerCredits] = useState(5);
-
-  useEffect(() => {
-    mysqlApi.settings.get().then((data: any) => {
-      if (data.reseller_price) setResellerPrice(Number(data.reseller_price));
-      if (data.reseller_credits) setResellerCredits(Number(data.reseller_credits));
-    }).catch(() => {});
-  }, []);
-
-  const hasPlayedSound = useRef(false);
-  const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const refAnimationInstance = useRef<CreateTypes | null>(null);
-
-  const handleInit = useCallback(({ confetti }: { confetti: CreateTypes }) => {
-    refAnimationInstance.current = confetti;
-  }, []);
-
-  const fire = useCallback(() => {
-    if (!refAnimationInstance.current) return;
-
-    const makeShot = (particleRatio: number, opts: any) => {
-      refAnimationInstance.current?.({
-        ...opts,
-        origin: { y: 0.7 },
-        particleCount: Math.floor(200 * particleRatio),
-      });
-    };
-
-    makeShot(0.25, { spread: 26, startVelocity: 55 });
-    makeShot(0.2, { spread: 60 });
-    makeShot(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    makeShot(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    makeShot(0.1, { spread: 120, startVelocity: 45 });
-  }, []);
-
-  const playNotificationSound = useCallback(() => {
-    if (hasPlayedSound.current) return;
-    hasPlayedSound.current = true;
-
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  const startPaymentVerification = useCallback((transactionId: string) => {
-    if (checkIntervalRef.current) {
-      clearInterval(checkIntervalRef.current);
-      checkIntervalRef.current = null;
-    }
-
-    const checkPayment = async () => {
-      try {
-        const data = await api.payments.getResellerStatus(transactionId);
-
-        if (data?.status === 'PAID' || data?.status === 'COMPLETED') {
-          if (checkIntervalRef.current) {
-            clearInterval(checkIntervalRef.current);
-            checkIntervalRef.current = null;
-          }
-
-          setPaymentConfirmed(true);
-          setCheckingPayment(false);
-
-          playNotificationSound();
-          fire();
-
-          toast.success('Pagamento confirmado!', {
-            description: 'Revendedor criado com sucesso!',
-          });
-
-          setStep('success');
-          return;
-        }
-      } catch (error) {
-        console.error('Erro ao verificar pagamento:', error);
-      }
-    };
-
-    checkPayment();
-    checkIntervalRef.current = setInterval(checkPayment, 3000);
-  }, [fire, playNotificationSound]);
-
-  // Timer countdown
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval>;
-
-    if (step === 'payment' && !paymentConfirmed && !paymentExpired && timeLeft > 0) {
-      timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setPaymentExpired(true);
-            setCheckingPayment(false);
-            if (checkIntervalRef.current) {
-              clearInterval(checkIntervalRef.current);
-              checkIntervalRef.current = null;
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [step, paymentConfirmed, paymentExpired, timeLeft]);
-
-  useEffect(() => {
-    return () => {
-      if (checkIntervalRef.current) {
-        clearInterval(checkIntervalRef.current);
-        checkIntervalRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (step !== 'payment' || !pixData?.transactionId) return;
-    startPaymentVerification(pixData.transactionId);
-  }, [pixData?.transactionId, startPaymentVerification, step]);
+  const [created, setCreated] = useState(false);
 
   if (loading) {
     return (
@@ -189,284 +25,92 @@ export default function CriarRevendedor() {
     );
   }
 
-  if (!admin) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (role !== 'master' && role !== 'sub') {
-    return <Navigate to="/dashboard" replace />;
-  }
+  if (!admin) return <Navigate to="/login" replace />;
+  if (role !== 'master' && role !== 'sub') return <Navigate to="/dashboard" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
 
-    // reset estado do pagamento
-    hasPlayedSound.current = false;
-    setPaymentConfirmed(false);
-    setPaymentExpired(false);
-    setCheckingPayment(true);
-    setTimeLeft(600);
-
     try {
-      const data = await api.payments.createResellerPix({
-        masterId: admin.id,
-        masterName: admin.nome,
-        resellerData: {
-          nome: formData.name,
-          email: formData.email.toLowerCase().trim(),
-          key: formData.password,
-        },
+      await api.admins.createReseller({
+        nome: formData.name,
+        email: formData.email.toLowerCase().trim(),
+        key: formData.password,
+        criadoPor: admin.id,
       });
 
-      // api-mysql já lança erro com mensagem amigável quando não for ok
-
-      setPixData(data);
-      setStep('payment');
-      toast.success('PIX gerado! Realize o pagamento para criar o revendedor.');
+      setCreated(true);
+      toast.success('Revendedor criado com sucesso!');
     } catch (error: any) {
-      setCheckingPayment(false);
-      toast.error('Erro ao gerar PIX', {
-        description: error.message,
-      });
+      toast.error('Erro ao criar revendedor', { description: error.message });
     } finally {
       setIsCreating(false);
     }
   };
 
-  const handleCopy = async () => {
-    if (!pixData?.copyPaste) return;
-    
-    try {
-      await navigator.clipboard.writeText(pixData.copyPaste);
-      setCopied(true);
-      toast.success('Código PIX copiado!');
-      setTimeout(() => setCopied(false), 3000);
-    } catch {
-      toast.error('Erro ao copiar');
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const handleNewReseller = () => {
-    setStep('form');
-    setFormData({ name: '', email: '', password: '' });
-    setPixData(null);
-  };
+  if (created) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-md mx-auto animate-fade-in">
+          <Card className="border-emerald-500/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Check className="h-4 w-4 text-emerald-500" />
+                Revendedor Criado
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-sm space-y-1 text-muted-foreground">
+                <p><span className="text-foreground font-medium">{formData.name}</span></p>
+                <p>{formData.email}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="flex-1" onClick={() => { setCreated(false); setFormData({ name: '', email: '', password: '' }); }}>
+                  <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Criar outro
+                </Button>
+                <Button size="sm" className="flex-1" onClick={() => navigate('/revendedores')}>
+                  Ver revendedores
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      <ReactCanvasConfetti
-        onInit={handleInit}
-        style={{
-          position: 'fixed',
-          pointerEvents: 'none',
-          width: '100%',
-          height: '100%',
-          top: 0,
-          left: 0,
-          zIndex: 100
-        }}
-      />
-
-      <div className="space-y-8 animate-fade-in max-w-xl">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Criar Revendedor</h1>
-          <p className="text-muted-foreground">
-            Adicione um novo revendedor à sua rede
-          </p>
-        </div>
-
-        {step === 'form' && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserPlus className="h-5 w-5 text-primary" />
-                Novo Revendedor
-              </CardTitle>
-              <CardDescription>
-                Preencha os dados e pague <strong>R$ {resellerPrice.toFixed(2).replace('.', ',')}</strong> via PIX. O revendedor receberá <strong>{resellerCredits} créditos</strong> iniciais.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome</Label>
-                  <Input
-                    id="name"
-                    placeholder="Nome do Revendedor"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="revendedor@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Senha</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <p className="text-sm font-medium text-primary">💰 Taxa de ativação: R$ {resellerPrice.toFixed(2).replace('.', ',')}</p>
-                  <p className="text-sm text-muted-foreground">📦 Créditos iniciais: {resellerCredits} créditos</p>
-                </div>
-                <Button type="submit" className="w-full" disabled={isCreating}>
-                  {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Gerar PIX (R$ {resellerPrice.toFixed(2).replace('.', ',')})
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
-
-        {step === 'payment' && pixData && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <QrCode className="h-5 w-5 text-primary" />
-                  Pagamento PIX
-                </CardTitle>
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  timeLeft < 60 ? 'bg-destructive/20 text-destructive' : 'bg-primary/20 text-primary'
-                }`}>
-                  <Clock className="h-4 w-4" />
-                  {formatTime(timeLeft)}
-                </div>
+      <div className="max-w-md mx-auto animate-fade-in">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <UserPlus className="h-4 w-4 text-primary" />
+              Novo Revendedor
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="name" className="text-xs">Nome</Label>
+                <Input id="name" placeholder="Nome do revendedor" value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} required className="h-9" />
               </div>
-              <CardDescription>
-                Escaneie o QR Code ou copie o código para pagar
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Criando revendedor:</p>
-                <p className="font-semibold">{formData.name}</p>
-                <p className="text-sm text-muted-foreground">{formData.email}</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs">Email</Label>
+                <Input id="email" type="email" placeholder="email@exemplo.com" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} required className="h-9" />
               </div>
-
-              {pixData.qrCodeBase64 && (
-                <div className="flex justify-center">
-                  <img
-                    src={`data:image/png;base64,${pixData.qrCodeBase64}`}
-                    alt="QR Code PIX"
-                    className="w-48 h-48 rounded-lg border"
-                  />
-                </div>
-              )}
-
-              <div className="text-center">
-                <p className="text-3xl font-bold text-primary">R$ {resellerPrice.toFixed(2).replace('.', ',')}</p>
-                <p className="text-sm text-muted-foreground">= {resellerCredits} créditos para o revendedor</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-xs">Senha</Label>
+                <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))} required minLength={6} className="h-9" />
               </div>
-
-              <div className="space-y-2">
-                <Label>Código Copia e Cola</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={pixData.copyPaste}
-                    readOnly
-                    className="font-mono text-xs"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCopy}
-                    className="shrink-0"
-                  >
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                {paymentExpired ? (
-                  <>
-                    <XCircle className="h-4 w-4 text-destructive" />
-                    <span className="text-sm text-muted-foreground">
-                      Tempo expirado. Gere um novo PIX.
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <span className="text-sm text-muted-foreground">
-                      {checkingPayment ? 'Aguardando confirmação do pagamento...' : 'Preparando verificação...'}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => {
-                  if (checkIntervalRef.current) {
-                    clearInterval(checkIntervalRef.current);
-                    checkIntervalRef.current = null;
-                  }
-                  setCheckingPayment(false);
-                  setPaymentExpired(false);
-                  setPaymentConfirmed(false);
-                  setPixData(null);
-                  setTimeLeft(600);
-                  setStep('form');
-                }}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar
+              <Button type="submit" className="w-full h-9 text-sm" disabled={isCreating}>
+                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                Criar Revendedor
               </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {step === 'success' && (
-          <Card className="border-green-500/50 bg-green-500/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-600">
-                <Check className="h-5 w-5" />
-                Revendedor Criado!
-              </CardTitle>
-              <CardDescription>
-                O revendedor foi criado com sucesso e já pode acessar o sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-background rounded-lg border space-y-2">
-                <p><strong>Nome:</strong> {formData.name}</p>
-                <p><strong>Email:</strong> {formData.email}</p>
-                <p><strong>Créditos:</strong> {resellerCredits}</p>
-              </div>
-              <Button onClick={handleNewReseller} className="w-full">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Criar Outro Revendedor
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
