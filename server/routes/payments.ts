@@ -199,7 +199,8 @@ router.post("/create-pix", requireSession, async (req, res) => {
 
     const { total: amount } = pricing;
 
-    const sanitizedAdminName = adminName.replace(/[<>\"'&]/g, "").trim().substring(0, 50);
+    const baseName = adminName.replace(/[<>\"'&]/g, "").trim().substring(0, 50);
+    const sanitizedAdminName = isOfficialPackage ? `PKG:${baseName}` : baseName;
     const publicKey = process.env.VIZZIONPAY_PUBLIC_KEY;
     const privateKey = process.env.VIZZIONPAY_PRIVATE_KEY;
     const domainUrl = process.env.DOMAIN_URL || "";
