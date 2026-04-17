@@ -457,10 +457,11 @@ router.post("/confirm-local/:transactionId", requireSession, async (req, res) =>
     // Pagamento normal de créditos
     await query("UPDATE pix_payments SET status = 'PAID', paid_at = NOW() WHERE transaction_id = ?", [transactionId]);
 
-    // Check double recharge for revendedores
+    // Check double recharge: somente revendedor + pacote oficial (admin_name começa com "PKG:")
     const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [payment.admin_id]);
     const isReseller = adminRows[0]?.rank === 'revendedor';
-    const doubleActive = isReseller ? await isDoubleRechargeActive() : false;
+    const isPackage = typeof payment.admin_name === 'string' && payment.admin_name.startsWith('PKG:');
+    const doubleActive = isReseller && isPackage ? await isDoubleRechargeActive() : false;
     const finalCredits = doubleActive ? payment.credits * 2 : payment.credits;
 
     const unitPrice = finalCredits > 0 ? (payment.amount / finalCredits) : payment.amount;
