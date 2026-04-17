@@ -178,14 +178,17 @@ router.post("/create-pix", requireSession, async (req, res) => {
     const isResellerFromAdmin3 = adminRow.rank === "revendedor" && adminRow.criado_por === 3;
 
     let pricing: { unitPrice: number; total: number } | null;
+    let isOfficialPackage = false;
 
     if (isResellerFromAdmin3) {
-      // Reseller pricing
+      // Reseller pricing - só é pacote se for um dos RESELLER_PACKAGES (não unitário avulso)
       pricing = calculateResellerPrice(credits);
+      isOfficialPackage = !!RESELLER_PACKAGES.find((p) => p.credits === credits);
     } else if (adminRow.rank === "master" || adminRow.rank === "dono" || adminRow.rank === "sub") {
-      // Master/dono pricing from platform_settings
+      // Master/dono pricing from platform_settings - sempre pacote oficial
       const settings = await getSettings();
       pricing = calculatePriceFromTiers(credits, settings.priceTiers);
+      isOfficialPackage = !!pricing;
     } else {
       return res.status(403).json({ error: "Sem permissão para recarregar" });
     }
