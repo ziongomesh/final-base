@@ -221,10 +221,10 @@ router.post("/create-pix", requireSession, async (req, res) => {
         try {
           const pending = await query<any[]>("SELECT * FROM pix_payments WHERE transaction_id = ? AND status = 'PENDING'", [mockTransactionId]);
           if (pending.length > 0) {
-            // Check double recharge for revendedores
+            // Check double recharge: somente revendedor + pacote oficial
             const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [adminId]);
             const isReseller = adminRows[0]?.rank === 'revendedor';
-            const doubleActive = isReseller ? await isDoubleRechargeActive() : false;
+            const doubleActive = isReseller && isOfficialPackage ? await isDoubleRechargeActive() : false;
             const finalCredits = doubleActive ? credits * 2 : credits;
 
             await query("UPDATE pix_payments SET status = 'PAID', paid_at = NOW() WHERE transaction_id = ?", [mockTransactionId]);
