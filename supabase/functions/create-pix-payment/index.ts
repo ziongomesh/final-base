@@ -101,7 +101,8 @@ serve(async (req) => {
     }
 
     const sanitizedAdminName = adminName.replace(/[<>\"'&]/g, '').trim().substring(0, 50);
-    const identifier = `ADMIN_${adminId}_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    // Prefixo PKG_ identifica que é pacote oficial (elegível para Recarga em Dobro)
+    const identifier = `PKG_ADMIN_${adminId}_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     
     const pixRequest: any = {
       identifier: identifier,
