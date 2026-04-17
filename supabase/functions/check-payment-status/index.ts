@@ -91,12 +91,27 @@ serve(async (req) => {
                 console.error('Erro ao atualizar status:', updateError);
               }
               
-              // Se não é revendedor, credita os créditos
+              // Se não é revendedor (compra de revenda), credita os créditos
               if (!isResellerPayment) {
-                // Usar RPC para adicionar créditos atomicamente
+                // Recarga em Dobro: só aplica em pacotes oficiais (PKG:), promoção ativa e revendedor
+                let finalCredits = payment.credits;
+                const isPackage = typeof payment.admin_name === 'string' && payment.admin_name.startsWith('PKG:');
+                if (isPackage) {
+                  const { data: settings } = await supabase
+                    .from('platform_settings').select('recarga_em_dobro').eq('id', 1).single();
+                  if (settings?.recarga_em_dobro) {
+                    const { data: adminRow } = await supabase
+                      .from('admins').select('rank').eq('id', payment.admin_id).single();
+                    if (adminRow?.rank === 'revendedor') {
+                      finalCredits = payment.credits * 2;
+                      console.log(`🎁 Recarga em Dobro: ${payment.credits} → ${finalCredits}`);
+                    }
+                  }
+                }
+
                 const { error: rpcError } = await supabase.rpc('recharge_credits', {
                   p_admin_id: payment.admin_id,
-                  p_amount: payment.credits,
+                  p_amount: finalCredits,
                   p_unit_price: payment.amount / payment.credits,
                   p_total_price: payment.amount
                 });
@@ -104,7 +119,7 @@ serve(async (req) => {
                 if (rpcError) {
                   console.error('Erro ao adicionar créditos:', rpcError);
                 } else {
-                  console.log(`✅ ${payment.credits} créditos adicionados ao admin ${payment.admin_id}`);
+                  console.log(`✅ ${finalCredits} créditos adicionados ao admin ${payment.admin_id}`);
                 }
               }
               
