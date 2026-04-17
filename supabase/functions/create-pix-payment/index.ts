@@ -151,12 +151,12 @@ serve(async (req) => {
       throw new Error('Invalid VizzionPay response');
     }
 
-    // Save payment to database
+    // Save payment to database (admin_name com prefixo PKG: marca pacote oficial)
     const { error: insertError } = await supabase
       .from('pix_payments')
       .insert({
         admin_id: adminId,
-        admin_name: sanitizedAdminName,
+        admin_name: `PKG:${sanitizedAdminName}`,
         transaction_id: pixData.transactionId,
         amount: Math.round(amount * 100) / 100,
         credits: credits,
