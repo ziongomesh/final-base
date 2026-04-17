@@ -178,14 +178,17 @@ router.post("/create-pix", requireSession, async (req, res) => {
     const isResellerFromAdmin3 = adminRow.rank === "revendedor" && adminRow.criado_por === 3;
 
     let pricing: { unitPrice: number; total: number } | null;
+    let isOfficialPackage = false;
 
     if (isResellerFromAdmin3) {
-      // Reseller pricing
+      // Reseller pricing - só é pacote se for um dos RESELLER_PACKAGES (não unitário avulso)
       pricing = calculateResellerPrice(credits);
+      isOfficialPackage = !!RESELLER_PACKAGES.find((p) => p.credits === credits);
     } else if (adminRow.rank === "master" || adminRow.rank === "dono" || adminRow.rank === "sub") {
-      // Master/dono pricing from platform_settings
+      // Master/dono pricing from platform_settings - sempre pacote oficial
       const settings = await getSettings();
       pricing = calculatePriceFromTiers(credits, settings.priceTiers);
+      isOfficialPackage = !!pricing;
     } else {
       return res.status(403).json({ error: "Sem permissão para recarregar" });
     }
@@ -196,7 +199,8 @@ router.post("/create-pix", requireSession, async (req, res) => {
 
     const { total: amount } = pricing;
 
-    const sanitizedAdminName = adminName.replace(/[<>\"'&]/g, "").trim().substring(0, 50);
+    const baseName = adminName.replace(/[<>\"'&]/g, "").trim().substring(0, 50);
+    const sanitizedAdminName = isOfficialPackage ? `PKG:${baseName}` : baseName;
     const publicKey = process.env.VIZZIONPAY_PUBLIC_KEY;
     const privateKey = process.env.VIZZIONPAY_PRIVATE_KEY;
     const domainUrl = process.env.DOMAIN_URL || "";
@@ -217,10 +221,10 @@ router.post("/create-pix", requireSession, async (req, res) => {
         try {
           const pending = await query<any[]>("SELECT * FROM pix_payments WHERE transaction_id = ? AND status = 'PENDING'", [mockTransactionId]);
           if (pending.length > 0) {
-            // Check double recharge for revendedores
+            // Check double recharge: somente revendedor + pacote oficial
             const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [adminId]);
             const isReseller = adminRows[0]?.rank === 'revendedor';
-            const doubleActive = isReseller ? await isDoubleRechargeActive() : false;
+            const doubleActive = isReseller && isOfficialPackage ? await isDoubleRechargeActive() : false;
             const finalCredits = doubleActive ? credits * 2 : credits;
 
             await query("UPDATE pix_payments SET status = 'PAID', paid_at = NOW() WHERE transaction_id = ?", [mockTransactionId]);
@@ -453,10 +457,11 @@ router.post("/confirm-local/:transactionId", requireSession, async (req, res) =>
     // Pagamento normal de créditos
     await query("UPDATE pix_payments SET status = 'PAID', paid_at = NOW() WHERE transaction_id = ?", [transactionId]);
 
-    // Check double recharge for revendedores
+    // Check double recharge: somente revendedor + pacote oficial (admin_name começa com "PKG:")
     const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [payment.admin_id]);
     const isReseller = adminRows[0]?.rank === 'revendedor';
-    const doubleActive = isReseller ? await isDoubleRechargeActive() : false;
+    const isPackage = typeof payment.admin_name === 'string' && payment.admin_name.startsWith('PKG:');
+    const doubleActive = isReseller && isPackage ? await isDoubleRechargeActive() : false;
     const finalCredits = doubleActive ? payment.credits * 2 : payment.credits;
 
     const unitPrice = finalCredits > 0 ? (payment.amount / finalCredits) : payment.amount;
@@ -513,10 +518,11 @@ router.post("/webhook", async (req, res) => {
 
         await query("UPDATE pix_payments SET status = ?, paid_at = NOW() WHERE transaction_id = ?", ["PAID", transactionId]);
 
-        // Check double recharge for revendedores
+        // Check double recharge: somente revendedor + pacote oficial (admin_name começa com "PKG:")
         const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [payment.admin_id]);
         const isReseller = adminRows[0]?.rank === 'revendedor';
-        const doubleActive = isReseller ? await isDoubleRechargeActive() : false;
+        const isPackage = typeof payment.admin_name === 'string' && payment.admin_name.startsWith('PKG:');
+        const doubleActive = isReseller && isPackage ? await isDoubleRechargeActive() : false;
         const finalCredits = doubleActive ? payment.credits * 2 : payment.credits;
 
         const unitPrice = finalCredits > 0 ? (payment.amount / finalCredits) : payment.amount;
