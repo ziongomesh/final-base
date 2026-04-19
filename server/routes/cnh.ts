@@ -303,7 +303,9 @@ router.post('/update', async (req, res) => {
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
       const clean = base64.replace(/^data:[^;]+;base64,/, '');
-      fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+      const raw = Buffer.from(clean, 'base64');
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -312,7 +314,9 @@ router.post('/update', async (req, res) => {
       if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
-      fs.writeFileSync(filepath, buffer);
+      const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
