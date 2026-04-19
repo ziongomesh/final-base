@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { PDFDocument } from 'pdf-lib';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 

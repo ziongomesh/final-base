@@ -3,6 +3,7 @@ import { query } from '../db';
 import fs from 'fs';
 import path from 'path';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 

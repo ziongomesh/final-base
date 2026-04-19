@@ -3,6 +3,7 @@ import { query } from '../db';
 import logger from '../utils/logger.ts';
 import * as fs from 'fs';
 import * as path from 'path';
+import { stripPdfMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 

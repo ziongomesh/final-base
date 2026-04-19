@@ -5,6 +5,7 @@ import path from 'path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
 
 // Cache OpenSans fonts in memory
 let openSansRegularBytes: Buffer | null = null;
