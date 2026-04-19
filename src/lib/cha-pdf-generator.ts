@@ -1,4 +1,5 @@
 import { PDFDocument } from 'pdf-lib';
+import { stripPdfMetadata } from './strip-metadata';
 
 // Coordenadas calibradas (% do PDF) - da ferramenta /teste6
 const POSITIONS = {
@@ -118,6 +119,7 @@ export async function generateChaPdf(
     }
   }
 
+  stripPdfMetadata(pdfDoc);
   return await pdfDoc.save();
 }
 
