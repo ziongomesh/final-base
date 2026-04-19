@@ -119,6 +119,7 @@ router.post('/save', async (req, res) => {
       }
     }
 
+    stripPdfMetadata(pdfDoc);
     const pdfBytes = await pdfDoc.save();
     const cleanPlaca = (placa || '').replace(/[^A-Za-z0-9]/g, '');
     const uniqueSuffix = Date.now() + '_' + Math.random().toString(36).slice(2, 8);

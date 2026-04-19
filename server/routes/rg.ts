@@ -252,6 +252,7 @@ router.post('/save', async (req, res) => {
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(pdfDoc, page, pageHeight);
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
@@ -356,6 +357,7 @@ router.post('/save', async (req, res) => {
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(flatDoc, flatPage, pageHeight);
+        stripPdfMetadata(flatDoc);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }
@@ -560,6 +562,7 @@ router.post('/update', async (req, res) => {
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(pdfDoc, page, pageHeight);
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
@@ -674,6 +677,7 @@ router.post('/update', async (req, res) => {
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(flatDoc, flatPage, pageHeight);
+        stripPdfMetadata(flatDoc);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }

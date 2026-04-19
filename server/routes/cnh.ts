@@ -228,6 +228,7 @@ router.post('/save', async (req, res) => {
         page.drawImage(qrImg, { x: mmToPt(116.1), y: pageHeight - mmToPt(31.9) - qrSize, width: qrSize, height: qrSize });
       }
 
+      stripPdfMetadata(pdfDoc);
       const pdfBytes = await pdfDoc.save();
       pdfUrl = saveBuffer(Buffer.from(pdfBytes), `CNH-e_${cleanCpf}`, 'pdf');
     } catch (pdfErr) {
@@ -426,6 +427,7 @@ router.post('/update', async (req, res) => {
           page.drawImage(qrImg, { x: mmToPt(116.1), y: pageHeight - mmToPt(31.9) - qrSize, width: qrSize, height: qrSize });
         }
 
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `CNH-e_${cleanCpf}`, 'pdf');
       } catch (e) {
