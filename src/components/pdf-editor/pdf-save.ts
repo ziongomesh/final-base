@@ -1,5 +1,6 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import type { PdfTextField } from './types';
+import { stripPdfMetadata } from '@/lib/strip-metadata';
 
 export async function savePdf(
   originalPdfBytes: ArrayBuffer,
@@ -62,5 +63,6 @@ export async function savePdf(
     }
   }
 
+  stripPdfMetadata(newPdf);
   return await newPdf.save();
 }

@@ -174,6 +174,7 @@ export default function ComprovanteBradesco() {
       if (!snapshot) { toast.error('Erro ao capturar comprovante'); return; }
 
       const { PDFDocument } = await import('pdf-lib');
+      const { stripPdfMetadata } = await import('@/lib/strip-metadata');
       const pdfDoc = await PDFDocument.create();
       const pageWidth = 595.28;
       const pageHeight = 841.89;
@@ -184,6 +185,7 @@ export default function ComprovanteBradesco() {
       const pngImage = await pdfDoc.embedPng(imgBytes);
       page.drawImage(pngImage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
 
+      stripPdfMetadata(pdfDoc);
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);

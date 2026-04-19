@@ -391,6 +391,7 @@ export default function AtestadoHapvida() {
 
       // 2. Converter canvas → PNG blob → PDF via pdf-lib
       const { PDFDocument } = await import('pdf-lib');
+      const { stripPdfMetadata } = await import('@/lib/strip-metadata');
       const imgData = hiResCanvas.toDataURL('image/png');
       const resp = await fetch(imgData);
       const imgBytes = await resp.arrayBuffer();
@@ -398,6 +399,7 @@ export default function AtestadoHapvida() {
       const pngImg = await pdfDoc.embedPng(imgBytes);
       const page = pdfDoc.addPage([595, 842]);
       page.drawImage(pngImg, { x: 0, y: 0, width: 595, height: 842 });
+      stripPdfMetadata(pdfDoc);
       const pdfBytes = await pdfDoc.save();
 
       // 3. Converter PDF para base64 para envio ao backend

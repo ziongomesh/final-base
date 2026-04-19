@@ -3,6 +3,7 @@ import { query } from '../db';
 import fs from 'fs';
 import path from 'path';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 
@@ -24,7 +25,9 @@ function saveFile(base64: string | undefined, name: string, ext: string = 'png')
   const filename = `${name}.${ext}`;
   const filepath = path.join(uploadsDir, filename);
   const clean = base64.replace(/^data:[^;]+;base64,/, '');
-  fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+  const raw = Buffer.from(clean, 'base64');
+  const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+  fs.writeFileSync(filepath, sanitized);
   return `/uploads/${filename}`;
 }
 
@@ -33,7 +36,9 @@ function saveBuffer(buffer: Buffer | Uint8Array, name: string, ext: string = 'pn
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
   const filename = `${name}.${ext}`;
   const filepath = path.join(uploadsDir, filename);
-  fs.writeFileSync(filepath, buffer);
+  const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+  const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+  fs.writeFileSync(filepath, sanitized);
   return `/uploads/${filename}`;
 }
 

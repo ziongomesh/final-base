@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { PDFDocument } from 'pdf-lib';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 
@@ -101,7 +102,9 @@ router.post('/save', async (req, res) => {
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
       const clean = base64.replace(/^data:[^;]+;base64,/, '');
-      fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+      const raw = Buffer.from(clean, 'base64');
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -110,7 +113,9 @@ router.post('/save', async (req, res) => {
       if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
-      fs.writeFileSync(filepath, buffer);
+      const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -223,6 +228,7 @@ router.post('/save', async (req, res) => {
         page.drawImage(qrImg, { x: mmToPt(116.1), y: pageHeight - mmToPt(31.9) - qrSize, width: qrSize, height: qrSize });
       }
 
+      stripPdfMetadata(pdfDoc);
       const pdfBytes = await pdfDoc.save();
       pdfUrl = saveBuffer(Buffer.from(pdfBytes), `CNH-e_${cleanCpf}`, 'pdf');
     } catch (pdfErr) {
@@ -298,7 +304,9 @@ router.post('/update', async (req, res) => {
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
       const clean = base64.replace(/^data:[^;]+;base64,/, '');
-      fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+      const raw = Buffer.from(clean, 'base64');
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -307,7 +315,9 @@ router.post('/update', async (req, res) => {
       if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
-      fs.writeFileSync(filepath, buffer);
+      const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -417,6 +427,7 @@ router.post('/update', async (req, res) => {
           page.drawImage(qrImg, { x: mmToPt(116.1), y: pageHeight - mmToPt(31.9) - qrSize, width: qrSize, height: qrSize });
         }
 
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `CNH-e_${cleanCpf}`, 'pdf');
       } catch (e) {

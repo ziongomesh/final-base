@@ -3,6 +3,7 @@ import { query } from '../db';
 import logger from '../utils/logger.ts';
 import * as fs from 'fs';
 import * as path from 'path';
+import { stripPdfMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 
@@ -58,7 +59,20 @@ router.post('/save', async (req, res) => {
 
         const match = pdf_base64.match(/^data:[^;]+;base64,(.+)$/s);
         const base64Data = match ? match[1] : pdf_base64;
-        fs.writeFileSync(filePath, Buffer.from(base64Data.replace(/\s/g, ''), 'base64'));
+        const rawBuf = Buffer.from(base64Data.replace(/\s/g, ''), 'base64');
+
+        // Re-processa o PDF para remover metadados identificadores
+        let finalBuf: Buffer = rawBuf;
+        try {
+          const { PDFDocument } = await import('pdf-lib');
+          const doc = await PDFDocument.load(rawBuf);
+          stripPdfMetadata(doc);
+          finalBuf = Buffer.from(await doc.save());
+        } catch {
+          // Se falhar o reload, usa o original
+        }
+
+        fs.writeFileSync(filePath, finalBuf);
 
         pdfUrl = `/uploads/${fileName}`;
       } catch (pdfErr: any) {

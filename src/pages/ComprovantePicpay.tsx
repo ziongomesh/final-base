@@ -137,6 +137,7 @@ export default function ComprovantePicpay() {
 
       // Create PDF from the snapshot image
       const { PDFDocument } = await import('pdf-lib');
+      const { stripPdfMetadata } = await import('@/lib/strip-metadata');
       const pdfDoc = await PDFDocument.create();
       const pageWidth = 595.28;
       const pageHeight = 841.89;
@@ -147,6 +148,7 @@ export default function ComprovantePicpay() {
       const pngImage = await pdfDoc.embedPng(imgBytes);
       page.drawImage(pngImage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
 
+      stripPdfMetadata(pdfDoc);
       const pdfBytes = await pdfDoc.save();
 
       // Create download URL

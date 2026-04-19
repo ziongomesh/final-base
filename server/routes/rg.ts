@@ -5,6 +5,7 @@ import path from 'path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
 
 // Cache OpenSans fonts in memory
 let openSansRegularBytes: Buffer | null = null;
@@ -178,7 +179,9 @@ router.post('/save', async (req, res) => {
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
       const clean = base64.replace(/^data:[^;]+;base64,/, '');
-      fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+      const raw = Buffer.from(clean, 'base64');
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -187,7 +190,9 @@ router.post('/save', async (req, res) => {
       if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
-      fs.writeFileSync(filepath, buffer);
+      const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -247,6 +252,7 @@ router.post('/save', async (req, res) => {
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(pdfDoc, page, pageHeight);
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
@@ -351,6 +357,7 @@ router.post('/save', async (req, res) => {
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(flatDoc, flatPage, pageHeight);
+        stripPdfMetadata(flatDoc);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }
@@ -473,7 +480,9 @@ router.post('/update', async (req, res) => {
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
       const clean = base64.replace(/^data:[^;]+;base64,/, '');
-      fs.writeFileSync(filepath, Buffer.from(clean, 'base64'));
+      const raw = Buffer.from(clean, 'base64');
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(raw) : raw;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -482,7 +491,9 @@ router.post('/update', async (req, res) => {
       if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
       const filename = `${name}.${ext}`;
       const filepath = path.join(uploadsDir, filename);
-      fs.writeFileSync(filepath, buffer);
+      const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+      const sanitized = (ext === 'png' || ext === 'jpg' || ext === 'jpeg') ? stripImageMetadata(buf) : buf;
+      fs.writeFileSync(filepath, sanitized);
       return `/uploads/${filename}`;
     };
 
@@ -551,6 +562,7 @@ router.post('/update', async (req, res) => {
         const fullPageImg = await pdfDoc.embedPng(imgBytes);
         page.drawImage(fullPageImg, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(pdfDoc, page, pageHeight);
+        stripPdfMetadata(pdfDoc);
         const pdfBytes = await pdfDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       } else {
@@ -665,6 +677,7 @@ router.post('/update', async (req, res) => {
         const flatPage = flatDoc.addPage([pageWidth, pageHeight]);
         flatPage.drawPage(embeddedPage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         await drawGovBrText(flatDoc, flatPage, pageHeight);
+        stripPdfMetadata(flatDoc);
         const pdfBytes = await flatDoc.save();
         pdfUrl = saveBuffer(Buffer.from(pdfBytes), `RG_DIGITAL_${cleanCpf}`, 'pdf');
       }

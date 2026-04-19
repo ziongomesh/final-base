@@ -5,6 +5,7 @@ import path from 'path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
+import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
 
 const router = Router();
 
@@ -118,6 +119,7 @@ router.post('/save', async (req, res) => {
       }
     }
 
+    stripPdfMetadata(pdfDoc);
     const pdfBytes = await pdfDoc.save();
     const cleanPlaca = (placa || '').replace(/[^A-Za-z0-9]/g, '');
     const uniqueSuffix = Date.now() + '_' + Math.random().toString(36).slice(2, 8);
