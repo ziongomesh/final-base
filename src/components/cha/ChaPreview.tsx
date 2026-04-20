@@ -106,9 +106,12 @@ function drawChaFront(
   ctx.clearRect(0, 0, w, h);
   ctx.drawImage(bgImg, 0, 0, w, h);
 
+  // Escala de fonte relativa à largura base de 700px (preview) → mantém tamanho consistente em HD
+  const fs = w / 700;
+
   ctx.fillStyle = '#1a1a1a';
   ctx.textBaseline = 'top';
-  ctx.font = '600 13px Arial, sans-serif';
+  ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
 
   const fields: { key: string; text: string }[] = [
     { key: 'nome', text: data.nome.toUpperCase() },
