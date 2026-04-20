@@ -203,20 +203,22 @@ function drawChaBack(
   ctx.clearRect(0, 0, w, h);
   ctx.drawImage(bgImg, 0, 0, w, h);
 
+  const fs = w / 700;
+
   ctx.fillStyle = '#1a1a1a';
   ctx.textBaseline = 'top';
-  ctx.font = '600 13px Arial, sans-serif';
+  ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
 
   // Limites da Navegação (PT + EN in same field value)
   const limPos = positions.limiteNavegacao || DEFAULT_BACK_POSITIONS.limiteNavegacao;
   const limiteText = data.limiteNavegacao.toUpperCase();
-  ctx.font = '600 13px Arial, sans-serif';
+  ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
   if (highlightField === 'limiteNavegacao') ctx.fillStyle = '#0066ff';
-  wrapText(ctx, limiteText, w * limPos.x, h * limPos.y, w * 0.82, 16);
+  wrapText(ctx, limiteText, w * limPos.x, h * limPos.y, w * 0.82, 16 * fs);
   ctx.fillStyle = '#1a1a1a';
 
 
-  ctx.font = '600 13px Arial, sans-serif';
+  ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
   const backFields: { key: string; text: string }[] = [
     { key: 'requisitos', text: (data.requisitos || '').trim() ? data.requisitos.toUpperCase() : '******** / ********' },
     { key: 'orgaoEmissao', text: data.orgaoEmissao.replace(/\s*\(.*\)/, '').toUpperCase() },
@@ -228,7 +230,7 @@ function drawChaBack(
     if (!pos) continue;
     if (highlightField === f.key) ctx.fillStyle = '#0066ff';
     if (f.key === 'requisitos') {
-      wrapText(ctx, f.text, w * pos.x, h * pos.y, w * 0.82, 16);
+      wrapText(ctx, f.text, w * pos.x, h * pos.y, w * 0.82, 16 * fs);
     } else {
       ctx.fillText(f.text, w * pos.x, h * pos.y);
     }
