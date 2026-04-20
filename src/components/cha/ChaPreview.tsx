@@ -111,7 +111,7 @@ function drawChaFront(
 
   ctx.fillStyle = '#1a1a1a';
   ctx.textBaseline = 'top';
-  ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
+  ctx.font = `600 ${17 * fs}px Arial, sans-serif`;
 
   const fields: { key: string; text: string }[] = [
     { key: 'nome', text: data.nome.toUpperCase() },
