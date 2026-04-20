@@ -144,21 +144,21 @@ function drawChaFront(
     if (!pos) continue;
     if (highlightField === f.key) ctx.fillStyle = '#0066ff';
     if (f.key === 'categoriaPt') {
-      // Render PT line at 12px, then EN line at 11px via wrapText with newlines
-      ctx.font = `600 ${12 * fs}px Arial, sans-serif`;
+      // Render PT line at 16px, then EN line at 14px via wrapText with newlines
+      ctx.font = `600 ${16 * fs}px Arial, sans-serif`;
       const lines = f.text.split('\n');
       let curY = h * pos.y;
-      // First line (PT) at 12px
+      // First line (PT) at 16px
       ctx.fillText(lines[0], w * pos.x, curY);
-      // Remaining lines (EN) at 11px
+      // Remaining lines (EN) at 14px
       if (lines.length > 1) {
-        ctx.font = `600 ${11 * fs}px Arial, sans-serif`;
+        ctx.font = `600 ${14 * fs}px Arial, sans-serif`;
         for (let i = 1; i < lines.length; i++) {
-          curY += 14 * fs;
+          curY += 18 * fs;
           ctx.fillText(lines[i], w * pos.x, curY);
         }
       }
-      ctx.font = `600 ${13 * fs}px Arial, sans-serif`;
+      ctx.font = `600 ${17 * fs}px Arial, sans-serif`;
     } else {
       ctx.fillText(f.text, w * pos.x, h * pos.y);
     }
