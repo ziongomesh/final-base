@@ -70,13 +70,24 @@ type CnhFormData = z.infer<typeof cnhFormSchema>;
 
 
 // File Upload component with gallery support
-function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
+function FileUploadField({ label, value, onChange, onOpenGallery, error, hint, previewClassName }: {
   label: string;
   value: File | null;
   onChange: (file: File | null) => void;
   onOpenGallery?: () => void;
   error?: boolean;
+  hint?: string;
+  previewClassName?: string;
 }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!value) { setPreviewUrl(null); return; }
+    const url = URL.createObjectURL(value);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [value]);
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -87,17 +98,15 @@ function FileUploadField({ label, value, onChange, onOpenGallery, error }: {
           </Button>
         )}
       </div>
-      <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors ${error ? 'border-destructive bg-destructive/5' : 'border-border'}`}>
-        {value ? (
-          <div className="text-center px-2">
-            <p className="text-sm text-primary font-medium truncate max-w-full">{value.name}</p>
-            <p className="text-xs text-muted-foreground">{Math.round(value.size / 1024)}KB</p>
-          </div>
+      <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden ${error ? 'border-destructive bg-destructive/5' : 'border-border'}`}>
+        {value && previewUrl ? (
+          <img src={previewUrl} alt={label} className={previewClassName || 'max-h-24 max-w-full object-contain rounded-lg'} />
         ) : (
           <div className="flex flex-col items-center gap-1 text-muted-foreground">
             <Upload className="h-6 w-6" />
             <span className="text-xs">Clique para upload</span>
             <span className="text-[10px]">PNG, JPG até 10MB</span>
+            {hint && <span className="text-[10px] text-primary/80">{hint}</span>}
           </div>
         )}
         <input
@@ -907,8 +916,8 @@ export default function CnhDigital() {
                     </div>
                   )}
 
-                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} error={triedSubmit && !fotoPerfil} />
-                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} error={triedSubmit && !assinatura} />
+                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} error={triedSubmit && !fotoPerfil} previewClassName="h-24 w-24 object-cover rounded-lg" />
+                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} error={triedSubmit && !assinatura} hint="Recomendado: 712 x 166 px" previewClassName="max-h-20 max-w-full object-contain" />
                 </CardContent>
               </Card>
 
