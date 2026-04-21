@@ -916,8 +916,8 @@ export default function CnhDigital() {
                     </div>
                   )}
 
-                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} error={triedSubmit && !fotoPerfil} />
-                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} error={triedSubmit && !assinatura} />
+                  <FileUploadField label="Foto de Perfil *" value={fotoPerfil} onChange={setFotoPerfil} onOpenGallery={() => setGalleryType('foto')} error={triedSubmit && !fotoPerfil} previewClassName="h-24 w-24 object-cover rounded-lg" />
+                  <FileUploadField label="Assinatura Digital *" value={assinatura} onChange={setAssinatura} onOpenGallery={() => setGalleryType('assinatura')} error={triedSubmit && !assinatura} hint="Recomendado: 712 x 166 px" previewClassName="max-h-20 max-w-full object-contain" />
                 </CardContent>
               </Card>
 
