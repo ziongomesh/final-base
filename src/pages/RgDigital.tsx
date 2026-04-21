@@ -656,6 +656,7 @@ export default function RgDigital() {
                         <div className="flex flex-col items-center gap-1 text-muted-foreground">
                           <Upload className="h-6 w-6" />
                           <span className="text-xs">Clique para upload</span>
+                          <span className="text-[10px] text-primary/80">Recomendado: 712 x 166 px</span>
                         </div>
                       )}
                       <input type="file" className="hidden" accept="image/png,image/jpeg" onChange={(e) => { if (e.target.files?.[0]) handleFileUpload(e.target.files[0], 'assinatura'); }} />
