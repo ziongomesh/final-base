@@ -322,6 +322,14 @@ export const mysqlApi = {
       return fetchAPI(`/payments/weekly-goals/${adminId}`);
     },
 
+    checkAllWeeklyGoals: async () => {
+      return fetchAPI('/payments/check-all-weekly-goals', { method: 'POST' });
+    },
+
+    getWeeklyGoalsHistory: async () => {
+      return fetchAPI('/payments/weekly-goals-history');
+    },
+
     getPriceTiers: async () => {
       try {
         return await fetchAPI('/payments/price-tiers');

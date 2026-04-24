@@ -22,8 +22,9 @@ async function isDoubleRechargeActive(): Promise<boolean> {
 // Helper: check and claim weekly goal bonuses after a recharge
 async function checkAndClaimWeeklyGoals(adminId: number): Promise<number> {
   try {
-    const adminRows = await query<any[]>("SELECT `rank` FROM admins WHERE id = ?", [adminId]);
+    const adminRows = await query<any[]>("SELECT `rank`, nome FROM admins WHERE id = ?", [adminId]);
     if (adminRows[0]?.rank !== 'revendedor') return 0;
+    const adminName = adminRows[0]?.nome || '';
 
     // Get start of current week (Sunday)
     const now = new Date();
@@ -49,10 +50,10 @@ async function checkAndClaimWeeklyGoals(adminId: number): Promise<number> {
           [adminId, weekKey, tier.target]
         );
         if (claimed.length === 0) {
-          // Claim it
+          // Claim it (com admin_name e tier_label para auditoria)
           await query(
-            "INSERT INTO weekly_goal_claims (admin_id, week_key, tier_target, bonus_credits) VALUES (?, ?, ?, ?)",
-            [adminId, weekKey, tier.target, tier.bonus]
+            "INSERT INTO weekly_goal_claims (admin_id, admin_name, week_key, tier_target, tier_label, bonus_credits, claimed_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
+            [adminId, adminName, weekKey, tier.target, tier.label, tier.bonus]
           );
           await query("UPDATE admins SET creditos = creditos + ? WHERE id = ?", [tier.bonus, adminId]);
           await query(
@@ -60,7 +61,7 @@ async function checkAndClaimWeeklyGoals(adminId: number): Promise<number> {
             [adminId, tier.bonus, "weekly_goal_bonus"]
           );
           totalBonus += tier.bonus;
-          console.log(`[WEEKLY GOAL] ✅ Admin ${adminId} bateu meta ${tier.label} (${tier.target} recargas) - +${tier.bonus} créditos bônus`);
+          console.log(`[WEEKLY GOAL] ✅ Admin ${adminId} (${adminName}) bateu meta ${tier.label} (${tier.target} recargas) - +${tier.bonus} créditos bônus`);
         }
       }
     }
@@ -587,6 +588,48 @@ router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar metas semanais:", error);
     res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// Verificar TODOS os revendedores e creditar metas pendentes (Dono only)
+router.post("/check-all-weekly-goals", requireSession, requireDono, async (_req, res) => {
+  try {
+    const resellers = await query<any[]>("SELECT id FROM admins WHERE `rank` = 'revendedor'");
+    let totalCredited = 0;
+    let adminsCredited = 0;
+    for (const r of resellers) {
+      const bonus = await checkAndClaimWeeklyGoals(r.id);
+      if (bonus > 0) {
+        adminsCredited++;
+        totalCredited += bonus;
+      }
+    }
+    console.log(`[WEEKLY GOAL SWEEP] ${adminsCredited} revendedores creditados, total ${totalCredited} créditos bônus`);
+    res.json({ success: true, adminsCredited, totalCredited, totalChecked: resellers.length });
+  } catch (error: any) {
+    console.error("Erro ao verificar metas de todos:", error);
+    res.status(500).json({ error: error.message || "Erro interno" });
+  }
+});
+
+// Histórico completo de metas creditadas (Dono only)
+router.get("/weekly-goals-history", requireSession, requireDono, async (_req, res) => {
+  try {
+    const rows = await query<any[]>(
+      `SELECT wgc.id, wgc.admin_id, 
+              COALESCE(wgc.admin_name, a.nome) AS admin_name,
+              wgc.week_key, wgc.tier_target, 
+              COALESCE(wgc.tier_label, '') AS tier_label,
+              wgc.bonus_credits, wgc.claimed_at
+       FROM weekly_goal_claims wgc
+       LEFT JOIN admins a ON a.id = wgc.admin_id
+       ORDER BY wgc.claimed_at DESC
+       LIMIT 500`
+    );
+    res.json({ history: rows });
+  } catch (error: any) {
+    console.error("Erro ao buscar histórico de metas:", error);
+    res.status(500).json({ error: error.message || "Erro interno" });
   }
 });
 
