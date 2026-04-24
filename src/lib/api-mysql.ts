@@ -519,7 +519,10 @@ export const mysqlApi = {
     markRead: async (id: number) => fetchAPI(`/suggestions/${id}/read`, { method: 'PUT' }),
   },
 
-  picpay: {
+  maintenance: {
+    cleanupExpired: async () => fetchAPI('/maintenance/cleanup-expired', { method: 'POST' }),
+    expiredCounts: async () => fetchAPI('/maintenance/expired-counts'),
+  },
     save: async (data: any) => fetchAPI('/picpay/save', { method: 'POST', body: JSON.stringify(data) }),
   },
 
