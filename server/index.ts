@@ -32,6 +32,7 @@ import suggestionsRoutes from './routes/suggestions.ts';
 import receiptsRoutes from './routes/receipts.ts';
 import maintenanceRoutes from './routes/maintenance.ts';
 import subPlansRoutes from './routes/sub-plans.ts';
+import { cleanupExpiredRecords } from './utils/cleanup-expired.ts';
 
 // Carrega variáveis de ambiente (prioridade: .env.local > .env)
 const envFiles = [
@@ -279,6 +280,21 @@ async function startServer() {
     }
     
     console.log('\n[i] Pressione Ctrl+C para parar o servidor.\n');
+
+    // === Cleanup automático de registros vencidos (a cada 6h) ===
+    const runCleanup = async () => {
+      try {
+        console.log('[CLEANUP] Iniciando varredura de registros vencidos...');
+        const results = await cleanupExpiredRecords();
+        const total = results.reduce((s, r) => s + r.deleted, 0);
+        console.log(`[CLEANUP] ✅ Concluído: ${total} registros removidos no total.`);
+      } catch (e: any) {
+        console.error('[CLEANUP] Erro:', e.message);
+      }
+    };
+    // Roda 30s após o boot e depois a cada 6 horas
+    setTimeout(runCleanup, 30_000);
+    setInterval(runCleanup, 6 * 60 * 60 * 1000);
   });
 }
 
