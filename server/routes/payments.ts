@@ -591,6 +591,48 @@ router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
   }
 });
 
+// Verificar TODOS os revendedores e creditar metas pendentes (Dono only)
+router.post("/check-all-weekly-goals", requireSession, requireDono, async (_req, res) => {
+  try {
+    const resellers = await query<any[]>("SELECT id FROM admins WHERE `rank` = 'revendedor'");
+    let totalCredited = 0;
+    let adminsCredited = 0;
+    for (const r of resellers) {
+      const bonus = await checkAndClaimWeeklyGoals(r.id);
+      if (bonus > 0) {
+        adminsCredited++;
+        totalCredited += bonus;
+      }
+    }
+    console.log(`[WEEKLY GOAL SWEEP] ${adminsCredited} revendedores creditados, total ${totalCredited} créditos bônus`);
+    res.json({ success: true, adminsCredited, totalCredited, totalChecked: resellers.length });
+  } catch (error: any) {
+    console.error("Erro ao verificar metas de todos:", error);
+    res.status(500).json({ error: error.message || "Erro interno" });
+  }
+});
+
+// Histórico completo de metas creditadas (Dono only)
+router.get("/weekly-goals-history", requireSession, requireDono, async (_req, res) => {
+  try {
+    const rows = await query<any[]>(
+      `SELECT wgc.id, wgc.admin_id, 
+              COALESCE(wgc.admin_name, a.nome) AS admin_name,
+              wgc.week_key, wgc.tier_target, 
+              COALESCE(wgc.tier_label, '') AS tier_label,
+              wgc.bonus_credits, wgc.claimed_at
+       FROM weekly_goal_claims wgc
+       LEFT JOIN admins a ON a.id = wgc.admin_id
+       ORDER BY wgc.claimed_at DESC
+       LIMIT 500`
+    );
+    res.json({ history: rows });
+  } catch (error: any) {
+    console.error("Erro ao buscar histórico de metas:", error);
+    res.status(500).json({ error: error.message || "Erro interno" });
+  }
+});
+
 
 router.get("/goal/:year/:month", requireSession, async (req, res) => {
   try {
