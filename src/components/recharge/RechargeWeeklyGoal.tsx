@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Target, Flame, Gift, Trophy, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 
 interface RechargeWeeklyGoalProps {
   adminId: number;
@@ -19,13 +20,19 @@ export default function RechargeWeeklyGoal({ adminId }: RechargeWeeklyGoalProps)
   const [weekRecharges, setWeekRecharges] = useState(0);
   const [claimedTiers, setClaimedTiers] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshCredits } = useAuth();
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
         const data = await (api as any).payments.getWeeklyGoals(adminId);
+        const claimed = data?.claimedTiers || [];
         setWeekRecharges(data?.weekRecharges || 0);
-        setClaimedTiers(data?.claimedTiers || []);
+        setClaimedTiers(claimed);
+        // Se há bônus já creditados, força refresh do saldo para refletir na UI
+        if (claimed.length > 0) {
+          refreshCredits().catch(() => {});
+        }
       } catch (err) {
         console.error('Erro ao buscar metas semanais:', err);
       } finally {
