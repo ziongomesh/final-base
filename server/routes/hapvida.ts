@@ -4,6 +4,7 @@ import logger from '../utils/logger.ts';
 import * as fs from 'fs';
 import * as path from 'path';
 import { stripPdfMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 const router = Router();
 

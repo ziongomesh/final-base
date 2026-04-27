@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import logger from '../utils/logger.ts';
 import { stripImageMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 const router = Router();
 
