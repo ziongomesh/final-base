@@ -1489,6 +1489,9 @@ function ResellerRechargeView({ adminId, sessionToken, credits }: { adminId: num
                 <p className="text-xs text-muted-foreground">
                   Todos os créditos recarregados serão <strong className="text-green-500">dobrados</strong> automaticamente!
                 </p>
+                <p className="text-[10px] text-amber-500 mt-1 font-medium">
+                  ⚠️ Válido apenas para <strong>pacotes de créditos</strong>. Créditos avulsos NÃO entram na promoção.
+                </p>
               </div>
             </div>
           </div>
