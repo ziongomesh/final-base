@@ -757,7 +757,7 @@ router.post('/renew', async (req, res) => {
     }
 
     const admin = admins[0];
-    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub' || (await isFreeMode());
+    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub';
     if (!isUnlimitedRenew && admin.creditos < 1) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }

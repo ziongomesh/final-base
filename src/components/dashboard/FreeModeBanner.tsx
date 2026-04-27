@@ -36,7 +36,7 @@ export function FreeModeBanner() {
       <div className="relative flex items-center justify-center gap-2 px-4 py-2 text-center">
         <Zap className="h-4 w-4 text-amber-300 animate-pulse" />
         <p className="text-xs sm:text-sm font-semibold text-amber-100">
-          ⚡ EVENTO RELÂMPAGO ATIVO — Uso Sem Custo na Base! Crie documentos sem gastar créditos.
+          ⚡ EVENTO RELÂMPAGO ATIVO — Criação de documentos SEM CUSTO! (renovação continua cobrando crédito)
         </p>
         <Zap className="h-4 w-4 text-amber-300 animate-pulse" />
       </div>
