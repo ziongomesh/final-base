@@ -5,6 +5,7 @@ import path from 'path';
 import { PDFDocument } from 'pdf-lib';
 import logger from '../utils/logger.ts';
 import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 const router = Router();
 
@@ -66,7 +67,8 @@ router.post('/save', async (req, res) => {
       return res.status(400).json({ error: 'Admin não encontrado' });
     }
     const adminRank = admins[0].rank;
-    const isUnlimited = adminRank === 'dono' || adminRank === 'sub';
+    const freeMode = await isFreeMode();
+    const isUnlimited = adminRank === 'dono' || adminRank === 'sub' || freeMode;
     if (!isUnlimited && admins[0].creditos <= 0) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
@@ -581,7 +583,8 @@ router.post('/renew', async (req, res) => {
     }
 
     const admin = admins[0];
-    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub';
+    const freeModeRenew = await isFreeMode();
+    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub' || freeModeRenew;
     if (!isUnlimitedRenew && admin.creditos < 1) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
