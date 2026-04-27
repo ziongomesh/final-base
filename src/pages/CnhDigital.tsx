@@ -176,6 +176,19 @@ export default function CnhDigital() {
   const [previewVersoUrl, setPreviewVersoUrl] = useState<string | null>(null);
   const [isCreatingCnh, setIsCreatingCnh] = useState(false);
   const [creationStep, setCreationStep] = useState('');
+  const [freeMode, setFreeMode] = useState(false);
+
+  useEffect(() => {
+    const fetchFree = async () => {
+      try {
+        const s: any = await api.settings.get();
+        setFreeMode(!!(s?.free_mode || s?.freeMode));
+      } catch {}
+    };
+    fetchFree();
+    const id = setInterval(fetchFree, 30000);
+    return () => clearInterval(id);
+  }, []);
   const skipRegenerationRef = useRef(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -550,7 +563,7 @@ export default function CnhDigital() {
       }
     } catch { }
 
-    if (adminData.creditos <= 0) {
+    if (adminData.creditos <= 0 && !freeMode) {
       toast.error('Créditos insuficientes para criar CNH.');
       return;
     }
