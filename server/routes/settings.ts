@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { query } from "../db";
 import { requireSession, requireDono } from "../middleware/auth";
+import { invalidateFreeModeCache } from "../utils/free-mode";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.get("/", requireSession, async (_req, res) => {
         reseller_credits: 5,
         credit_packages: [],
         recarga_em_dobro: false,
+        free_mode: false,
       });
     }
     const row = rows[0];
@@ -26,6 +28,7 @@ router.get("/", requireSession, async (_req, res) => {
       reseller_credits: Number(row.reseller_credits),
       credit_packages: packages,
       recarga_em_dobro: !!row.recarga_em_dobro,
+      free_mode: !!row.free_mode,
     });
   } catch (error) {
     console.error("Erro ao buscar configurações:", error);
@@ -85,6 +88,22 @@ router.put("/recarga-dobro", requireSession, requireDono, async (req, res) => {
     res.json({ success: true, recarga_em_dobro: !!enabled });
   } catch (error) {
     console.error("Erro ao atualizar recarga em dobro:", error);
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// Toggle Free Mode / Uso Sem Custo (dono only)
+router.put("/free-mode", requireSession, requireDono, async (req, res) => {
+  try {
+    const { enabled } = req.body;
+    await query(
+      `UPDATE platform_settings SET free_mode = ? WHERE id = 1`,
+      [enabled ? 1 : 0]
+    );
+    invalidateFreeModeCache();
+    res.json({ success: true, free_mode: !!enabled });
+  } catch (error) {
+    console.error("Erro ao atualizar free mode:", error);
     res.status(500).json({ error: "Erro interno" });
   }
 });

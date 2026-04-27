@@ -4,6 +4,7 @@ import logger from '../utils/logger.ts';
 import * as fs from 'fs';
 import * as path from 'path';
 import { stripPdfMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 const router = Router();
 
@@ -41,7 +42,7 @@ router.post('/save', async (req, res) => {
     if (!admins.length) {
       return res.status(400).json({ error: 'Admin não encontrado' });
     }
-    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub';
+    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub' || (await isFreeMode());
     if (!isUnlimited && admins[0].creditos <= 0) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }

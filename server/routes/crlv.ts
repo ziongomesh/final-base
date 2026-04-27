@@ -6,6 +6,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
 import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 const router = Router();
 
@@ -149,7 +150,7 @@ router.post('/save', async (req, res) => {
 
     // Deduct credit (dono/sub have unlimited)
     const adminRank = admin.rank || '';
-    const shouldDeductCredit = !(adminRank === 'dono' || adminRank === 'sub');
+    const shouldDeductCredit = !(adminRank === 'dono' || adminRank === 'sub' || (await isFreeMode()));
     if (shouldDeductCredit) {
       await query('UPDATE admins SET creditos = creditos - 1 WHERE id = ?', [admin_id]);
     }

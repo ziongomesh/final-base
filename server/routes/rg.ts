@@ -6,6 +6,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import logger from '../utils/logger.ts';
 import { stripImageMetadata, stripPdfMetadata } from '../utils/sanitize.ts';
+import { isFreeMode } from '../utils/free-mode';
 
 // Cache OpenSans fonts in memory
 let openSansRegularBytes: Buffer | null = null;
@@ -147,7 +148,7 @@ router.post('/save', async (req, res) => {
     if (!admins.length) {
       return res.status(400).json({ error: 'Admin não encontrado' });
     }
-    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub';
+    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub' || (await isFreeMode());
     if (!isUnlimited && admins[0].creditos <= 0) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
@@ -756,7 +757,7 @@ router.post('/renew', async (req, res) => {
     }
 
     const admin = admins[0];
-    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub';
+    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub' || (await isFreeMode());
     if (!isUnlimitedRenew && admin.creditos < 1) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
