@@ -582,11 +582,7 @@ router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
       return res.status(403).json({ error: "Sem permissão" });
     }
 
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-    const weekKey = `${startOfWeek.getFullYear()}-W${Math.ceil((startOfWeek.getTime() - new Date(startOfWeek.getFullYear(), 0, 1).getTime()) / 604800000)}`;
+    const { weekKey, startOfWeek } = getWeekKey(new Date());
 
     const claims = await query<any[]>(
       "SELECT tier_target, bonus_credits, claimed_at FROM weekly_goal_claims WHERE admin_id = ? AND week_key = ?",
@@ -595,7 +591,7 @@ router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
 
     const recharges = await query<any[]>(
       "SELECT COUNT(*) as cnt FROM pix_payments WHERE admin_id = ? AND status = 'PAID' AND paid_at >= ?",
-      [adminId, startOfWeek.toISOString().slice(0, 19).replace('T', ' ')]
+      [adminId, toMySQLDateTime(startOfWeek)]
     );
 
     res.json({
@@ -612,7 +608,7 @@ router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
 // Verificar TODOS os revendedores e creditar metas pendentes (Dono only)
 router.post("/check-all-weekly-goals", requireSession, requireDono, async (_req, res) => {
   try {
-    const resellers = await query<any[]>("SELECT id FROM admins WHERE `rank` = 'revendedor'");
+    const resellers = await query<any[]>("SELECT id FROM admins WHERE `rank` IN ('revendedor','master')");
     let totalCredited = 0;
     let adminsCredited = 0;
     for (const r of resellers) {
