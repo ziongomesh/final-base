@@ -478,6 +478,12 @@ export const mysqlApi = {
         body: JSON.stringify({ enabled }),
       });
     },
+    toggleFreeMode: async (enabled: boolean) => {
+      return fetchAPI('/settings/free-mode', {
+        method: 'PUT',
+        body: JSON.stringify({ enabled }),
+      });
+    },
   },
 
   health: async () => {
