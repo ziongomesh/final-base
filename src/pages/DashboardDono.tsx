@@ -1419,7 +1419,7 @@ export default function DashboardDono() {
                           Uso Sem Custo ⚡
                           {freeMode && <Badge className="bg-amber-500 text-white text-[8px] px-1 py-0 border-0">RELÂMPAGO</Badge>}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">Evento global: ninguém da base gasta créditos</p>
+                        <p className="text-[10px] text-muted-foreground">Evento global: criação sem custo (renovação continua cobrando)</p>
                       </div>
                     </div>
                     <Switch
