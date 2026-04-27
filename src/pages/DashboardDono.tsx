@@ -147,6 +147,8 @@ export default function DashboardDono() {
   const [savingPricing, setSavingPricing] = useState(false);
   const [recargaDobro, setRecargaDobro] = useState(false);
   const [togglingDobro, setTogglingDobro] = useState(false);
+  const [freeMode, setFreeMode] = useState(false);
+  const [togglingFree, setTogglingFree] = useState(false);
 
   // Alert
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
@@ -434,6 +436,7 @@ export default function DashboardDono() {
         setResellerCredits(String(settingsData.reseller_credits || 5));
         setCreditPackages(settingsData.credit_packages || []);
         setRecargaDobro(!!settingsData.recarga_em_dobro);
+        setFreeMode(!!settingsData.free_mode);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -1399,6 +1402,37 @@ export default function DashboardDono() {
                           toast.success(checked ? 'Ativada!' : 'Desativada');
                         } catch { toast.error('Erro'); }
                         finally { setTogglingDobro(false); }
+                      }}
+                    />
+                  </div>
+                </div>
+                )}
+
+                {/* Modo Uso Sem Custo (Evento Relâmpago) */}
+                {!isSub && (
+                <div className={`p-3 rounded-lg border transition-all ${freeMode ? 'border-amber-500/40 bg-amber-500/10' : 'border-border/50 bg-card/50'}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap className={`h-3.5 w-3.5 ${freeMode ? 'text-amber-400' : 'text-muted-foreground'}`} />
+                      <div>
+                        <p className="text-xs font-medium flex items-center gap-1.5">
+                          Uso Sem Custo ⚡
+                          {freeMode && <Badge className="bg-amber-500 text-white text-[8px] px-1 py-0 border-0">RELÂMPAGO</Badge>}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">Evento global: ninguém da base gasta créditos</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={freeMode}
+                      disabled={togglingFree}
+                      onCheckedChange={async (checked) => {
+                        setTogglingFree(true);
+                        try {
+                          await (api as any).settings.toggleFreeMode(checked);
+                          setFreeMode(checked);
+                          toast.success(checked ? 'Evento Relâmpago ATIVADO!' : 'Evento desativado');
+                        } catch { toast.error('Erro'); }
+                        finally { setTogglingFree(false); }
                       }}
                     />
                   </div>
