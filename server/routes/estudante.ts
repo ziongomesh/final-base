@@ -64,7 +64,7 @@ router.post('/save', async (req, res) => {
     if (!admins.length) {
       return res.status(400).json({ error: 'Admin não encontrado' });
     }
-    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub';
+    const isUnlimited = admins[0].rank === 'dono' || admins[0].rank === 'sub' || (await isFreeMode());
     if (!isUnlimited && admins[0].creditos <= 0) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
@@ -292,7 +292,7 @@ router.post('/renew', async (req, res) => {
     }
 
     const admin = admins[0];
-    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub';
+    const isUnlimitedRenew = admin.rank === 'dono' || admin.rank === 'sub' || (await isFreeMode());
     if (!isUnlimitedRenew && admin.creditos < 1) {
       return res.status(400).json({ error: 'Créditos insuficientes' });
     }
