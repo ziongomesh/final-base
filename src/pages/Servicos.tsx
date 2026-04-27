@@ -451,9 +451,23 @@ const internationalFlags = [
 export default function Servicos() {
   const { admin, credits, loading } = useAuth();
   const navigate = useNavigate();
-  const hasCredits = credits > 0;
+  const [freeMode, setFreeMode] = useState(false);
+  const hasCredits = credits > 0 || freeMode;
   const [maintenanceMap, setMaintenanceMap] = useState<Record<string, boolean>>({});
   const [weeklyServices, setWeeklyServices] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const s: any = await (api as any).settings.get();
+        if (mounted) setFreeMode(!!s?.free_mode);
+      } catch {}
+    };
+    load();
+    const id = setInterval(load, 30_000);
+    return () => { mounted = false; clearInterval(id); };
+  }, []);
 
   useEffect(() => {
     if (!admin) return;
