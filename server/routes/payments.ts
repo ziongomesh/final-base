@@ -19,49 +19,67 @@ async function isDoubleRechargeActive(): Promise<boolean> {
   } catch { return false; }
 }
 
+// Helper: gera weekKey estável (YYYY-MM-DD do domingo, em horário local)
+function getWeekKey(date: Date): { weekKey: string; startOfWeek: Date } {
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(date.getDate() - date.getDay()); // domingo
+  startOfWeek.setHours(0, 0, 0, 0);
+  const yyyy = startOfWeek.getFullYear();
+  const mm = String(startOfWeek.getMonth() + 1).padStart(2, '0');
+  const dd = String(startOfWeek.getDate()).padStart(2, '0');
+  return { weekKey: `${yyyy}-${mm}-${dd}`, startOfWeek };
+}
+
+// Formata Date local para 'YYYY-MM-DD HH:mm:ss' (sem conversão UTC)
+function toMySQLDateTime(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 // Helper: check and claim weekly goal bonuses after a recharge
+// Aplica para revendedores E masters (ambos podem recarregar via PIX).
 async function checkAndClaimWeeklyGoals(adminId: number): Promise<number> {
   try {
     const adminRows = await query<any[]>("SELECT `rank`, nome FROM admins WHERE id = ?", [adminId]);
-    if (adminRows[0]?.rank !== 'revendedor') return 0;
+    if (!adminRows.length) return 0;
+    const rank = adminRows[0]?.rank;
+    // Dono e Sub têm créditos ilimitados, não precisam de bônus
+    if (rank !== 'revendedor' && rank !== 'master') return 0;
     const adminName = adminRows[0]?.nome || '';
 
-    // Get start of current week (Sunday)
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-    const weekKey = `${startOfWeek.getFullYear()}-W${Math.ceil((startOfWeek.getTime() - new Date(startOfWeek.getFullYear(), 0, 1).getTime()) / 604800000)}`;
+    const { weekKey, startOfWeek } = getWeekKey(new Date());
 
-    // Count PAID recharges this week
+    // Conta recargas PAGAS na semana corrente
     const recharges = await query<any[]>(
       "SELECT COUNT(*) as cnt FROM pix_payments WHERE admin_id = ? AND status = 'PAID' AND paid_at >= ?",
-      [adminId, startOfWeek.toISOString().slice(0, 19).replace('T', ' ')]
+      [adminId, toMySQLDateTime(startOfWeek)]
     );
-    const rechargeCount = recharges[0]?.cnt || 0;
+    const rechargeCount = Number(recharges[0]?.cnt || 0);
 
     let totalBonus = 0;
 
     for (const tier of WEEKLY_GOAL_TIERS) {
       if (rechargeCount >= tier.target) {
-        // Check if already claimed
         const claimed = await query<any[]>(
           "SELECT id FROM weekly_goal_claims WHERE admin_id = ? AND week_key = ? AND tier_target = ?",
           [adminId, weekKey, tier.target]
         );
         if (claimed.length === 0) {
-          // Claim it (com admin_name e tier_label para auditoria)
+          // Registra a meta batida (auditoria completa: admin, rank, tier, valor, data/hora, qtd recargas)
           await query(
-            "INSERT INTO weekly_goal_claims (admin_id, admin_name, week_key, tier_target, tier_label, bonus_credits, claimed_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
-            [adminId, adminName, weekKey, tier.target, tier.label, tier.bonus]
+            `INSERT INTO weekly_goal_claims
+              (admin_id, admin_name, admin_rank, week_key, tier_target, tier_label, bonus_credits, recharges_count, claimed_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [adminId, adminName, rank, weekKey, tier.target, tier.label, tier.bonus, rechargeCount]
           );
+          // Credita bônus
           await query("UPDATE admins SET creditos = creditos + ? WHERE id = ?", [tier.bonus, adminId]);
           await query(
             "INSERT INTO credit_transactions (to_admin_id, amount, transaction_type) VALUES (?, ?, ?)",
             [adminId, tier.bonus, "weekly_goal_bonus"]
           );
           totalBonus += tier.bonus;
-          console.log(`[WEEKLY GOAL] ✅ Admin ${adminId} (${adminName}) bateu meta ${tier.label} (${tier.target} recargas) - +${tier.bonus} créditos bônus`);
+          console.log(`[WEEKLY GOAL] ✅ ${rank.toUpperCase()} ${adminId} (${adminName}) - meta ${tier.label} (${tier.target} recargas) → +${tier.bonus} créditos`);
         }
       }
     }
