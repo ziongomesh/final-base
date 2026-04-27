@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { query } from "../db";
 import { requireSession, requireDono } from "../middleware/auth";
+import { invalidateFreeModeCache } from "../utils/free-mode";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.get("/", requireSession, async (_req, res) => {
       reseller_credits: Number(row.reseller_credits),
       credit_packages: packages,
       recarga_em_dobro: !!row.recarga_em_dobro,
+      free_mode: !!row.free_mode,
     });
   } catch (error) {
     console.error("Erro ao buscar configurações:", error);
