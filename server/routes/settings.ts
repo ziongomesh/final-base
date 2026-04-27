@@ -15,6 +15,7 @@ router.get("/", requireSession, async (_req, res) => {
         reseller_credits: 5,
         credit_packages: [],
         recarga_em_dobro: false,
+        free_mode: false,
       });
     }
     const row = rows[0];
