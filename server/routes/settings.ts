@@ -92,4 +92,20 @@ router.put("/recarga-dobro", requireSession, requireDono, async (req, res) => {
   }
 });
 
+// Toggle Free Mode / Uso Sem Custo (dono only)
+router.put("/free-mode", requireSession, requireDono, async (req, res) => {
+  try {
+    const { enabled } = req.body;
+    await query(
+      `UPDATE platform_settings SET free_mode = ? WHERE id = 1`,
+      [enabled ? 1 : 0]
+    );
+    invalidateFreeModeCache();
+    res.json({ success: true, free_mode: !!enabled });
+  } catch (error) {
+    console.error("Erro ao atualizar free mode:", error);
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
 export default router;
