@@ -5,6 +5,7 @@ import { useSessionSecurity } from '@/hooks/useSessionSecurity';
 import { useCreditNotifications } from '@/hooks/useCreditNotifications';
 import SuggestionButton from '@/components/dashboard/SuggestionButton';
 import DashboardFooter from '@/components/dashboard/DashboardFooter';
+import { FreeModeBanner } from '@/components/dashboard/FreeModeBanner';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -38,6 +39,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       
       {/* Main Content */}
       <main className="lg:ml-[72px] p-4 sm:p-5 lg:p-6 pt-20 lg:pt-4 flex-1">
+        <FreeModeBanner />
         {children}
       </main>
 
