@@ -238,9 +238,26 @@ export default function ComprovanteItau() {
                 <CardTitle className="text-xs">Valor</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 px-3 pb-3">
-                <div className="space-y-1">
-                  <Label className="text-[10px]">Valor Total</Label>
-                  <Input value={formData.valorTotal} onChange={e => handleValorChange(e.target.value)} placeholder="R$ 0,00 em 1x" className="text-xs h-8" />
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-[10px]">Valor</Label>
+                    <Input
+                      value={parseValor(formData.valorTotal).valor}
+                      onChange={e => handleValorChange(e.target.value)}
+                      placeholder="R$ 0,00"
+                      className="text-xs h-8"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Vezes (x)</Label>
+                    <Input
+                      value={parseValor(formData.valorTotal).vezes}
+                      onChange={e => handleVezesChange(e.target.value)}
+                      placeholder="1"
+                      inputMode="numeric"
+                      className="text-xs h-8"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
