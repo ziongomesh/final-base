@@ -221,7 +221,10 @@ export default function ComprovanteItau() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Aprovada em</Label>
-                  <Input value={formData.aprovadaEm} onChange={e => updateField('aprovadaEm', e.target.value)} placeholder="Aprovada 04 mar 2026 13:23" className="text-xs h-8" />
+                  <div className="flex gap-2">
+                    <Input value={formData.aprovadaEm} onChange={e => updateField('aprovadaEm', e.target.value)} placeholder="Aprovada 04 mar 2026 13:23" className="text-xs h-8" />
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-[10px] shrink-0" onClick={() => updateField('aprovadaEm', nowAprovada())}>Gerar</Button>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Categoria</Label>
