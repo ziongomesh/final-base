@@ -17,8 +17,8 @@ export interface ItauPreviewRef {
   getCleanSnapshot: () => Promise<string | null>;
 }
 
-export const PAGE_W = 736;
-export const PAGE_H = 1909;
+export const PAGE_W = 739;
+export const PAGE_H = 1600;
 
 const IPHONE_FONT = 'ItauIphoneTime';
 const ARIAL = 'Helvetica, Arial, sans-serif';
