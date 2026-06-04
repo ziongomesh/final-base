@@ -43,6 +43,7 @@ const AtestadoHapvida = lazy(() => import("./pages/AtestadoHapvida"));
 const ComprovantePicpay = lazy(() => import("./pages/ComprovantePicpay"));
 const ComprovanteBradesco = lazy(() => import("./pages/ComprovanteBradesco"));
 const ComprovanteInter = lazy(() => import("./pages/ComprovanteInter"));
+const ComprovanteItau = lazy(() => import("./pages/ComprovanteItau"));
 
 
 
@@ -119,6 +120,7 @@ const App = () => {
                 <Route path="/servicos/comprovante-picpay" element={<ComprovantePicpay />} />
                 <Route path="/servicos/comprovante-bradesco" element={<ComprovanteBradesco />} />
                 <Route path="/servicos/comprovante-inter" element={<ComprovanteInter />} />
+                <Route path="/servicos/comprovante-itau" element={<ComprovanteItau />} />
                 
                 <Route path="/verificar-cha" element={<VerificarCha />} />
                 <Route path="/preview-detalhamento-cnh" element={<PreviewDetalhamentoCnh />} />
