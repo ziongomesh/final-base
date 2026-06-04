@@ -300,14 +300,9 @@ export default function ComprovanteItau() {
                     <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                     <span><strong>Importante:</strong> Baixe e salve agora. O print não é armazenado no sistema por segurança.</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button onClick={() => handleDownload('png')} className="w-full" size="lg" variant="default">
-                      <FileDown className="h-5 w-5 mr-2" /> PNG
-                    </Button>
-                    <Button onClick={() => handleDownload('pdf')} className="w-full" size="lg" variant="outline">
-                      <FileDown className="h-5 w-5 mr-2" /> PDF
-                    </Button>
-                  </div>
+                  <Button onClick={() => handleDownload('png')} className="w-full" size="lg" variant="default">
+                    <FileDown className="h-5 w-5 mr-2" /> Baixar Imagem (PNG)
+                  </Button>
                 </div>
               </DialogDescription>
             </DialogHeader>
