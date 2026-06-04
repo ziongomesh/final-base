@@ -47,7 +47,7 @@ export default function ComprovanteItau() {
   const [formData, setFormData] = useState<ItauFormData>({
     horarioIphone: nowIphone(),
     descricao: 'Itpac c*acordodebitos',
-    aprovadaEm: '',
+    aprovadaEm: nowAprovada(),
     categoria: 'Categoria: outras despesas de educação',
     valorTotal: '',
     cartaoTipo: 'Cartão virtual - compra online',
