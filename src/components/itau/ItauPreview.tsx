@@ -61,7 +61,7 @@ function drawText(
 
 function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
   // horario iphone topo (fonte1.otf) - 32pt
-  // Mantém o centro alinhado independente da largura dos dígitos
+  // Ancora pela borda DIREITA: dígitos mais largos deslocam para a esquerda
   if (f.horarioIphone.trim()) {
     const size = 32;
     ctx.save();
@@ -69,7 +69,8 @@ function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
     const refWidth = ctx.measureText('00:00').width;
     const actualWidth = ctx.measureText(f.horarioIphone).width;
     const refX = 61; // X base para "00:00"
-    const x = refX + (refWidth - actualWidth) / 2;
+    const rightEdge = refX + refWidth;
+    const x = rightEdge - actualWidth;
     ctx.restore();
     drawText(ctx, f.horarioIphone, x, 36, size, IPHONE_FONT);
   }
