@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt, Camera, Zap, Target, Trophy, Sparkles, Star } from 'lucide-react';
+import { FileText, CheckCircle, Clock, CreditCard, AlertTriangle, Anchor, IdCard, Car, Home, Stethoscope, Eye, ChevronDown, ChevronUp, Crown, Globe, Lock, History, Wrench, Banknote, Receipt, Camera, Zap, Target, Trophy, Sparkles, Star, Smartphone } from 'lucide-react';
 
 import exemploCnh from '@/assets/exemplo-cnh.png';
 import exemploGovbr from '@/assets/exemplo-govbr.png';
@@ -85,7 +85,7 @@ const categories: ServiceCategory[] = [
     services: [
       { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
-      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
+      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer', hidden: true } as any,
       { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
