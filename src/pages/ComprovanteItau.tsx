@@ -286,7 +286,7 @@ export default function ComprovanteItau() {
           </div>
 
           <div className="hidden lg:block">
-            <div className="sticky top-4" style={{ maxWidth: 550 }}>
+            <div className="sticky top-4 mx-auto" style={{ maxWidth: 340 }}>
               <ItauPreview ref={previewRef} formData={formData} />
             </div>
           </div>
