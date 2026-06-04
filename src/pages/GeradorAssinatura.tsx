@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 
 const FONTS = [
   { name: 'Caveat', css: "'Caveat', cursive" },
-  { name: 'Homemade Apple', css: "'Homemade Apple', cursive" },
   { name: 'Nothing You Could Do', css: "'Nothing You Could Do', cursive" },
 ];
 
