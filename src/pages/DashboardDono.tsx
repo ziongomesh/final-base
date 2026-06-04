@@ -171,6 +171,65 @@ export default function DashboardDono() {
   const [savingModule, setSavingModule] = useState<string | null>(null);
   const [togglingAll, setTogglingAll] = useState(false);
 
+  // Status de Domínios / Links
+  type DomainStatus = { status: 'online' | 'offline' | 'checking' | 'unknown'; latency?: number; error?: string; checkedAt?: number };
+  const [domainsStatus, setDomainsStatus] = useState<Record<string, DomainStatus>>({});
+  const [checkingDomains, setCheckingDomains] = useState(false);
+
+  const checkDomain = async (url: string): Promise<DomainStatus> => {
+    if (!url || !/^https?:\/\//i.test(url)) return { status: 'unknown', error: 'URL inválida', checkedAt: Date.now() };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const t0 = performance.now();
+    try {
+      await fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+      clearTimeout(timeout);
+      return { status: 'online', latency: Math.round(performance.now() - t0), checkedAt: Date.now() };
+    } catch (err: any) {
+      clearTimeout(timeout);
+      const msg = err?.name === 'AbortError' ? 'Timeout (>8s)' : (err?.message || 'Falha de rede / DNS');
+      return { status: 'offline', error: msg, checkedAt: Date.now() };
+    }
+  };
+
+  const getDomainTargets = useCallback(() => {
+    const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
+    const base = apiUrl.replace(/\/api\/?$/, '');
+    return [
+      { group: 'QR Codes', label: 'qrcode-certificado-vio.info', url: 'https://qrcode-certificado-vio.info' },
+      { group: 'QR Codes', label: 'qrcode-certificadodigital-vio.info (CRLV)', url: 'https://qrcode-certificadodigital-vio.info' },
+      { group: 'QR Codes', label: 'abafe-certificado.info', url: 'https://abafe-certificado.info' },
+      { group: 'API Backend', label: 'API Principal', url: base || 'https://datasistemas.online' },
+      { group: 'Links de Instalação', label: 'CNH Digital — iPhone', url: cnhIphone },
+      { group: 'Links de Instalação', label: 'CNH Digital — APK', url: cnhApk },
+      { group: 'Links de Instalação', label: 'Gov.br — iPhone', url: govbrIphone },
+      { group: 'Links de Instalação', label: 'Gov.br — APK', url: govbrApk },
+      { group: 'Links de Instalação', label: 'ABAFE — iPhone', url: abafeIphone },
+      { group: 'Links de Instalação', label: 'ABAFE — APK', url: abafeApk },
+    ];
+  }, [cnhIphone, cnhApk, govbrIphone, govbrApk, abafeIphone, abafeApk]);
+
+  const checkAllDomains = async () => {
+    setCheckingDomains(true);
+    const targets = getDomainTargets();
+    setDomainsStatus(prev => {
+      const next = { ...prev };
+      for (const t of targets) next[t.url] = { ...(next[t.url] || {}), status: 'checking' };
+      return next;
+    });
+    const results = await Promise.all(targets.map(async t => [t.url, await checkDomain(t.url)] as const));
+    setDomainsStatus(prev => {
+      const next = { ...prev };
+      for (const [u, s] of results) next[u] = s;
+      return next;
+    });
+    setCheckingDomains(false);
+    const off = results.filter(([, s]) => s.status === 'offline').length;
+    if (off > 0) toast.warning(`${off} domínio(s) offline`);
+    else toast.success('Todos os domínios respondendo');
+  };
+
+
   // Notícias
   interface Noticia { id: number; titulo: string; informacao: string; data_post: string; }
   const [noticias, setNoticias] = useState<Noticia[]>([]);
