@@ -66,10 +66,24 @@ export default function ComprovanteItau() {
     return 'R$ ' + (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  const parseValor = (full: string) => {
+    const m = full.match(/^(R\$ [\d.,]+) em (\d+)x$/);
+    if (m) return { valor: m[1], vezes: m[2] };
+    return { valor: full, vezes: '1' };
+  };
+
   const handleValorChange = (raw: string) => {
     const digits = raw.replace(/\D/g, '');
+    const { vezes } = parseValor(formData.valorTotal);
     if (!digits) { updateField('valorTotal', ''); return; }
-    updateField('valorTotal', `${formatMoney(raw)} em 1x`);
+    updateField('valorTotal', `${formatMoney(raw)} em ${vezes || '1'}x`);
+  };
+
+  const handleVezesChange = (raw: string) => {
+    const v = raw.replace(/\D/g, '') || '1';
+    const { valor } = parseValor(formData.valorTotal);
+    if (!valor) { updateField('valorTotal', ''); return; }
+    updateField('valorTotal', `${valor} em ${v}x`);
   };
 
   const definirAgora = useCallback(() => {
