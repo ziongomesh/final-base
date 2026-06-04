@@ -85,7 +85,7 @@ const categories: ServiceCategory[] = [
     services: [
       { id: 'pix-bradesco', name: 'BRADESCO PIX', description: 'Comprovante de transferência PIX Bradesco', credits: 1, available: true, route: '/servicos/comprovante-bradesco', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-picpay', name: 'PICPAY PIX', description: 'Comprovante de transferência PIX PicPay', credits: 1, available: true, route: '/servicos/comprovante-picpay', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
-      { id: 'pix-itau', name: 'ITAÚ PIX', description: 'Comprovante de transferência PIX Itaú', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer', hidden: true } as any,
+      
       { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
@@ -110,6 +110,15 @@ const categories: ServiceCategory[] = [
       // Laudos - Em Breve
       { id: 'laudo-medico', name: 'LAUDO MÉDICO', description: 'Laudo médico digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-medical', specs: ['PDF: Sim'], atestadoGroup: 'laudo' },
       { id: 'laudo-exame', name: 'LAUDO DE EXAME', description: 'Laudo de exame laboratorial', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-flask-vial', specs: ['PDF: Sim'], atestadoGroup: 'laudo' },
+    ],
+  },
+  {
+    title: 'Prints de Tela',
+    icon: Smartphone,
+    services: [
+      { id: 'print-itau-compra', name: 'ITAÚ — DETALHES DA COMPRA', description: 'Print de tela do app Itaú (compra no cartão)', credits: 1, available: true, route: '/servicos/comprovante-itau', icon: Smartphone, faIcon: 'fa-solid fa-mobile-screen', specs: ['PNG: Sim', 'PDF: Sim'] },
+      { id: 'print-nubank-compra', name: 'NUBANK — COMPRA', description: 'Print de tela do app Nubank', credits: 1, available: false, route: '#', icon: Smartphone, faIcon: 'fa-solid fa-mobile-screen' },
+      { id: 'print-c6-compra', name: 'C6 — COMPRA', description: 'Print de tela do app C6 Bank', credits: 1, available: false, route: '#', icon: Smartphone, faIcon: 'fa-solid fa-mobile-screen' },
     ],
   },
 ];
