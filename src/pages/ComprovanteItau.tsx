@@ -46,7 +46,7 @@ export default function ComprovanteItau() {
 
   const [formData, setFormData] = useState<ItauFormData>({
     horarioIphone: nowIphone(),
-    descricao: '',
+    descricao: 'Itpac c*acordodebitos',
     aprovadaEm: '',
     categoria: 'Categoria: outras despesas de educação',
     valorTotal: '',
@@ -129,7 +129,7 @@ export default function ComprovanteItau() {
 
       setFormData({
         horarioIphone: nowIphone(),
-        descricao: '',
+        descricao: 'Itpac c*acordodebitos',
         aprovadaEm: '',
         categoria: 'Categoria: outras despesas de educação',
         valorTotal: '',
