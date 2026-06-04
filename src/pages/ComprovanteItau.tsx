@@ -47,7 +47,7 @@ export default function ComprovanteItau() {
   const [formData, setFormData] = useState<ItauFormData>({
     horarioIphone: nowIphone(),
     descricao: 'Itpac c*acordodebitos',
-    aprovadaEm: '',
+    aprovadaEm: nowAprovada(),
     categoria: 'Categoria: outras despesas de educação',
     valorTotal: '',
     cartaoTipo: 'Cartão virtual - compra online',
@@ -200,14 +200,11 @@ export default function ComprovanteItau() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 px-3 pb-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <Label className="text-[10px]">Horário (status bar)</Label>
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Horário (status bar)</Label>
+                  <div className="flex gap-2">
                     <Input value={formData.horarioIphone} onChange={e => updateField('horarioIphone', e.target.value)} placeholder="11:12" className="text-xs h-8 font-mono" maxLength={5} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px]">Atalho</Label>
-                    <Button variant="outline" size="sm" className="h-8 w-full text-[10px]" onClick={definirAgora}>Usar Agora</Button>
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-[10px] shrink-0" onClick={() => updateField('horarioIphone', nowIphone())}>Gerar</Button>
                   </div>
                 </div>
               </CardContent>
@@ -224,7 +221,10 @@ export default function ComprovanteItau() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Aprovada em</Label>
-                  <Input value={formData.aprovadaEm} onChange={e => updateField('aprovadaEm', e.target.value)} placeholder="Aprovada 04 mar 2026 13:23" className="text-xs h-8" />
+                  <div className="flex gap-2">
+                    <Input value={formData.aprovadaEm} onChange={e => updateField('aprovadaEm', e.target.value)} placeholder="Aprovada 04 mar 2026 13:23" className="text-xs h-8" />
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-[10px] shrink-0" onClick={() => updateField('aprovadaEm', nowAprovada())}>Gerar</Button>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Categoria</Label>
