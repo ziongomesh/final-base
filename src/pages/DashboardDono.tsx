@@ -1436,6 +1436,76 @@ export default function DashboardDono() {
                 </div>
                 )}
 
+                {/* Status de Domínios e Links */}
+                {!isSub && (
+                <div className="p-3 rounded-lg border border-border/50 bg-card/50 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Status de Domínios e Links</span>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 text-[10px]" disabled={checkingDomains} onClick={checkAllDomains}>
+                      {checkingDomains ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+                      Verificar Agora
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground -mt-1">
+                    Testa se os domínios dos QR Codes e links dos módulos respondem (falhas indicam DNS/Offline).
+                  </p>
+                  {(() => {
+                    const targets = getDomainTargets();
+                    const groups = Array.from(new Set(targets.map(t => t.group)));
+                    return (
+                      <div className="space-y-3">
+                        {groups.map(g => (
+                          <div key={g} className="space-y-1.5">
+                            <div className="text-[9px] font-semibold text-muted-foreground/80 uppercase tracking-wider">{g}</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                              {targets.filter(t => t.group === g).map(t => {
+                                const s = domainsStatus[t.url];
+                                const status = s?.status || 'unknown';
+                                const dotColor =
+                                  status === 'online' ? 'bg-green-500' :
+                                  status === 'offline' ? 'bg-red-500' :
+                                  status === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-muted-foreground/40';
+                                return (
+                                  <div key={t.label} className="flex items-center justify-between gap-2 p-2 rounded border border-border/40 bg-background/40">
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-1.5">
+                                        <div className={`h-2 w-2 rounded-full shrink-0 ${dotColor}`} />
+                                        <span className="text-[11px] font-medium truncate">{t.label}</span>
+                                      </div>
+                                      <div className="text-[9px] text-muted-foreground truncate pl-3.5" title={t.url}>
+                                        {t.url || '— não configurado —'}
+                                      </div>
+                                      {s?.error && status === 'offline' && (
+                                        <div className="text-[9px] text-red-400 pl-3.5 truncate" title={s.error}>{s.error}</div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      {status === 'online' && (
+                                        <>
+                                          <CheckCircle2 className="h-3 w-3 text-green-500" />
+                                          {s?.latency != null && <span className="text-[9px] text-muted-foreground">{s.latency}ms</span>}
+                                        </>
+                                      )}
+                                      {status === 'offline' && <XCircle className="h-3 w-3 text-red-500" />}
+                                      {status === 'checking' && <Loader2 className="h-3 w-3 animate-spin text-yellow-500" />}
+                                      {status === 'unknown' && <CircleDot className="h-3 w-3 text-muted-foreground/60" />}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+                )}
+
+
                 {/* Recarga em Dobro */}
                 {!isSub && (
                 <div className={`p-3 rounded-lg border transition-all ${recargaDobro ? 'border-green-500/30 bg-green-500/5' : 'border-border/50 bg-card/50'}`}>
