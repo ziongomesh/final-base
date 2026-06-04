@@ -3,15 +3,11 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Download, FileText, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { PDFDocument } from 'pdf-lib';
-
-type PageSize = 'A4' | 'LETTER' | 'FIT';
-type Orient = 'portrait' | 'landscape';
 
 interface Item {
   id: string;
@@ -19,17 +15,10 @@ interface Item {
   url: string;
 }
 
-const SIZES: Record<Exclude<PageSize, 'FIT'>, [number, number]> = {
-  A4: [595.28, 841.89],
-  LETTER: [612, 792],
-};
-
 export default function ImagemParaPdf() {
   const { admin, loading } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
-  const [pageSize, setPageSize] = useState<PageSize>('A4');
-  const [orient, setOrient] = useState<Orient>('portrait');
-  const [margin, setMargin] = useState(20);
+  const [margin, setMargin] = useState(0);
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -86,33 +75,19 @@ export default function ImagemParaPdf() {
           img = await pdf.embedPng(dataUrl);
         }
 
-        let pageW: number;
-        let pageH: number;
-        if (pageSize === 'FIT') {
-          pageW = img.width;
-          pageH = img.height;
-        } else {
-          const [w, h] = SIZES[pageSize];
-          if (orient === 'landscape') {
-            pageW = h;
-            pageH = w;
-          } else {
-            pageW = w;
-            pageH = h;
-          }
-        }
+        const imgW = img.width;
+        const imgH = img.height;
+
+        const pageW = imgW + margin * 2;
+        const pageH = imgH + margin * 2;
+
         const page = pdf.addPage([pageW, pageH]);
 
-        const availW = pageW - margin * 2;
-        const availH = pageH - margin * 2;
-        const scale = pageSize === 'FIT' ? 1 : Math.min(availW / img.width, availH / img.height);
-        const drawW = img.width * scale;
-        const drawH = img.height * scale;
         page.drawImage(img, {
-          x: (pageW - drawW) / 2,
-          y: (pageH - drawH) / 2,
-          width: drawW,
-          height: drawH,
+          x: margin,
+          y: margin,
+          width: imgW,
+          height: imgH,
         });
       }
 
@@ -140,49 +115,28 @@ export default function ImagemParaPdf() {
             <FileText className="h-6 w-6 text-rose-500" />
             Imagem para PDF
           </h1>
-          <p className="text-muted-foreground text-sm">Converta qualquer formato de imagem em um único PDF</p>
+          <p className="text-muted-foreground text-sm">Converta qualquer formato de imagem em um único PDF mantendo as proporções originais</p>
         </div>
 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Configurações da página</CardTitle>
-            <CardDescription>Tamanho, orientação e margens</CardDescription>
+            <CardDescription>A página do PDF terá as dimensões naturais de cada imagem</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs">Tamanho</Label>
-                <Select value={pageSize} onValueChange={(v) => setPageSize(v as PageSize)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="A4">A4</SelectItem>
-                    <SelectItem value="LETTER">Carta</SelectItem>
-                    <SelectItem value="FIT">Ajustar à imagem</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Orientação</Label>
-                <Select value={orient} onValueChange={(v) => setOrient(v as Orient)} disabled={pageSize === 'FIT'}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="portrait">Retrato</SelectItem>
-                    <SelectItem value="landscape">Paisagem</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Margem ({margin}pt)</Label>
-                <input
-                  type="range"
-                  min={0}
-                  max={80}
-                  value={margin}
-                  onChange={(e) => setMargin(parseInt(e.target.value))}
-                  className="w-full accent-primary"
-                  disabled={pageSize === 'FIT'}
-                />
-              </div>
+            <div className="max-w-xs space-y-1.5">
+              <Label className="text-xs">Margem ({margin}pt)</Label>
+              <input
+                type="range"
+                min={0}
+                max={80}
+                value={margin}
+                onChange={(e) => setMargin(parseInt(e.target.value))}
+                className="w-full accent-primary"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                A margem é adicionada ao redor da imagem preservando seu tamanho original
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -208,7 +162,7 @@ export default function ImagemParaPdf() {
             >
               <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
               <p className="text-sm text-foreground">Clique ou arraste imagens aqui</p>
-              <p className="text-xs text-muted-foreground mt-1">Cada imagem vira uma página do PDF</p>
+              <p className="text-xs text-muted-foreground mt-1">Cada imagem vira uma página do PDF com suas proporções originais</p>
             </div>
 
             {items.length > 0 && (
