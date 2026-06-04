@@ -37,6 +37,8 @@ const EditorPdf = lazy(() => import("./pages/EditorPdf"));
 const RemoverFundo = lazy(() => import("./pages/RemoverFundo"));
 const GeradorAssinatura = lazy(() => import("./pages/GeradorAssinatura"));
 const ConverterImagem = lazy(() => import("./pages/ConverterImagem"));
+const ConverterFormato = lazy(() => import("./pages/ConverterFormato"));
+const ImagemParaPdf = lazy(() => import("./pages/ImagemParaPdf"));
 const HistoricoServicos = lazy(() => import("./pages/HistoricoServicos"));
 const HapvidaPositionTool = lazy(() => import("./pages/HapvidaPositionTool"));
 const AtestadoHapvida = lazy(() => import("./pages/AtestadoHapvida"));
