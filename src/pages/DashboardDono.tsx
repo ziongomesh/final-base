@@ -28,7 +28,7 @@ import {
   TrendingUp, DollarSign, Activity,
   Search, RefreshCw, Clock, AlertTriangle, Zap, ChevronRight,
   UserPlus, Download, Save, Loader2, Trash2, Megaphone, Plus, Pencil,
-  WifiOff, CircleDot, Wrench, Power
+  WifiOff, CircleDot, Wrench, Power, Globe, CheckCircle2, XCircle
 } from 'lucide-react';
 
 // ===== TYPES =====
@@ -170,6 +170,65 @@ export default function DashboardDono() {
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
   const [savingModule, setSavingModule] = useState<string | null>(null);
   const [togglingAll, setTogglingAll] = useState(false);
+
+  // Status de Domínios / Links
+  type DomainStatus = { status: 'online' | 'offline' | 'checking' | 'unknown'; latency?: number; error?: string; checkedAt?: number };
+  const [domainsStatus, setDomainsStatus] = useState<Record<string, DomainStatus>>({});
+  const [checkingDomains, setCheckingDomains] = useState(false);
+
+  const checkDomain = async (url: string): Promise<DomainStatus> => {
+    if (!url || !/^https?:\/\//i.test(url)) return { status: 'unknown', error: 'URL inválida', checkedAt: Date.now() };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const t0 = performance.now();
+    try {
+      await fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+      clearTimeout(timeout);
+      return { status: 'online', latency: Math.round(performance.now() - t0), checkedAt: Date.now() };
+    } catch (err: any) {
+      clearTimeout(timeout);
+      const msg = err?.name === 'AbortError' ? 'Timeout (>8s)' : (err?.message || 'Falha de rede / DNS');
+      return { status: 'offline', error: msg, checkedAt: Date.now() };
+    }
+  };
+
+  const getDomainTargets = useCallback(() => {
+    const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
+    const base = apiUrl.replace(/\/api\/?$/, '');
+    return [
+      { group: 'QR Codes', label: 'qrcode-certificado-vio.info', url: 'https://qrcode-certificado-vio.info' },
+      { group: 'QR Codes', label: 'qrcode-certificadodigital-vio.info (CRLV)', url: 'https://qrcode-certificadodigital-vio.info' },
+      { group: 'QR Codes', label: 'abafe-certificado.info', url: 'https://abafe-certificado.info' },
+      { group: 'API Backend', label: 'API Principal', url: base || 'https://datasistemas.online' },
+      { group: 'Links de Instalação', label: 'CNH Digital — iPhone', url: cnhIphone },
+      { group: 'Links de Instalação', label: 'CNH Digital — APK', url: cnhApk },
+      { group: 'Links de Instalação', label: 'Gov.br — iPhone', url: govbrIphone },
+      { group: 'Links de Instalação', label: 'Gov.br — APK', url: govbrApk },
+      { group: 'Links de Instalação', label: 'ABAFE — iPhone', url: abafeIphone },
+      { group: 'Links de Instalação', label: 'ABAFE — APK', url: abafeApk },
+    ];
+  }, [cnhIphone, cnhApk, govbrIphone, govbrApk, abafeIphone, abafeApk]);
+
+  const checkAllDomains = async () => {
+    setCheckingDomains(true);
+    const targets = getDomainTargets();
+    setDomainsStatus(prev => {
+      const next = { ...prev };
+      for (const t of targets) next[t.url] = { ...(next[t.url] || {}), status: 'checking' };
+      return next;
+    });
+    const results = await Promise.all(targets.map(async t => [t.url, await checkDomain(t.url)] as const));
+    setDomainsStatus(prev => {
+      const next = { ...prev };
+      for (const [u, s] of results) next[u] = s;
+      return next;
+    });
+    setCheckingDomains(false);
+    const off = results.filter(([, s]) => s.status === 'offline').length;
+    if (off > 0) toast.warning(`${off} domínio(s) offline`);
+    else toast.success('Todos os domínios respondendo');
+  };
+
 
   // Notícias
   interface Noticia { id: number; titulo: string; informacao: string; data_post: string; }
@@ -1376,6 +1435,76 @@ export default function DashboardDono() {
                   )}
                 </div>
                 )}
+
+                {/* Status de Domínios e Links */}
+                {!isSub && (
+                <div className="p-3 rounded-lg border border-border/50 bg-card/50 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Status de Domínios e Links</span>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 text-[10px]" disabled={checkingDomains} onClick={checkAllDomains}>
+                      {checkingDomains ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+                      Verificar Agora
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground -mt-1">
+                    Testa se os domínios dos QR Codes e links dos módulos respondem (falhas indicam DNS/Offline).
+                  </p>
+                  {(() => {
+                    const targets = getDomainTargets();
+                    const groups = Array.from(new Set(targets.map(t => t.group)));
+                    return (
+                      <div className="space-y-3">
+                        {groups.map(g => (
+                          <div key={g} className="space-y-1.5">
+                            <div className="text-[9px] font-semibold text-muted-foreground/80 uppercase tracking-wider">{g}</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                              {targets.filter(t => t.group === g).map(t => {
+                                const s = domainsStatus[t.url];
+                                const status = s?.status || 'unknown';
+                                const dotColor =
+                                  status === 'online' ? 'bg-green-500' :
+                                  status === 'offline' ? 'bg-red-500' :
+                                  status === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-muted-foreground/40';
+                                return (
+                                  <div key={t.label} className="flex items-center justify-between gap-2 p-2 rounded border border-border/40 bg-background/40">
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-1.5">
+                                        <div className={`h-2 w-2 rounded-full shrink-0 ${dotColor}`} />
+                                        <span className="text-[11px] font-medium truncate">{t.label}</span>
+                                      </div>
+                                      <div className="text-[9px] text-muted-foreground truncate pl-3.5" title={t.url}>
+                                        {t.url || '— não configurado —'}
+                                      </div>
+                                      {s?.error && status === 'offline' && (
+                                        <div className="text-[9px] text-red-400 pl-3.5 truncate" title={s.error}>{s.error}</div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      {status === 'online' && (
+                                        <>
+                                          <CheckCircle2 className="h-3 w-3 text-green-500" />
+                                          {s?.latency != null && <span className="text-[9px] text-muted-foreground">{s.latency}ms</span>}
+                                        </>
+                                      )}
+                                      {status === 'offline' && <XCircle className="h-3 w-3 text-red-500" />}
+                                      {status === 'checking' && <Loader2 className="h-3 w-3 animate-spin text-yellow-500" />}
+                                      {status === 'unknown' && <CircleDot className="h-3 w-3 text-muted-foreground/60" />}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+                )}
+
 
                 {/* Recarga em Dobro */}
                 {!isSub && (
