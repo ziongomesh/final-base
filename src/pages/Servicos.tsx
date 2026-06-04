@@ -89,7 +89,7 @@ const categories: ServiceCategory[] = [
       { id: 'pix-nubank', name: 'NUBANK PIX', description: 'Comprovante de transferência PIX Nubank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-c6', name: 'C6 PIX', description: 'Comprovante de transferência PIX C6 Bank', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
       { id: 'pix-99pay', name: '99PAY PIX', description: 'Comprovante de transferência PIX 99Pay', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
-      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: false, route: '#', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
+      { id: 'pix-inter', name: 'INTER PIX', description: 'Comprovante de transferência PIX Inter', credits: 1, available: true, route: '/servicos/comprovante-inter', icon: Receipt, faIcon: 'fa-solid fa-money-bill-transfer' },
     ],
   },
   {
