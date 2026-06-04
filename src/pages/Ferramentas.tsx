@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ImageMinus, FileText, PenLine, Clock, Palette } from 'lucide-react';
+import { ImageMinus, FileText, PenLine, Clock, Palette, Image as ImageIcon, FileImage } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -12,6 +12,22 @@ const tools = [
     icon: ImageMinus,
     href: '/ferramentas/remover-fundo',
     color: 'text-blue-500',
+    available: true,
+  },
+  {
+    title: 'Converter Imagens',
+    description: 'Converta entre JPG, PNG, WEBP e outros formatos de imagem',
+    icon: ImageIcon,
+    href: '/ferramentas/converter-formato',
+    color: 'text-emerald-500',
+    available: true,
+  },
+  {
+    title: 'Imagem para PDF',
+    description: 'Transforme uma ou várias imagens (qualquer formato) em um único PDF',
+    icon: FileImage,
+    href: '/ferramentas/imagem-para-pdf',
+    color: 'text-rose-500',
     available: true,
   },
   {
@@ -31,11 +47,11 @@ const tools = [
     available: true,
   },
   {
-    title: 'Converter Imagem',
+    title: 'Converter Imagem (P&B)',
     description: 'Converta imagens para tons de cinza ou somente preto e branco',
     icon: Palette,
     href: '/ferramentas/converter-imagem',
-    color: 'text-emerald-500',
+    color: 'text-slate-400',
     available: true,
   },
 ];
