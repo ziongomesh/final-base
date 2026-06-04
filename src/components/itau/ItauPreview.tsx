@@ -60,39 +60,39 @@ function drawText(
 }
 
 function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
-  // Horário iPhone topo - fonte custom
+  // horario iphone topo (fonte custom) - 35pt
   if (f.horarioIphone.trim()) {
-    drawText(ctx, f.horarioIphone, 66.34, 25.6, 22, IPHONE_FONT);
+    drawText(ctx, f.horarioIphone, 66.34, 30.7, 35, IPHONE_FONT);
   }
 
-  // Descrição bold com opacidade (Itpac c*acordodebitos)
+  // bold fraco com opacidade 0.5 (Itpac c*acordodebitos) - 37.55pt
   if (f.descricao.trim()) {
-    drawText(ctx, f.descricao, 45.26, 176.6, 37.55, ARIAL, { bold: true, opacity: 0.5 });
+    drawText(ctx, f.descricao, 45.26, 211.59, 37.55, ARIAL, { bold: true, opacity: 0.5 });
   }
 
-  // Aprovada em
+  // Aprovada em - 21.68pt
   if (f.aprovadaEm.trim()) {
-    drawText(ctx, f.aprovadaEm, 45.26, 229.8, 21.68, ARIAL);
+    drawText(ctx, f.aprovadaEm, 45.26, 275.31, 21.68, ARIAL);
   }
 
-  // Categoria
+  // Categoria - 21.68pt
   if (f.categoria.trim()) {
-    drawText(ctx, f.categoria, 45.76, 267.4, 21.68, ARIAL);
+    drawText(ctx, f.categoria, 45.76, 320.33, 21.68, ARIAL);
   }
 
-  // Valor total
+  // Valor total - 25pt
   if (f.valorTotal.trim()) {
-    drawText(ctx, f.valorTotal, 121.75, 391.3, 25, ARIAL);
+    drawText(ctx, f.valorTotal, 121.75, 468.83, 25, ARIAL);
   }
 
-  // Cartão tipo
+  // Cartão tipo - 22.03pt
   if (f.cartaoTipo.trim()) {
-    drawText(ctx, f.cartaoTipo, 120.26, 499.4, 22.03, ARIAL);
+    drawText(ctx, f.cartaoTipo, 120.26, 598.33, 22.03, ARIAL);
   }
 
-  // Cartão nome
+  // Cartão nome - 24.84pt
   if (f.cartaoNome.trim()) {
-    drawText(ctx, f.cartaoNome, 122.08, 523.6, 24.84, ARIAL);
+    drawText(ctx, f.cartaoNome, 122.08, 627.33, 24.84, ARIAL);
   }
 }
 
