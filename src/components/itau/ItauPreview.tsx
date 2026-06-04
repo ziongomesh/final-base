@@ -61,8 +61,17 @@ function drawText(
 
 function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
   // horario iphone topo (fonte1.otf) - 32pt
+  // Mantém o centro alinhado independente da largura dos dígitos
   if (f.horarioIphone.trim()) {
-    drawText(ctx, f.horarioIphone, 61, 36, 32, IPHONE_FONT);
+    const size = 32;
+    ctx.save();
+    ctx.font = `${size}px ${IPHONE_FONT}`;
+    const refWidth = ctx.measureText('00:00').width;
+    const actualWidth = ctx.measureText(f.horarioIphone).width;
+    const refX = 61; // X base para "00:00"
+    const x = refX + (refWidth - actualWidth) / 2;
+    ctx.restore();
+    drawText(ctx, f.horarioIphone, x, 36, size, IPHONE_FONT);
   }
 
   // bold fraco com opacidade 0.5 (Itpac c*acordodebitos) - 37.55pt
