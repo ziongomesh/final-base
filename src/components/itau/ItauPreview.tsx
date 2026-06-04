@@ -17,8 +17,8 @@ export interface ItauPreviewRef {
   getCleanSnapshot: () => Promise<string | null>;
 }
 
-export const PAGE_W = 736;
-export const PAGE_H = 1909;
+export const PAGE_W = 739;
+export const PAGE_H = 1600;
 
 const IPHONE_FONT = 'ItauIphoneTime';
 const ARIAL = 'Helvetica, Arial, sans-serif';
@@ -62,37 +62,37 @@ function drawText(
 function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
   // Horário iPhone topo - fonte custom
   if (f.horarioIphone.trim()) {
-    drawText(ctx, f.horarioIphone, 66.34, 30.7, 22, IPHONE_FONT);
+    drawText(ctx, f.horarioIphone, 66.34, 25.6, 22, IPHONE_FONT);
   }
 
   // Descrição bold com opacidade (Itpac c*acordodebitos)
   if (f.descricao.trim()) {
-    drawText(ctx, f.descricao, 45.26, 211.59, 37.55, ARIAL, { bold: true, opacity: 0.5 });
+    drawText(ctx, f.descricao, 45.26, 176.6, 37.55, ARIAL, { bold: true, opacity: 0.5 });
   }
 
   // Aprovada em
   if (f.aprovadaEm.trim()) {
-    drawText(ctx, f.aprovadaEm, 45.26, 275.31, 21.68, ARIAL);
+    drawText(ctx, f.aprovadaEm, 45.26, 229.8, 21.68, ARIAL);
   }
 
   // Categoria
   if (f.categoria.trim()) {
-    drawText(ctx, f.categoria, 45.76, 320.33, 21.68, ARIAL);
+    drawText(ctx, f.categoria, 45.76, 267.4, 21.68, ARIAL);
   }
 
   // Valor total
   if (f.valorTotal.trim()) {
-    drawText(ctx, f.valorTotal, 121.75, 468.83, 25, ARIAL);
+    drawText(ctx, f.valorTotal, 121.75, 391.3, 25, ARIAL);
   }
 
   // Cartão tipo
   if (f.cartaoTipo.trim()) {
-    drawText(ctx, f.cartaoTipo, 120.26, 598.33, 22.03, ARIAL);
+    drawText(ctx, f.cartaoTipo, 120.26, 499.4, 22.03, ARIAL);
   }
 
   // Cartão nome
   if (f.cartaoNome.trim()) {
-    drawText(ctx, f.cartaoNome, 122.08, 627.33, 24.84, ARIAL);
+    drawText(ctx, f.cartaoNome, 122.08, 523.6, 24.84, ARIAL);
   }
 }
 
