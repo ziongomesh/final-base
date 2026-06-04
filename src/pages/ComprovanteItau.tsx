@@ -51,7 +51,7 @@ export default function ComprovanteItau() {
     categoria: 'Categoria: outras despesas de educação',
     valorTotal: '',
     cartaoTipo: 'Cartão virtual - compra online',
-    cartaoNome: '',
+    cartaoNome: 'Itau Platinum Final 5676',
   });
 
   const updateField = useCallback((key: keyof ItauFormData, value: string) => {
@@ -148,7 +148,7 @@ export default function ComprovanteItau() {
         categoria: 'Categoria: outras despesas de educação',
         valorTotal: '',
         cartaoTipo: 'Cartão virtual - compra online',
-        cartaoNome: '',
+        cartaoNome: 'Itau Platinum Final 5676',
       });
       setHasTouched(false);
       setShowSuccessModal(true);
