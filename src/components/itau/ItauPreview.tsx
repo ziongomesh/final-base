@@ -62,7 +62,7 @@ function drawText(
 function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
   // Horário iPhone topo - fonte custom
   if (f.horarioIphone.trim()) {
-    drawText(ctx, f.horarioIphone, 66.34, 30.7, 35, IPHONE_FONT);
+    drawText(ctx, f.horarioIphone, 66.34, 30.7, 22, IPHONE_FONT);
   }
 
   // Descrição bold com opacidade (Itpac c*acordodebitos)
