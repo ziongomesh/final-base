@@ -67,7 +67,7 @@ function drawFormFields(ctx: CanvasRenderingContext2D, f: ItauFormData) {
 
   // bold fraco com opacidade 0.5 (Itpac c*acordodebitos) - 37.55pt
   if (f.descricao.trim()) {
-    drawText(ctx, f.descricao, 45.26, 211.59, 37.55, ARIAL, { bold: true, opacity: 0.5, color: '#000000' });
+    drawText(ctx, f.descricao, 45.26, 211.59, 37.55, ARIAL, { bold: true, color: '#000000' });
   }
 
   // Aprovada em - 21.68pt
