@@ -19,6 +19,10 @@ const MODULES = [
   { id: 'carteira-abafe', label: 'ABAFE' },
   { id: 'crlv-digital', label: 'CRLV Digital' },
   { id: 'atestado-hapvida', label: 'Hapvida' },
+  { id: 'pix-bradesco', label: 'Bradesco PIX' },
+  { id: 'pix-picpay', label: 'PicPay PIX' },
+  { id: 'pix-inter', label: 'Inter PIX' },
+  { id: 'print-itau-compra', label: 'Itaú — Detalhes da Compra' },
 ];
 
 export default function Configuracoes() {

@@ -163,8 +163,10 @@ export default function DashboardDono() {
     { id: 'carteira-abafe', label: 'ABAFE' },
     { id: 'crlv-digital', label: 'CRLV Digital' },
     { id: 'atestado-hapvida', label: 'Hapvida' },
-    { id: 'comprovante-picpay', label: 'PicPay' },
-    { id: 'comprovante-bradesco', label: 'Bradesco' },
+    { id: 'pix-bradesco', label: 'Bradesco PIX' },
+    { id: 'pix-picpay', label: 'PicPay PIX' },
+    { id: 'pix-inter', label: 'Inter PIX' },
+    { id: 'print-itau-compra', label: 'Itaú — Detalhes da Compra' },
   ];
   const [maintenanceMap, setMaintenanceMap] = useState<Record<string, boolean>>({});
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
