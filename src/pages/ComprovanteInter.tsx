@@ -409,7 +409,7 @@ export default function ComprovanteInter() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px]">Instituição</Label>
-                  <Input value={formData.instituicaoPagador} onChange={e => updateField('instituicaoPagador', e.target.value)} className="text-xs h-8" />
+                  <Input value="Banco Inter S.A." readOnly disabled className="text-xs h-8 opacity-70 cursor-not-allowed" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
