@@ -115,24 +115,8 @@ export default function ComprovanteItau() {
       const snapshot = await previewRef.current?.getCleanSnapshot();
       if (!snapshot) { toast.error('Erro ao capturar print'); return; }
 
-      // PNG download
-      const pngUrl = snapshot;
-
-      // PDF mesmo tamanho
-      const { PDFDocument } = await import('pdf-lib');
-      const { stripPdfMetadata } = await import('@/lib/strip-metadata');
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([PAGE_W, PAGE_H]);
-      const cleanB64 = snapshot.replace(/^data:image\/\w+;base64,/, '');
-      const imgBytes = Uint8Array.from(atob(cleanB64), (c) => c.charCodeAt(0));
-      const pngImage = await pdfDoc.embedPng(imgBytes);
-      page.drawImage(pngImage, { x: 0, y: 0, width: PAGE_W, height: PAGE_H });
-      stripPdfMetadata(pdfDoc);
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
-      const pdfUrl = URL.createObjectURL(blob);
-
-      setGeneratedUrls({ png: pngUrl, pdf: pdfUrl });
+      // PNG download apenas
+      setGeneratedUrls({ png: snapshot, pdf: null });
 
       try {
         await api.credits.transfer(admin.id, admin.id, 1);
