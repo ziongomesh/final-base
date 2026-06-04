@@ -37,6 +37,8 @@ const EditorPdf = lazy(() => import("./pages/EditorPdf"));
 const RemoverFundo = lazy(() => import("./pages/RemoverFundo"));
 const GeradorAssinatura = lazy(() => import("./pages/GeradorAssinatura"));
 const ConverterImagem = lazy(() => import("./pages/ConverterImagem"));
+const ConverterFormato = lazy(() => import("./pages/ConverterFormato"));
+const ImagemParaPdf = lazy(() => import("./pages/ImagemParaPdf"));
 const HistoricoServicos = lazy(() => import("./pages/HistoricoServicos"));
 const HapvidaPositionTool = lazy(() => import("./pages/HapvidaPositionTool"));
 const AtestadoHapvida = lazy(() => import("./pages/AtestadoHapvida"));
@@ -111,6 +113,8 @@ const App = () => {
                 <Route path="/ferramentas/editor-pdf" element={<Navigate to="/ferramentas" replace />} />
                 <Route path="/ferramentas/gerador-assinatura" element={<GeradorAssinatura />} />
                 <Route path="/ferramentas/converter-imagem" element={<ConverterImagem />} />
+                <Route path="/ferramentas/converter-formato" element={<ConverterFormato />} />
+                <Route path="/ferramentas/imagem-para-pdf" element={<ImagemParaPdf />} />
                 <Route path="/historico-servicos" element={<HistoricoServicos />} />
                 <Route path="/downloads" element={<Downloads />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
