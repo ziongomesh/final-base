@@ -342,7 +342,10 @@ export default function ComprovanteInter() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label className="text-[10px]">Código de Barras (linha 1)</Label>
-                    <Input value={formData.codigoBarras1} onChange={e => updateField('codigoBarras1', e.target.value)} className="text-xs h-8 font-mono" />
+                    <div className="flex gap-1">
+                      <Input value={formData.codigoBarras1} onChange={e => updateField('codigoBarras1', e.target.value)} className="text-xs h-8 font-mono" />
+                      <Button variant="outline" size="sm" className="h-8 px-2 text-[10px]" onClick={() => { const b = genBoleto(); updateField('codigoBarras1', b.l1); updateField('codigoBarras2', b.l2); }}>Gerar</Button>
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px]">Código de Barras (linha 2)</Label>
