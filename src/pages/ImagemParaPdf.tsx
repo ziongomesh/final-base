@@ -118,28 +118,6 @@ export default function ImagemParaPdf() {
           <p className="text-muted-foreground text-sm">Converta qualquer formato de imagem em um único PDF mantendo as proporções originais</p>
         </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Configurações da página</CardTitle>
-            <CardDescription>A página do PDF terá as dimensões naturais de cada imagem</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="max-w-xs space-y-1.5">
-              <Label className="text-xs">Margem ({margin}pt)</Label>
-              <input
-                type="range"
-                min={0}
-                max={80}
-                value={margin}
-                onChange={(e) => setMargin(parseInt(e.target.value))}
-                className="w-full accent-primary"
-              />
-              <p className="text-[10px] text-muted-foreground">
-                A margem é adicionada ao redor da imagem preservando seu tamanho original
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         <Card>
           <CardContent className="p-4 space-y-3">
