@@ -83,10 +83,10 @@ function drawFormFields(ctx: CanvasRenderingContext2D, f: InterFormData) {
   // Título
   drawText(ctx, 'Pagamento realizado', 187, 191, 35.46, BOLD);
 
-  // Valor principal
+  // Valor principal (centralizado independente do tamanho)
   if (f.valorPrincipal.trim()) {
     const v = f.valorPrincipal.trim().startsWith('R$') ? f.valorPrincipal : `R$ ${f.valorPrincipal}`;
-    drawText(ctx, v, 280, 245, 35.46, BOLD, { width: 205, align: 'right' });
+    drawText(ctx, v, 0, 245, 35.46, BOLD, { width: PAGE_W, align: 'center' });
   }
 
   // Data principal (regular)
