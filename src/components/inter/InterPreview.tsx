@@ -111,11 +111,11 @@ function drawFormFields(ctx: CanvasRenderingContext2D, f: InterFormData) {
   right(f.multa || 'R$ 0,00', 623);
   right(f.valorTotal, 685);
 
-  if (f.dataVencimento.trim()) {
-    drawText(ctx, f.dataVencimento, 284, 747, 21.47, BOLD, { width: 405, align: 'right' });
-  }
   if (f.dataPagamento.trim()) {
-    drawText(ctx, f.dataPagamento, 284, 804, 21.47, BOLD, { width: 405, align: 'right' });
+    drawText(ctx, f.dataPagamento, 284, 747, 21.47, BOLD, { width: 405, align: 'right' });
+  }
+  if (f.dataVencimento.trim()) {
+    drawText(ctx, f.dataVencimento, 284, 804, 21.47, BOLD, { width: 405, align: 'right' });
   }
 
   // Código de barras (duas linhas)
