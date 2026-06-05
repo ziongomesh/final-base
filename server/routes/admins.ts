@@ -245,6 +245,17 @@ router.get('/:id', requireSession, async (req, res) => {
   }
 });
 
+// Marcar tutorial como concluído (clicar em "Pular" ou finalizar)
+router.post('/:id/complete-tutorial', requireSession, async (req, res) => {
+  try {
+    await query('UPDATE admins SET tutorial = 1 WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao marcar tutorial:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // Buscar revendedores de um master (requer sessão + master ou dono)
 router.get('/resellers/:masterId', requireSession, requireMasterOrAbove, async (req, res) => {
   try {
