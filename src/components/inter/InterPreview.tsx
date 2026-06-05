@@ -201,15 +201,16 @@ export const InterPreview = forwardRef<InterPreviewRef, { formData: InterFormDat
     }, [formData, ready, bgImage, logoImage]);
 
     return (
-      <div className="rounded-lg border border-border overflow-hidden bg-white">
+      <div className="relative rounded-lg border border-border overflow-hidden bg-white" style={{ aspectRatio: `${PAGE_W} / ${PAGE_H}` }}>
         <canvas
           ref={canvasRef}
           className="w-full h-auto pointer-events-none select-none"
-          style={{ display: 'block' }}
+          style={{ display: ready ? 'block' : 'none' }}
         />
         {!ready && (
-          <div className="flex items-center justify-center py-20 text-muted-foreground text-sm">
-            Carregando preview...
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-muted/40 to-muted/10">
+            <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+            <div className="text-xs text-muted-foreground">Carregando preview...</div>
           </div>
         )}
       </div>
