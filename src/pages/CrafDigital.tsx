@@ -262,14 +262,11 @@ export default function CrafDigital() {
 
           <div className="rounded-lg border border-border bg-muted/20 p-2">
             <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Preview</p>
-            <div className="bg-white rounded overflow-hidden flex items-center justify-center" style={{ minHeight: 400 }}>
+            <div className="relative bg-white rounded overflow-hidden flex items-center justify-center" style={{ minHeight: 400 }}>
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="max-w-full max-h-[80vh] object-contain" />
               ) : (
-                <div className="flex flex-col items-center gap-2 p-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">Carregando preview...</p>
-                </div>
+                <PreviewLoader label="Renderizando CRAF" />
               )}
             </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
