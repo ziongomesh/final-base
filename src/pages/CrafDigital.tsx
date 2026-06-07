@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PreviewLoader } from '@/components/PreviewLoader';
 import { useForm } from 'react-hook-form';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -112,6 +112,14 @@ export default function CrafDigital() {
 
   const watched = form.watch();
   const cpfReady = onlyDigits(watched.cpf).length >= 11;
+
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      setPreviewUrl(null);
+      setPreviewError(null);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const handleGeneratePreview = async () => {
     const data = form.getValues();
