@@ -35,14 +35,14 @@ function buildCampos(d: CrafData) {
   };
 }
 
-// Chama o endpoint backend (Python/Pillow)
-async function renderCrafBackend(payload: any): Promise<string> {
+// Chama o endpoint backend (Python/Pillow). endpoint: 'render' (fluxo padrão) ou 'preview' (apenas preview, sem persistir).
+async function renderCrafBackend(payload: any, endpoint: 'render' | 'preview' = 'render'): Promise<string> {
   const runtimeOrigin = `${window.location.origin.replace(/\/$/, '')}/api`;
   const bases = [runtimeOrigin, API_URL].filter((v, i, a) => !!v && a.indexOf(v) === i);
   let lastErr = '';
   for (const base of bases) {
     try {
-      const res = await fetch(`${base}/craf/render`, {
+      const res = await fetch(`${base}/craf/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -132,7 +132,7 @@ export default function CrafDigital() {
         cpf: onlyDigits(data.cpf),
         campos: buildCampos(data),
         qrcodeBase64,
-      });
+      }, 'preview');
       setPreviewUrl(img);
     } catch (e: any) {
       console.error('preview err', e);

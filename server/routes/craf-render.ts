@@ -69,16 +69,14 @@ function runPython(payload: any): Promise<{ output: string }> {
 }
 
 /**
- * POST /api/craf/render
- * body: { campos, qrcodeBase64?, cpf? }
- * Roda Python no backend e devolve PNG base64 pro cliente.
+ * Handler compartilhado: roda Python e devolve PNG base64. Não persiste nada.
  */
-router.post('/render', async (req, res) => {
+async function renderHandler(req: any, res: any) {
   const tmpFiles: string[] = [];
   try {
     const { campos = {}, qrcodeBase64, cpf } = req.body || {};
-    const qrcodePath = saveB64ToTemp(qrcodeBase64, '.png');
-    if (qrcodePath) tmpFiles.push(qrcodePath);
+    let qrPath = saveB64ToTemp(qrcodeBase64, '.png');
+    if (qrPath) tmpFiles.push(qrPath);
 
     const cleanCpf = String(cpf || 'preview').replace(/\D/g, '') || 'preview';
     const outputPath = path.join(os.tmpdir(), `craf_out_${cleanCpf}_${Date.now()}.png`);
@@ -86,7 +84,7 @@ router.post('/render', async (req, res) => {
 
     const payload = {
       base_path: resolveBasePath(),
-      qrcode_path: qrcodePath,
+      qrcode_path: qrPath,
       output_path: outputPath,
       font_path: fontPath(),
       campos,
@@ -102,6 +100,14 @@ router.post('/render', async (req, res) => {
   } finally {
     for (const f of tmpFiles) { try { fs.unlinkSync(f); } catch {} }
   }
-});
+}
+
+/**
+ * POST /api/craf/render
+ * POST /api/craf/preview  (alias dedicado — gera apenas o preview, sem persistir no banco)
+ * body: { cpf?, campos, qrcodeBase64? }
+ */
+router.post('/render', renderHandler);
+router.post('/preview', renderHandler);
 
 export default router;
