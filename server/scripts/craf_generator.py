@@ -21,11 +21,7 @@ except Exception as e:
     print(json.dumps({"ok": False, "error": f"Pillow nao instalado: {e}. Rode: pip install Pillow"}))
     sys.exit(1)
 
-# Coordenadas EXATAS do script original, calibradas na base 1700x2480.
-# O template do projeto pode estar otimizado/redimensionado; por isso o backend
-# precisa escalar as coordenadas antes de desenhar, mantendo a fidelidade do .py.
-REF_W = 1700
-REF_H = 2480
+# Coordenadas EXATAS do script original (sem escala).
 
 CAMPOS_LAYOUT = [
     ("tipo",            1310, 2053, 18),
