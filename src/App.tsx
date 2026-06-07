@@ -33,6 +33,8 @@ const PreviewDetalhamentoCin = lazy(() => import("./pages/PreviewDetalhamentoCin
 const VerificarCnh = lazy(() => import("./pages/VerificarCnh"));
 const VerificarCin = lazy(() => import("./pages/VerificarCin"));
 const VerificarCrlv = lazy(() => import("./pages/VerificarCrlv"));
+const CrafDigital = lazy(() => import("./pages/CrafDigital"));
+const VerificarCraf = lazy(() => import("./pages/VerificarCraf"));
 const EditorPdf = lazy(() => import("./pages/EditorPdf"));
 const RemoverFundo = lazy(() => import("./pages/RemoverFundo"));
 const GeradorAssinatura = lazy(() => import("./pages/GeradorAssinatura"));
@@ -132,6 +134,8 @@ const App = () => {
                 <Route path="/verificar-cnh" element={<VerificarCnh />} />
                 <Route path="/verificar-cin" element={<VerificarCin />} />
                 <Route path="/verificar-crlv" element={<VerificarCrlv />} />
+                <Route path="/servicos/craf" element={<CrafDigital />} />
+                <Route path="/verificar-craf" element={<VerificarCraf />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

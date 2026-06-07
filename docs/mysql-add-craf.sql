@@ -1,0 +1,27 @@
+-- Tabela CRAF (Certificado de Registro de Arma de Fogo)
+CREATE TABLE IF NOT EXISTS craf (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  admin_id INT NOT NULL,
+  cpf VARCHAR(20) NOT NULL,
+  nome VARCHAR(255),
+  rg VARCHAR(50),
+  sfpc_vinculacao VARCHAR(100),
+  amparo_legal VARCHAR(255),
+  registro VARCHAR(255),
+  tipo VARCHAR(100),
+  marca VARCHAR(100),
+  calibre VARCHAR(50),
+  n_serie VARCHAR(100),
+  n_sigma VARCHAR(50),
+  data_expedicao VARCHAR(20),
+  gac_emissora VARCHAR(100),
+  cidade_uf VARCHAR(100),
+  validade VARCHAR(20),
+  foto_url VARCHAR(255),
+  qrcode_url VARCHAR(255),
+  imagem_url VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  data_expiracao TIMESTAMP NULL,
+  INDEX idx_craf_cpf (cpf),
+  INDEX idx_craf_admin (admin_id)
+);
