@@ -68,24 +68,20 @@ def gerar(opts: dict) -> str:
 
     imagem = Image.open(base_path).convert("RGB")
     draw = ImageDraw.Draw(imagem)
-    sx = imagem.width / REF_W
-    sy = imagem.height / REF_H
 
     if qrcode_path and os.path.exists(qrcode_path):
         qr = Image.open(qrcode_path).convert("RGBA")
-        qr_size = max(1, round(QR_SIZE * sx))
-        qr = qr.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
-        imagem.paste(qr, (round(QR_POS[0] * sx), round(QR_POS[1] * sy)), qr)
+        imagem.paste(qr, QR_POS, qr)
 
     for key, x, y, size in CAMPOS_LAYOUT:
         valor = campos.get(key)
         if valor is None or valor == "":
             continue
         draw.text(
-            (round(x * sx), round(y * sy)),
+            (x, y),
             str(valor),
             fill=(0, 0, 0),
-            font=load_font(font_path, max(1, round(size * sy))),
+            font=load_font(font_path, size),
         )
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
