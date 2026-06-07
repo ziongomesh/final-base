@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { PreviewLoader } from '@/components/PreviewLoader';
 import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import baseItau from '@/assets/base-itau.png';
 import iphoneTimeFont from '@/assets/fonte1.otf';
