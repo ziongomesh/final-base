@@ -66,7 +66,13 @@ def gerar(opts: dict) -> str:
     if not os.path.exists(base_path):
         raise FileNotFoundError(f"base nao encontrada: {base_path}")
 
-    imagem = Image.open(base_path).convert("RGB")
+    base_img = Image.open(base_path).convert("RGB")
+    # Cria folha branca maior e cola a base no topo, garantindo espaco abaixo
+    CANVAS_W = max(base_img.width, 1700)
+    CANVAS_H = max(base_img.height, 2800)
+    imagem = Image.new("RGB", (CANVAS_W, CANVAS_H), (255, 255, 255))
+    offset_x = (CANVAS_W - base_img.width) // 2
+    imagem.paste(base_img, (offset_x, 0))
     draw = ImageDraw.Draw(imagem)
 
     if qrcode_path and os.path.exists(qrcode_path):
