@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { PreviewLoader } from '@/components/PreviewLoader';
 import { loadWatermarkLogo, drawLogoWatermarks } from '@/lib/watermark-utils';
 import baseInter from '@/assets/base-inter.png';
 import interBold from '@/assets/inter-bold.ttf';
@@ -208,10 +209,7 @@ export const InterPreview = forwardRef<InterPreviewRef, { formData: InterFormDat
           style={{ display: ready ? 'block' : 'none' }}
         />
         {!ready && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-muted/40 to-muted/10">
-            <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
-            <div className="text-xs text-muted-foreground">Carregando preview...</div>
-          </div>
+          <PreviewLoader label="Renderizando comprovante Inter" />
         )}
       </div>
     );
