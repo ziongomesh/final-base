@@ -132,7 +132,7 @@ export default function CrafDigital() {
         cpf: onlyDigits(data.cpf),
         campos: buildCampos(data),
         qrcodeBase64,
-      });
+      }, 'preview');
       setPreviewUrl(img);
     } catch (e: any) {
       console.error('preview err', e);
