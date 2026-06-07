@@ -77,6 +77,7 @@ const categories: ServiceCategory[] = [
       { id: 'certidao-nascimento-qr-off', name: 'CERTIDÃO DE NASCIMENTO', description: 'Certidão de nascimento sem QR Code', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-file-lines', hasQr: false, pdfGroup: 'certidao' },
       { id: 'certidao-obito', name: 'CERTIDÃO DE ÓBITO', description: 'Certidão de óbito digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-cross', pdfGroup: 'certidao' },
       { id: 'certidao-casamento', name: 'CERTIDÃO DE CASAMENTO', description: 'Certidão de casamento digital', credits: 1, available: false, route: '#', icon: FileText, faIcon: 'fa-solid fa-ring', pdfGroup: 'certidao' },
+      { id: 'craf-exercito', name: 'CRAF — EXÉRCITO', description: 'Certificado de Registro de Arma de Fogo', credits: 1, available: true, route: '/servicos/craf', icon: FileText, faIcon: 'fa-solid fa-shield-halved', hasQr: true, specs: ['QR Code: Sim', 'PDF: Sim'] },
     ],
   },
   {
