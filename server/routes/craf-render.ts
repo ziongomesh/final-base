@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
+import os from 'os';
+import crypto from 'crypto';
+import { spawn } from 'child_process';
 import logger from '../utils/logger.ts';
 
 const router = Router();
@@ -9,56 +11,10 @@ const router = Router();
 const publicDir = path.resolve(process.cwd(), '..', 'public');
 const templatesDir = path.join(publicDir, 'templates');
 const uploadsDir = path.join(publicDir, 'uploads');
-const serverFontsDir = path.resolve(process.cwd(), 'fonts');
+const scriptsDir = path.resolve(process.cwd(), 'scripts');
+const pythonScript = path.join(scriptsDir, 'craf_generator.py');
 
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-// Posicoes EXATAS do script python original
-const CAMPOS_LAYOUT: Array<{ key: string; x: number; y: number; size: number }> = [
-  { key: 'tipo',            x: 1310, y: 2053, size: 18 },
-  { key: 'registro',        x: 1297, y: 1960, size: 21 },
-  { key: 'n_serie',         x: 1309, y: 2210, size: 18 },
-  { key: 'n_sigma',         x: 1545, y: 2210, size: 18 },
-  { key: 'calibre',         x: 1309, y: 2128, size: 18 },
-  { key: 'marca',           x: 1550, y: 2053, size: 18 },
-  { key: 'data_expedicao',  x: 1306, y: 2279, size: 20 },
-  { key: 'gac_emissora',    x: 1293, y: 2423, size: 18 },
-  { key: 'cidade_uf',       x: 1294, y: 2465, size: 18 },
-  { key: 'amparo_legal',    x:  711, y: 1465, size: 18 },
-  { key: 'sfpc_vinculacao', x: 1356, y: 1363, size: 18 },
-  { key: 'rg',              x: 1018, y: 1363, size: 18 },
-  { key: 'cpf',             x:  712, y: 1363, size: 18 },
-  { key: 'nome',            x:  712, y: 1245, size: 20 },
-  { key: 'validade',        x:  706, y: 1136, size: 21 },
-];
-
-const QR_X = 691;
-const QR_Y = 1929;
-
-// Registrar fonte (tenta arial do Windows, fallback OpenSans incluida no servidor)
-let fontFamily = 'CrafFont';
-let fontLoaded = false;
-function ensureFont() {
-  if (fontLoaded) return;
-  const candidates = [
-    process.env.CRAF_FONT,
-    'C:\\Windows\\Fonts\\arial.ttf',
-    path.join(serverFontsDir, 'OpenSans-Regular.ttf'),
-  ].filter(Boolean) as string[];
-  for (const fp of candidates) {
-    try {
-      if (fs.existsSync(fp)) {
-        GlobalFonts.registerFromPath(fp, fontFamily);
-        fontLoaded = true;
-        logger.info(`[CRAF] Fonte carregada: ${fp}`);
-        return;
-      }
-    } catch {}
-  }
-  // ultimo recurso: usar sans-serif default do canvas
-  fontFamily = 'sans-serif';
-  fontLoaded = true;
-}
 
 function resolveBasePath(): string {
   const candidates = [
@@ -70,61 +26,82 @@ function resolveBasePath(): string {
   return candidates[0];
 }
 
-function b64ToBuffer(b64?: string | null): Buffer | null {
+function pythonCmd(): string {
+  return process.env.CRAF_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+}
+
+function fontPath(): string {
+  return process.env.CRAF_FONT || (process.platform === 'win32'
+    ? 'C:\\Windows\\Fonts\\arial.ttf'
+    : '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf');
+}
+
+function saveB64ToTemp(b64: string | null | undefined, suffix: string): string | null {
   if (!b64) return null;
   const clean = b64.replace(/^data:[^;]+;base64,/, '');
   if (!clean) return null;
   const buf = Buffer.from(clean, 'base64');
-  return buf.length ? buf : null;
+  if (!buf.length) return null;
+  const tmp = path.join(os.tmpdir(), `craf_${Date.now()}_${crypto.randomBytes(4).toString('hex')}${suffix}`);
+  fs.writeFileSync(tmp, buf);
+  return tmp;
+}
+
+function runPython(payload: any): Promise<{ output: string }> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(pythonCmd(), [pythonScript], { stdio: ['pipe', 'pipe', 'pipe'] });
+    let out = '';
+    let err = '';
+    proc.stdout.on('data', (d) => { out += d.toString(); });
+    proc.stderr.on('data', (d) => { err += d.toString(); });
+    proc.on('error', (e) => reject(new Error(`spawn falhou: ${e.message}. Instale Python e Pillow (pip install Pillow).`)));
+    proc.on('close', (code) => {
+      try {
+        const parsed = JSON.parse(out.trim().split('\n').pop() || '{}');
+        if (parsed?.ok) return resolve({ output: parsed.output });
+        return reject(new Error(parsed?.error || err || `python exit ${code}`));
+      } catch {
+        return reject(new Error(err || out || `python exit ${code}`));
+      }
+    });
+    proc.stdin.write(JSON.stringify(payload));
+    proc.stdin.end();
+  });
 }
 
 /**
  * POST /api/craf/render
- * body: { campos: {...}, qrcodeBase64?, cpf? }
- * Replica o script Python original em TypeScript usando @napi-rs/canvas.
+ * body: { campos, qrcodeBase64?, cpf? }
+ * Roda Python no backend e devolve PNG base64 pro cliente.
  */
 router.post('/render', async (req, res) => {
+  const tmpFiles: string[] = [];
   try {
-    ensureFont();
-    const { campos = {}, qrcodeBase64 } = req.body || {};
+    const { campos = {}, qrcodeBase64, cpf } = req.body || {};
+    const qrcodePath = saveB64ToTemp(qrcodeBase64, '.png');
+    if (qrcodePath) tmpFiles.push(qrcodePath);
 
-    const basePath = resolveBasePath();
-    if (!fs.existsSync(basePath)) {
-      return res.status(500).json({ error: `base nao encontrada: ${basePath}` });
-    }
+    const cleanCpf = String(cpf || 'preview').replace(/\D/g, '') || 'preview';
+    const outputPath = path.join(os.tmpdir(), `craf_out_${cleanCpf}_${Date.now()}.png`);
+    tmpFiles.push(outputPath);
 
-    const base = await loadImage(basePath);
-    const canvas = createCanvas(base.width, base.height);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(base, 0, 0);
+    const payload = {
+      base_path: resolveBasePath(),
+      qrcode_path: qrcodePath,
+      output_path: outputPath,
+      font_path: fontPath(),
+      campos,
+    };
 
-    // QR-Code (mesma posicao do python: paste em (691,1929))
-    const qrBuf = b64ToBuffer(qrcodeBase64);
-    if (qrBuf) {
-      try {
-        const qr = await loadImage(qrBuf);
-        ctx.drawImage(qr, QR_X, QR_Y);
-      } catch (e) {
-        logger.warn('[CRAF] qrcode invalido, ignorando');
-      }
-    }
-
-    // Texto preto, identico ao Pillow draw.text((x,y), ...)
-    ctx.fillStyle = '#000000';
-    ctx.textBaseline = 'top';
-    for (const { key, x, y, size } of CAMPOS_LAYOUT) {
-      const valor = (campos as any)[key];
-      if (valor === undefined || valor === null || valor === '') continue;
-      ctx.font = `${size}px "${fontFamily}"`;
-      ctx.fillText(String(valor), x, y);
-    }
-
-    const png = await canvas.encode('png');
-    const b64 = `data:image/png;base64,${png.toString('base64')}`;
+    const { output } = await runPython(payload);
+    const buf = fs.readFileSync(output);
+    const b64 = `data:image/png;base64,${buf.toString('base64')}`;
     res.json({ success: true, imageBase64: b64 });
   } catch (e: any) {
     logger.error('[CRAF render] ', e);
     res.status(500).json({ error: e?.message || 'Erro ao renderizar CRAF' });
+  } finally {
+    for (const f of tmpFiles) { try { fs.unlinkSync(f); } catch {} }
   }
 });
 
