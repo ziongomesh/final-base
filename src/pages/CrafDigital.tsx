@@ -81,9 +81,11 @@ async function generateQrCode(cpf: string): Promise<string> {
 export default function CrafDigital() {
   const { admin, loading } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [fotoBase64, setFotoBase64] = useState<string | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [savedUrl, setSavedUrl] = useState<string | null>(null);
   const fotoInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -111,26 +113,27 @@ export default function CrafDigital() {
   const watched = form.watch();
   const cpfReady = onlyDigits(watched.cpf).length >= 11;
 
-  // Live preview via backend Python (debounce 600ms)
-  useEffect(() => {
-    if (!cpfReady) return;
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      try {
-        const qr = await generateQrCode(watched.cpf);
-        if (cancelled) return;
-        const img = await renderCrafBackend({
-          cpf: onlyDigits(watched.cpf),
-          campos: buildCampos(watched),
-          qrcodeBase64: qr,
-        });
-        if (cancelled) return;
-        setPreviewUrl(img);
-      } catch (e) { console.error('preview err', e); }
-    }, 600);
-    return () => { cancelled = true; clearTimeout(t); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(watched), cpfReady]);
+  const handleGeneratePreview = async () => {
+    const data = form.getValues();
+    if (onlyDigits(data.cpf).length < 11) { toast.error('Informe um CPF válido'); return; }
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const qrcodeBase64 = await generateQrCode(data.cpf);
+      const img = await renderCrafBackend({
+        cpf: onlyDigits(data.cpf),
+        campos: buildCampos(data),
+        qrcodeBase64,
+      });
+      setPreviewUrl(img);
+    } catch (e: any) {
+      console.error('preview err', e);
+      setPreviewError(e?.message || 'Erro ao gerar preview');
+      toast.error(e?.message || 'Erro ao gerar preview');
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
