@@ -497,12 +497,7 @@ const ChaPreview = forwardRef<ChaPreviewHandle, ChaPreviewProps>((props, ref) =>
 
 
 
-      {loading && (
-        <div className="flex items-center justify-center py-12 gap-2 text-muted-foreground">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          <span className="text-sm">Gerando matrizes...</span>
-        </div>
-      )}
+      {loading && <PreviewLoader label="Renderizando CHA" />}
       <div className={`grid grid-cols-1 gap-3`} style={{ position: loading ? 'absolute' : 'relative', opacity: loading ? 0 : 1, pointerEvents: loading ? 'none' : 'auto' }}>
         <div>
           <p className="text-xs font-medium text-muted-foreground mb-1">Frente</p>

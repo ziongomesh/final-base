@@ -289,10 +289,7 @@ export default function CnhPreview({ cnhData, onClose, onSaveSuccess, onEdit, is
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">Gerando preview...</span>
-        </div>
+        <PreviewLoader label="Renderizando CNH" />
       ) : (
         <>
           {/* Preview das 3 imagens */}
