@@ -10,9 +10,50 @@ import { Navigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { playSuccessSound } from '@/lib/success-sound';
 import { FileText, Loader2, ArrowLeft, Upload, X } from 'lucide-react';
-import { generateCrafImage, canvasToBase64, type CrafData } from '@/lib/craf-generator';
+import type { CrafData } from '@/lib/craf-generator';
 
 const API_URL = (import.meta as any).env?.VITE_API_URL || '';
+
+// Monta o objeto `campos` exatamente como o craf_generator.py espera
+function buildCampos(d: CrafData) {
+  return {
+    tipo: d.tipo,
+    registro: d.registro,
+    n_serie: d.nSerie,
+    n_sigma: d.nSigma,
+    calibre: d.calibre,
+    marca: d.marca,
+    data_expedicao: d.dataExpedicao,
+    gac_emissora: d.gacEmissora,
+    cidade_uf: d.cidadeUf,
+    amparo_legal: d.amparoLegal,
+    sfpc_vinculacao: d.sfpcVinculacao,
+    rg: d.rg,
+    cpf: onlyDigits(d.cpf),
+    nome: d.nome,
+    validade: d.validade,
+  };
+}
+
+// Chama o endpoint backend (Python/Pillow)
+async function renderCrafBackend(payload: any): Promise<string> {
+  const runtimeOrigin = `${window.location.origin.replace(/\/$/, '')}/api`;
+  const bases = [runtimeOrigin, API_URL].filter((v, i, a) => !!v && a.indexOf(v) === i);
+  let lastErr = '';
+  for (const base of bases) {
+    try {
+      const res = await fetch(`${base}/craf/render`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) { lastErr = json?.error || `HTTP ${res.status}`; continue; }
+      return json.imageBase64 as string;
+    } catch (e: any) { lastErr = e?.message || 'erro'; }
+  }
+  throw new Error(lastErr || 'Falha ao renderizar CRAF');
+}
 
 function onlyDigits(v: string) { return (v || '').replace(/\D/g, ''); }
 function formatCPF(v: string) {
@@ -70,22 +111,24 @@ export default function CrafDigital() {
   const watched = form.watch();
   const cpfReady = onlyDigits(watched.cpf).length >= 11;
 
-  // Live preview
+  // Live preview via backend Python (debounce 600ms)
   useEffect(() => {
     if (!cpfReady) return;
     let cancelled = false;
-    (async () => {
+    const t = setTimeout(async () => {
       try {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
         const qr = await generateQrCode(watched.cpf);
         if (cancelled) return;
-        await generateCrafImage(canvas, watched, qr);
+        const img = await renderCrafBackend({
+          cpf: onlyDigits(watched.cpf),
+          campos: buildCampos(watched),
+          qrcodeBase64: qr,
+        });
         if (cancelled) return;
-        setPreviewUrl(canvas.toDataURL('image/png'));
+        setPreviewUrl(img);
       } catch (e) { console.error('preview err', e); }
-    })();
-    return () => { cancelled = true; };
+    }, 600);
+    return () => { cancelled = true; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(watched), cpfReady]);
 
@@ -109,10 +152,12 @@ export default function CrafDigital() {
     if (!fotoBase64) { toast.error('Envie uma foto'); return; }
     setSubmitting(true);
     try {
-      const canvas = canvasRef.current!;
       const qrcodeBase64 = await generateQrCode(data.cpf);
-      await generateCrafImage(canvas, data, qrcodeBase64);
-      const imagemBase64 = canvasToBase64(canvas, 'png');
+      const imagemBase64 = await renderCrafBackend({
+        cpf: onlyDigits(data.cpf),
+        campos: buildCampos(data),
+        qrcodeBase64,
+      });
 
       const payload = {
         admin_id: admin.id,
