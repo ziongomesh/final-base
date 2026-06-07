@@ -18,9 +18,8 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 function resolveBasePath(): string {
   const candidates = [
-    path.join(publicDir, 'base.png'),
-    path.join(templatesDir, 'base.png'),
     path.join(templatesDir, 'craf-base.png'),
+    path.join(templatesDir, 'base.png'),
   ];
   for (const c of candidates) if (fs.existsSync(c)) return c;
   return candidates[0];
