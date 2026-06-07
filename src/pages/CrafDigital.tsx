@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { PreviewLoader } from '@/components/PreviewLoader';
 import { useForm } from 'react-hook-form';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -310,12 +310,21 @@ export default function CrafDigital() {
           </form>
 
           <div className="rounded-lg border border-border bg-muted/20 p-2">
-            <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Preview</p>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">Preview</p>
+              <Button type="button" size="sm" onClick={handleGeneratePreview} disabled={previewLoading || !cpfReady} className="h-7 text-[11px]">
+                {previewLoading ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Gerando...</> : 'Gerar preview'}
+              </Button>
+            </div>
             <div className="relative bg-white rounded overflow-hidden flex items-center justify-center" style={{ minHeight: 400 }}>
-              {previewUrl ? (
+              {previewLoading ? (
+                <PreviewLoader label="Gerando preview CRAF" />
+              ) : previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="max-w-full max-h-[80vh] object-contain" />
+              ) : previewError ? (
+                <p className="px-4 text-center text-xs text-destructive">{previewError}</p>
               ) : (
-                <PreviewLoader label="Renderizando CRAF" />
+                <PreviewLoader label="Aguardando gerar preview" />
               )}
             </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
