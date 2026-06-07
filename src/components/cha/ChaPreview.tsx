@@ -3,6 +3,7 @@ import { loadTemplate } from '@/lib/template-loader';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
+import { PreviewLoader } from '@/components/PreviewLoader';
 
 interface ChaPreviewProps {
   nome: string;

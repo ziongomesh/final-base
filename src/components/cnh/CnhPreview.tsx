@@ -13,6 +13,7 @@ import CnhSuccessModal from "./CnhSuccessModal";
 import CnhDetalhamento from "./CnhDetalhamento";
 import { cnhService } from "@/lib/cnh-service";
 import { playSuccessSound } from "@/lib/success-sound";
+import { PreviewLoader } from "@/components/PreviewLoader";
 import api from "@/lib/api";
 
 interface CnhPreviewProps {
