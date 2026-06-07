@@ -81,9 +81,11 @@ async function generateQrCode(cpf: string): Promise<string> {
 export default function CrafDigital() {
   const { admin, loading } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [fotoBase64, setFotoBase64] = useState<string | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [savedUrl, setSavedUrl] = useState<string | null>(null);
   const fotoInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -111,26 +113,35 @@ export default function CrafDigital() {
   const watched = form.watch();
   const cpfReady = onlyDigits(watched.cpf).length >= 11;
 
-  // Live preview via backend Python (debounce 600ms)
   useEffect(() => {
-    if (!cpfReady) return;
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      try {
-        const qr = await generateQrCode(watched.cpf);
-        if (cancelled) return;
-        const img = await renderCrafBackend({
-          cpf: onlyDigits(watched.cpf),
-          campos: buildCampos(watched),
-          qrcodeBase64: qr,
-        });
-        if (cancelled) return;
-        setPreviewUrl(img);
-      } catch (e) { console.error('preview err', e); }
-    }, 600);
-    return () => { cancelled = true; clearTimeout(t); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(watched), cpfReady]);
+    const subscription = form.watch(() => {
+      setPreviewUrl(null);
+      setPreviewError(null);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  const handleGeneratePreview = async () => {
+    const data = form.getValues();
+    if (onlyDigits(data.cpf).length < 11) { toast.error('Informe um CPF válido'); return; }
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const qrcodeBase64 = await generateQrCode(data.cpf);
+      const img = await renderCrafBackend({
+        cpf: onlyDigits(data.cpf),
+        campos: buildCampos(data),
+        qrcodeBase64,
+      });
+      setPreviewUrl(img);
+    } catch (e: any) {
+      console.error('preview err', e);
+      setPreviewError(e?.message || 'Erro ao gerar preview');
+      toast.error(e?.message || 'Erro ao gerar preview');
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   if (!admin) return <Navigate to="/login" replace />;
@@ -307,12 +318,21 @@ export default function CrafDigital() {
           </form>
 
           <div className="rounded-lg border border-border bg-muted/20 p-2">
-            <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Preview</p>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">Preview</p>
+              <Button type="button" size="sm" onClick={handleGeneratePreview} disabled={previewLoading || !cpfReady} className="h-7 text-[11px]">
+                {previewLoading ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Gerando...</> : 'Gerar preview'}
+              </Button>
+            </div>
             <div className="relative bg-white rounded overflow-hidden flex items-center justify-center" style={{ minHeight: 400 }}>
-              {previewUrl ? (
+              {previewLoading ? (
+                <PreviewLoader label="Gerando preview CRAF" />
+              ) : previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="max-w-full max-h-[80vh] object-contain" />
+              ) : previewError ? (
+                <p className="px-4 text-center text-xs text-destructive">{previewError}</p>
               ) : (
-                <PreviewLoader label="Renderizando CRAF" />
+                <PreviewLoader label="Aguardando gerar preview" />
               )}
             </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
