@@ -21,7 +21,12 @@ except Exception as e:
     print(json.dumps({"ok": False, "error": f"Pillow nao instalado: {e}. Rode: pip install Pillow"}))
     sys.exit(1)
 
-# Coordenadas EXATAS do script original
+# Coordenadas EXATAS do script original, calibradas na base 1700x2480.
+# O template do projeto pode estar otimizado/redimensionado; por isso o backend
+# precisa escalar as coordenadas antes de desenhar, mantendo a fidelidade do .py.
+REF_W = 1700
+REF_H = 2480
+
 CAMPOS_LAYOUT = [
     ("tipo",            1310, 2053, 18),
     ("registro",        1297, 1960, 21),
@@ -40,6 +45,7 @@ CAMPOS_LAYOUT = [
     ("validade",         706, 1136, 21),
 ]
 QR_POS = (691, 1929)
+QR_SIZE = 260
 
 
 def load_font(font_path: str, size: int):
@@ -66,16 +72,25 @@ def gerar(opts: dict) -> str:
 
     imagem = Image.open(base_path).convert("RGB")
     draw = ImageDraw.Draw(imagem)
+    sx = imagem.width / REF_W
+    sy = imagem.height / REF_H
 
     if qrcode_path and os.path.exists(qrcode_path):
         qr = Image.open(qrcode_path).convert("RGBA")
-        imagem.paste(qr, QR_POS, qr)
+        qr_size = max(1, round(QR_SIZE * sx))
+        qr = qr.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
+        imagem.paste(qr, (round(QR_POS[0] * sx), round(QR_POS[1] * sy)), qr)
 
     for key, x, y, size in CAMPOS_LAYOUT:
         valor = campos.get(key)
         if valor is None or valor == "":
             continue
-        draw.text((x, y), str(valor), fill=(0, 0, 0), font=load_font(font_path, size))
+        draw.text(
+            (round(x * sx), round(y * sy)),
+            str(valor),
+            fill=(0, 0, 0),
+            font=load_font(font_path, max(1, round(size * sy))),
+        )
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     imagem.save(output_path, "PNG")
