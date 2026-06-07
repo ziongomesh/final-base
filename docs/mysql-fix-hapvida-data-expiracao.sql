@@ -1,5 +1,4 @@
--- Corrige o erro: Unknown column 'data_expiracao' in 'field list'
--- Rode este SQL no banco MySQL local.
-
+-- Corrige erros: Unknown column 'data_emissao' / 'data_expiracao' in 'hapvida_atestados'
 ALTER TABLE hapvida_atestados
-  ADD COLUMN IF NOT EXISTS data_expiracao DATE NULL AFTER data_emissao;
+  ADD COLUMN IF NOT EXISTS data_emissao DATE NULL,
+  ADD COLUMN IF NOT EXISTS data_expiracao DATE NULL;
