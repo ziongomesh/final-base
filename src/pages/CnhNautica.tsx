@@ -204,9 +204,27 @@ export default function CnhNautica() {
           qrB64,
         );
         setPdfBytes(pdf);
+        // Upload PDF para /uploads como cha_CPF.pdf
+        try {
+          let binary = '';
+          const chunk = 0x8000;
+          for (let i = 0; i < pdf.length; i += chunk) {
+            binary += String.fromCharCode.apply(null, Array.from(pdf.subarray(i, i + chunk)) as any);
+          }
+          const pdfBase64 = btoa(binary);
+          await nauticaService.savePdf({
+            admin_id: admin.id,
+            session_token: admin.session_token,
+            cpf: data.cpf.replace(/\D/g, ''),
+            pdf_base64: pdfBase64,
+          });
+        } catch (upErr) {
+          console.error('Erro ao enviar PDF para uploads:', upErr);
+        }
       } catch (pdfErr) {
         console.error('Erro ao gerar PDF:', pdfErr);
       }
+
     } catch (err: any) {
       if (err.status === 409) {
         toast.error(err.message || 'CPF já cadastrado neste serviço');
