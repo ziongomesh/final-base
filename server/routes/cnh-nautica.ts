@@ -182,8 +182,10 @@ router.post('/list', async (req, res) => {
       const cpf = (r.cpf || '').replace(/\D/g, '');
       if (!cpf) return false;
       if (r.foto && fs.existsSync(path.join(uploadsDir, path.basename(r.foto)))) return true;
+      if (fs.existsSync(path.join(uploadsDir, `cha_${cpf}.pdf`))) return true;
       if (fs.existsSync(path.join(uploadsDir, `CHA_${cpf}.pdf`))) return true;
       return false;
+
     });
 
     res.json({ registros });
