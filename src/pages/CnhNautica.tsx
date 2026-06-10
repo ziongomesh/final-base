@@ -578,31 +578,25 @@ export default function CnhNautica() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {fotoPreview && form.watch('nome') ? (
-                  <div className="relative">
-                    <ChaPreview
-                      ref={liveChaPreviewRef}
-                      nome={form.watch('nome')}
-                      cpf={form.watch('cpf')}
-                      dataNascimento={form.watch('dataNascimento')}
-                      categoria={form.watch('categoria')}
-                      categoria2={form.watch('categoria2') || ''}
-                      validade={form.watch('validade')}
-                      emissao={form.watch('emissao')}
-                      numeroInscricao={form.watch('numeroInscricao')}
-                      limiteNavegacao={form.watch('limiteNavegacao')}
-                      requisitos={form.watch('requisitos') || ''}
-                      orgaoEmissao={form.watch('orgaoEmissao')}
-                      fotoPreview={fotoPreview}
-                    />
-                    <WatermarkOverlay />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3 border-2 border-dashed rounded-lg">
-                    <Eye className="h-10 w-10 opacity-30" />
-                    <p className="text-sm">Preencha o nome e envie a foto para visualizar o preview</p>
-                  </div>
-                )}
+                <div className="relative">
+                  <ChaPreview
+                    ref={liveChaPreviewRef}
+                    nome={form.watch('nome')}
+                    cpf={form.watch('cpf')}
+                    dataNascimento={form.watch('dataNascimento')}
+                    categoria={form.watch('categoria')}
+                    categoria2={form.watch('categoria2') || ''}
+                    validade={form.watch('validade')}
+                    emissao={form.watch('emissao')}
+                    numeroInscricao={form.watch('numeroInscricao')}
+                    limiteNavegacao={form.watch('limiteNavegacao')}
+                    requisitos={form.watch('requisitos') || ''}
+                    orgaoEmissao={form.watch('orgaoEmissao')}
+                    fotoPreview={fotoPreview}
+                  />
+                  <WatermarkOverlay />
+                </div>
+
               </CardContent>
             </Card>
 
