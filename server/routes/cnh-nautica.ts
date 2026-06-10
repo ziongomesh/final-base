@@ -218,14 +218,23 @@ router.post('/delete', async (req, res) => {
     }
 
     // Delete files
-    const uploadsDir = path.resolve(process.cwd(), '..', 'public');
+    const publicRoot = path.resolve(process.cwd(), '..', 'public');
+    const uploadsDir2 = path.join(publicRoot, 'uploads');
     const filesToDelete = [record.foto, record.qrcode].filter(Boolean);
     for (const fileUrl of filesToDelete) {
-      const filePath = path.join(uploadsDir, fileUrl);
+      const filePath = path.join(publicRoot, fileUrl);
       if (fs.existsSync(filePath)) {
         try { fs.unlinkSync(filePath); } catch {}
       }
     }
+    const cpfClean = (record.cpf || '').replace(/\D/g, '');
+    if (cpfClean) {
+      for (const name of [`cha_${cpfClean}.pdf`, `CHA_${cpfClean}.pdf`]) {
+        const fp = path.join(uploadsDir2, name);
+        if (fs.existsSync(fp)) { try { fs.unlinkSync(fp); } catch {} }
+      }
+    }
+
 
     await query('DELETE FROM chas WHERE id = ?', [nautica_id]);
 
