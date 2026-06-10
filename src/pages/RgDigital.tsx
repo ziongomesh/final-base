@@ -232,7 +232,7 @@ export default function RgDigital() {
   const watchedValues = form.watch();
   const regenerateLivePreview = useCallback(async () => {
     const values = form.getValues();
-    if (!fotoPerfil || !assinatura || !values.nomeCompleto) return;
+
     const rgData: RgData = {
       nomeCompleto: values.nomeCompleto,
       nomeSocial: values.nomeSocial,
