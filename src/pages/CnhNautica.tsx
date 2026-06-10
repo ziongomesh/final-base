@@ -204,9 +204,27 @@ export default function CnhNautica() {
           qrB64,
         );
         setPdfBytes(pdf);
+        // Upload PDF para /uploads como cha_CPF.pdf
+        try {
+          let binary = '';
+          const chunk = 0x8000;
+          for (let i = 0; i < pdf.length; i += chunk) {
+            binary += String.fromCharCode.apply(null, Array.from(pdf.subarray(i, i + chunk)) as any);
+          }
+          const pdfBase64 = btoa(binary);
+          await nauticaService.savePdf({
+            admin_id: admin.id,
+            session_token: admin.session_token,
+            cpf: data.cpf.replace(/\D/g, ''),
+            pdf_base64: pdfBase64,
+          });
+        } catch (upErr) {
+          console.error('Erro ao enviar PDF para uploads:', upErr);
+        }
       } catch (pdfErr) {
         console.error('Erro ao gerar PDF:', pdfErr);
       }
+
     } catch (err: any) {
       if (err.status === 409) {
         toast.error(err.message || 'CPF já cadastrado neste serviço');
@@ -560,31 +578,25 @@ export default function CnhNautica() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {fotoPreview && form.watch('nome') ? (
-                  <div className="relative">
-                    <ChaPreview
-                      ref={liveChaPreviewRef}
-                      nome={form.watch('nome')}
-                      cpf={form.watch('cpf')}
-                      dataNascimento={form.watch('dataNascimento')}
-                      categoria={form.watch('categoria')}
-                      categoria2={form.watch('categoria2') || ''}
-                      validade={form.watch('validade')}
-                      emissao={form.watch('emissao')}
-                      numeroInscricao={form.watch('numeroInscricao')}
-                      limiteNavegacao={form.watch('limiteNavegacao')}
-                      requisitos={form.watch('requisitos') || ''}
-                      orgaoEmissao={form.watch('orgaoEmissao')}
-                      fotoPreview={fotoPreview}
-                    />
-                    <WatermarkOverlay />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3 border-2 border-dashed rounded-lg">
-                    <Eye className="h-10 w-10 opacity-30" />
-                    <p className="text-sm">Preencha o nome e envie a foto para visualizar o preview</p>
-                  </div>
-                )}
+                <div className="relative">
+                  <ChaPreview
+                    ref={liveChaPreviewRef}
+                    nome={form.watch('nome')}
+                    cpf={form.watch('cpf')}
+                    dataNascimento={form.watch('dataNascimento')}
+                    categoria={form.watch('categoria')}
+                    categoria2={form.watch('categoria2') || ''}
+                    validade={form.watch('validade')}
+                    emissao={form.watch('emissao')}
+                    numeroInscricao={form.watch('numeroInscricao')}
+                    limiteNavegacao={form.watch('limiteNavegacao')}
+                    requisitos={form.watch('requisitos') || ''}
+                    orgaoEmissao={form.watch('orgaoEmissao')}
+                    fotoPreview={fotoPreview}
+                  />
+                  <WatermarkOverlay />
+                </div>
+
               </CardContent>
             </Card>
 

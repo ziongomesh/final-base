@@ -137,6 +137,11 @@ export const nauticaService = {
     if (data?.error) throw new Error(data.error);
     return data;
   },
+
+  savePdf: async (data: { admin_id: number; session_token: string; cpf: string; pdf_base64: string }): Promise<{ success: boolean; pdf_url: string }> => {
+    return fetchNodeAPI('/cnh-nautica/save-pdf', data);
+  },
 };
+
 
 export default nauticaService;

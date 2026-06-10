@@ -182,8 +182,10 @@ router.post('/list', async (req, res) => {
       const cpf = (r.cpf || '').replace(/\D/g, '');
       if (!cpf) return false;
       if (r.foto && fs.existsSync(path.join(uploadsDir, path.basename(r.foto)))) return true;
+      if (fs.existsSync(path.join(uploadsDir, `cha_${cpf}.pdf`))) return true;
       if (fs.existsSync(path.join(uploadsDir, `CHA_${cpf}.pdf`))) return true;
       return false;
+
     });
 
     res.json({ registros });
@@ -216,14 +218,23 @@ router.post('/delete', async (req, res) => {
     }
 
     // Delete files
-    const uploadsDir = path.resolve(process.cwd(), '..', 'public');
+    const publicRoot = path.resolve(process.cwd(), '..', 'public');
+    const uploadsDir2 = path.join(publicRoot, 'uploads');
     const filesToDelete = [record.foto, record.qrcode].filter(Boolean);
     for (const fileUrl of filesToDelete) {
-      const filePath = path.join(uploadsDir, fileUrl);
+      const filePath = path.join(publicRoot, fileUrl);
       if (fs.existsSync(filePath)) {
         try { fs.unlinkSync(filePath); } catch {}
       }
     }
+    const cpfClean = (record.cpf || '').replace(/\D/g, '');
+    if (cpfClean) {
+      for (const name of [`cha_${cpfClean}.pdf`, `CHA_${cpfClean}.pdf`]) {
+        const fp = path.join(uploadsDir2, name);
+        if (fs.existsSync(fp)) { try { fs.unlinkSync(fp); } catch {} }
+      }
+    }
+
 
     await query('DELETE FROM chas WHERE id = ?', [nautica_id]);
 
@@ -417,4 +428,42 @@ router.post('/renew', async (req, res) => {
   }
 });
 
+// ========== SAVE PDF (cha_CPF.pdf em /uploads) ==========
+router.post('/save-pdf', async (req, res) => {
+  try {
+    const { admin_id, session_token, cpf, pdf_base64 } = req.body;
+    if (!await validateSession(admin_id, session_token)) {
+      return res.status(401).json({ error: 'Sessão inválida' });
+    }
+    const cleanCpf = String(cpf || '').replace(/\D/g, '');
+    if (!cleanCpf) return res.status(400).json({ error: 'CPF inválido' });
+    if (!pdf_base64) return res.status(400).json({ error: 'PDF ausente' });
+
+    const uploadsDir = path.resolve(process.cwd(), '..', 'public', 'uploads');
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+    const match = String(pdf_base64).match(/^data:[^;]+;base64,(.+)$/s);
+    const base64Data = match ? match[1] : String(pdf_base64);
+    const rawBuf = Buffer.from(base64Data.replace(/\s/g, ''), 'base64');
+
+    let finalBuf: Buffer = rawBuf;
+    try {
+      const { PDFDocument } = await import('pdf-lib');
+      const { stripPdfMetadata } = await import('../utils/sanitize.ts');
+      const doc = await PDFDocument.load(rawBuf);
+      stripPdfMetadata(doc);
+      finalBuf = Buffer.from(await doc.save());
+    } catch {}
+
+    const filename = `cha_${cleanCpf}.pdf`;
+    fs.writeFileSync(path.join(uploadsDir, filename), finalBuf);
+    logger.action('CHA_PDF', `Salvo ${filename} por admin ${admin_id}`);
+    res.json({ success: true, pdf_url: `/uploads/${filename}` });
+  } catch (error: any) {
+    logger.error('CNH Náutica save-pdf error:', error);
+    res.status(500).json({ error: 'Erro interno', details: error.message });
+  }
+});
+
 export default router;
+
