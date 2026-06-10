@@ -1198,46 +1198,51 @@ export default function CnhDigital() {
             </div>
 
             {/* Live Preview */}
-            {(previewFrenteUrl || previewMeioUrl || previewVersoUrl) && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Eye className="h-4 w-4" /> Preview ao Vivo
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {previewFrenteUrl && (
-                      <div className="cursor-pointer relative" onClick={() => openImageModal(previewFrenteUrl, 'CNH Frente')}>
-                        <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
-                        <div className="relative overflow-hidden rounded-lg border">
-                          <img src={previewFrenteUrl} alt="CNH Frente" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                          <WatermarkOverlay />
-                        </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Eye className="h-4 w-4" /> Preview ao Vivo
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {previewFrenteUrl && (
+                    <div className="cursor-pointer relative" onClick={() => openImageModal(previewFrenteUrl, 'CNH Frente')}>
+                      <p className="text-xs text-muted-foreground mb-1 text-center">Frente</p>
+                      <div className="relative overflow-hidden rounded-lg border">
+                        <img src={previewFrenteUrl} alt="CNH Frente" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                        <WatermarkOverlay />
                       </div>
-                    )}
-                    {previewMeioUrl && (
-                      <div className="cursor-pointer relative" onClick={() => openImageModal(previewMeioUrl, 'CNH Meio')}>
-                        <p className="text-xs text-muted-foreground mb-1 text-center">Meio</p>
-                        <div className="relative overflow-hidden rounded-lg border">
-                          <img src={previewMeioUrl} alt="CNH Meio" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                          <WatermarkOverlay />
-                        </div>
+                    </div>
+                  )}
+                  {previewMeioUrl && (
+                    <div className="cursor-pointer relative" onClick={() => openImageModal(previewMeioUrl, 'CNH Meio')}>
+                      <p className="text-xs text-muted-foreground mb-1 text-center">Meio</p>
+                      <div className="relative overflow-hidden rounded-lg border">
+                        <img src={previewMeioUrl} alt="CNH Meio" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                        <WatermarkOverlay />
                       </div>
-                    )}
-                    {previewVersoUrl && (
-                      <div className="cursor-pointer relative" onClick={() => openImageModal(previewVersoUrl, 'CNH Verso')}>
-                        <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
-                        <div className="relative overflow-hidden rounded-lg border">
-                          <img src={previewVersoUrl} alt="CNH Verso" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
-                          <WatermarkOverlay />
-                        </div>
+                    </div>
+                  )}
+                  {previewVersoUrl && (
+                    <div className="cursor-pointer relative" onClick={() => openImageModal(previewVersoUrl, 'CNH Verso')}>
+                      <p className="text-xs text-muted-foreground mb-1 text-center">Verso</p>
+                      <div className="relative overflow-hidden rounded-lg border">
+                        <img src={previewVersoUrl} alt="CNH Verso" className="w-full pointer-events-none select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                        <WatermarkOverlay />
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                    </div>
+                  )}
+                  {!previewFrenteUrl && !previewMeioUrl && !previewVersoUrl && (
+                    <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground gap-3 border-2 border-dashed rounded-lg">
+                      <Eye className="h-10 w-10 opacity-30" />
+                      <p className="text-sm">Gerando preview ao vivo...</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
 
             {/* Submit - Criar Acesso */}
             <div className="flex justify-end">
