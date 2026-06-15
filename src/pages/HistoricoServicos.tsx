@@ -130,6 +130,7 @@ export default function HistoricoServicos() {
   const [renewingId, setRenewingId] = useState<string | null>(null);
   const [expiringOpen, setExpiringOpen] = useState(false);
   const [historyView, setHistoryView] = useState<'mine' | 'base'>('mine');
+  const [deletingAllExpired, setDeletingAllExpired] = useState(false);
   const isAdminView = role === 'dono' || role === 'sub';
 
   const handleDeleteCnh = async (usuarioId: number) => {
@@ -249,6 +250,59 @@ export default function HistoricoServicos() {
       toast.error(err.message || 'Erro ao renovar');
     } finally {
       setRenewingId(null);
+    }
+  };
+
+  // ========== FUNÇÃO: Excluir todos os expirados da BASE ==========
+  const handleDeleteAllExpired = async () => {
+    if (!admin) return;
+    setDeletingAllExpired(true);
+    try {
+      // Filtrar apenas os registros expirados que pertencem à base (admin_id diferente do admin atual)
+      const expiredCnhs = usuarios.filter(u => {
+        const days = daysUntilExpiration(u.data_expiracao);
+        return days !== null && days < 0 && u.admin_id !== admin.id;
+      });
+      
+      const expiredRgs = rgRegistros.filter(r => {
+        const days = daysUntilExpiration(r.data_expiracao);
+        return days !== null && days < 0 && r.admin_id !== admin.id;
+      });
+      
+      const expiredEstudantes = estudanteRegistros.filter(e => {
+        const days = daysUntilExpiration(e.data_expiracao || null);
+        return days !== null && days < 0 && e.admin_id !== admin.id;
+      });
+      
+      const expiredNauticas = nauticaRegistros.filter(n => {
+        const days = daysUntilExpiration(n.expires_at);
+        return days !== null && days < 0 && n.admin_id !== admin.id;
+      });
+
+      const totalExpired = expiredCnhs.length + expiredRgs.length + expiredEstudantes.length + expiredNauticas.length;
+
+      if (totalExpired === 0) {
+        toast.info('Nenhum registro expirado para excluir');
+        setDeletingAllExpired(false);
+        return;
+      }
+
+      // Deletar todos em paralelo
+      const deletePromises = [
+        ...expiredCnhs.map(u => cnhService.delete(admin.id, admin.session_token, u.id)),
+        ...expiredRgs.map(r => rgService.delete(admin.id, admin.session_token, r.id)),
+        ...expiredEstudantes.map(e => estudanteService.delete(admin.id, admin.session_token, e.id)),
+        ...expiredNauticas.map(n => nauticaService.delete(admin.id, admin.session_token, n.id)),
+      ];
+
+      await Promise.all(deletePromises);
+      
+      toast.success(`${totalExpired} registro${totalExpired > 1 ? 's' : ''} expirado${totalExpired > 1 ? 's' : ''} excluído${totalExpired > 1 ? 's' : ''} com sucesso!`);
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao excluir registros expirados');
+    } finally {
+      setDeletingAllExpired(false);
     }
   };
 
@@ -406,97 +460,210 @@ export default function HistoricoServicos() {
   });
   const totalExpiring = expiringCnhs.length + expiringRgs.length + expiringEstudantes.length + expiringNauticas.length;
 
+  // ========== Calcular expirados da BASE ==========
+  const expiredBaseUsuarios = historyView === 'base' ? usuarios.filter(u => {
+    const days = daysUntilExpiration(u.data_expiracao);
+    return days !== null && days < 0 && u.admin_id !== admin?.id;
+  }) : [];
+
+  const expiredBaseRgs = historyView === 'base' ? rgRegistros.filter(r => {
+    const days = daysUntilExpiration(r.data_expiracao);
+    return days !== null && days < 0 && r.admin_id !== admin?.id;
+  }) : [];
+
+  const expiredBaseEstudantes = historyView === 'base' ? estudanteRegistros.filter(e => {
+    const days = daysUntilExpiration(e.data_expiracao || null);
+    return days !== null && days < 0 && e.admin_id !== admin?.id;
+  }) : [];
+
+  const expiredBaseNauticas = historyView === 'base' ? nauticaRegistros.filter(n => {
+    const days = daysUntilExpiration(n.expires_at);
+    return days !== null && days < 0 && n.admin_id !== admin?.id;
+  }) : [];
+
+  const totalExpiredBase = expiredBaseUsuarios.length + expiredBaseRgs.length + expiredBaseEstudantes.length + expiredBaseNauticas.length;
+
   // Last created across all types
   const allRecords = [
     ...filteredUsuarios.map(u => ({ type: 'cnh' as const, data: u, created: u.created_at })),
     ...filteredRgs.map(r => ({ type: 'rg' as const, data: r, created: r.created_at })),
     ...filteredEstudantes.map(e => ({ type: 'estudante' as const, data: e, created: e.created_at })),
     ...filteredNauticas.map(n => ({ type: 'nautica' as const, data: n, created: n.created_at })),
-  ].sort((a, b) => {
-    const da = a.created ? new Date(a.created).getTime() : 0;
-    const db = b.created ? new Date(b.created).getTime() : 0;
-    return db - da;
-  });
+  ];
+  const lastCreated = allRecords.sort((a, b) => {
+    const aDate = a.created ? new Date(a.created).getTime() : 0;
+    const bDate = b.created ? new Date(b.created).getTime() : 0;
+    return bDate - aDate;
+  })[0];
 
-  const lastCreated = allRecords.length > 0 ? allRecords[0] : null;
-
-  const formatCpf = (cpf: string | null | undefined) => {
-    if (!cpf) return '—';
-    const c = cpf.replace(/\D/g, '');
-    return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  const formatCpf = (cpf: string) => {
+    if (!cpf) return '';
+    const cleaned = cpf.replace(/\D/g, '');
+    if (cleaned.length !== 11) return cpf;
+    return `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-${cleaned.substring(9)}`;
   };
 
-  const formatDateStr = (dateStr: string | null) => {
-    if (!dateStr) return '—';
+  const formatDateStr = (d: string | null) => {
+    if (!d) return '—';
     try {
-      return new Date(dateStr).toLocaleDateString('pt-BR');
+      return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     } catch {
-      return dateStr;
+      return '—';
     }
   };
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-6xl">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
-              <History className="h-5 w-5 sm:h-6 sm:w-6" /> Histórico de Serviços
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">Gerencie seus serviços criados</p>
+            <h1 className="text-3xl font-bold">Histórico de Serviços</h1>
+            <p className="text-muted-foreground">Gerencie todos os seus acessos e documentos digitais</p>
           </div>
-          <Badge variant="outline" className="text-sm">
-            {totalRecords} registro{totalRecords !== 1 ? 's' : ''}
-          </Badge>
+
+          {/* Search */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nome ou CPF..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Tabs */}
+          {isAdminView && (
+            <Tabs value={historyView} onValueChange={(v) => setHistoryView(v as 'mine' | 'base')}>
+              <TabsList>
+                <TabsTrigger value="mine">Meus Registros</TabsTrigger>
+                <TabsTrigger value="base">Histórico da Base</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nome ou CPF..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        {/* View Toggle for Dono/Sub */}
-        {isAdminView && (
-          <Tabs value={historyView} onValueChange={(v) => setHistoryView(v as 'mine' | 'base')} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="mine">Seu Histórico</TabsTrigger>
-              <TabsTrigger value="base">Histórico da Base</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
-
+        {/* Loading State */}
         {loadingData ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Carregando histórico...</span>
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           </div>
-        ) : totalRecords === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <History className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">Nenhum serviço encontrado</p>
-            </CardContent>
-          </Card>
         ) : (
           <>
-            {/* Serviços próximos a expirar */}
-            {totalExpiring > 0 && (
-              <Card className="border-orange-500/40 bg-orange-500/5">
-                <CardHeader className="pb-3 cursor-pointer" onClick={() => setExpiringOpen(!expiringOpen)}>
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm text-orange-600 dark:text-orange-400 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" /> Serviços Próximos a Expirar ({totalExpiring})
-                    </CardTitle>
-                    {expiringOpen ? <ChevronUp className="h-4 w-4 text-orange-500" /> : <ChevronDown className="h-4 w-4 text-orange-500" />}
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total de Registros</p>
+                      <p className="text-2xl font-bold">{totalRecords}</p>
+                    </div>
+                    <FileText className="h-8 w-8 text-primary/30" />
                   </div>
-                  <p className="text-xs text-muted-foreground">Estes serviços expiram em 5 dias ou menos. Renove por 1 crédito para +45 dias.</p>
+                </CardContent>
+              </Card>
+              {totalExpiring > 0 && (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Expirando em 5 dias</p>
+                        <p className="text-2xl font-bold text-orange-600">{totalExpiring}</p>
+                      </div>
+                      <AlertTriangle className="h-8 w-8 text-orange-500/30" />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Botão para excluir expirados - VISUALIZAÇÃO "HISTÓRICO DA BASE" */}
+            {historyView === 'base' && totalExpiredBase > 0 && (
+              <Card className="border-destructive/30 bg-destructive/5">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold text-destructive flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        {totalExpiredBase} registro{totalExpiredBase > 1 ? 's' : ''} expirado{totalExpiredBase > 1 ? 's' : ''} na base
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Você pode excluir todos os registros expirados de uma vez para liberar espaço.
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="shrink-0">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Excluir Todos Expirados
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-destructive" />
+                            Excluir todos os expirados?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="space-y-3">
+                            <p>
+                              Você está prestes a excluir <strong>{totalExpiredBase} registro{totalExpiredBase > 1 ? 's' : ''}</strong> expirado{totalExpiredBase > 1 ? 's' : ''} da base:
+                            </p>
+                            <ul className="text-sm space-y-1 ml-4">
+                              {expiredBaseUsuarios.length > 0 && <li>• {expiredBaseUsuarios.length} CNH{expiredBaseUsuarios.length > 1 ? 's' : ''}</li>}
+                              {expiredBaseRgs.length > 0 && <li>• {expiredBaseRgs.length} RG{expiredBaseRgs.length > 1 ? 's' : ''}</li>}
+                              {expiredBaseEstudantes.length > 0 && <li>• {expiredBaseEstudantes.length} Carteira{expiredBaseEstudantes.length > 1 ? 's' : ''} de Estudante</li>}
+                              {expiredBaseNauticas.length > 0 && <li>• {expiredBaseNauticas.length} CHA Náutica{expiredBaseNauticas.length > 1 ? 's' : ''}</li>}
+                            </ul>
+                            <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 text-sm text-destructive">
+                              <strong>⚠️ Atenção:</strong> Esta ação é <strong>irreversível</strong>. Todos os arquivos serão permanentemente apagados.
+                            </div>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeleteAllExpired}
+                            disabled={deletingAllExpired}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {deletingAllExpired ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Excluindo...
+                              </>
+                            ) : (
+                              <>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir Permanentemente
+                              </>
+                            )}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Expiring Alert */}
+            {totalExpiring > 0 && (
+              <Card className="border-orange-500/30 bg-orange-500/5">
+                <CardHeader
+                  className="cursor-pointer hover:bg-orange-500/5 transition-colors"
+                  onClick={() => setExpiringOpen(!expiringOpen)}
+                >
+                  <CardTitle className="flex items-center justify-between text-orange-700">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5" />
+                      {totalExpiring} serviço{totalExpiring > 1 ? 's' : ''} expirando em breve
+                    </div>
+                    {expiringOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                  </CardTitle>
                 </CardHeader>
                 {expiringOpen && (
                 <CardContent className="space-y-3">
@@ -837,6 +1004,9 @@ function CnhHistoryCard({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{usuario.nome}</h3>
+                <Badge variant="outline" className="text-[10px]">
+                  <i className="fa-solid fa-id-card text-[10px] mr-1" /> CNH
+                </Badge>
                 <ExpirationBadge dataExpiracao={usuario.data_expiracao} />
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground">CPF: {formatCpf(usuario.cpf)}</p>
@@ -853,7 +1023,7 @@ function CnhHistoryCard({
             <RenewButton id={usuario.id} type="cnh" onRenew={onRenew} renewingId={renewingId} />
             {usuario.pdf_url && (
               <Button variant="outline" size="sm" asChild>
-              <a href={`${resolveUploadUrl(usuario.pdf_url)}?t=${Date.now()}`} target="_blank" rel="noopener noreferrer">
+                <a href={`${resolveUploadUrl(usuario.pdf_url)}?t=${Date.now()}`} target="_blank" rel="noopener noreferrer">
                   <FileText className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">PDF</span>
                 </a>
               </Button>
@@ -942,6 +1112,9 @@ function RgHistoryCard({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{nome}</h3>
+                <Badge variant="outline" className="text-[10px]">
+                  <i className="fa-solid fa-user text-[10px] mr-1" /> RG
+                </Badge>
                 <ExpirationBadge dataExpiracao={registro.data_expiracao} />
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground">CPF: {formatCpf(registro.cpf)}</p>
@@ -1072,6 +1245,13 @@ function EstudanteHistoryCard({
         <div className="flex items-center gap-2 shrink-0 self-end sm:self-center flex-wrap">
           <CopyDataButton text={buildEstudanteCopyText(registro, formatCpf)} />
           <RenewButton id={registro.id} type="estudante" onRenew={onRenew} renewingId={renewingId} />
+          {registro.pdf_url && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={`${resolveUploadUrl(registro.pdf_url)}?t=${Date.now()}`} target="_blank" rel="noopener noreferrer">
+                <FileText className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">PDF</span>
+              </a>
+            </Button>
+          )}
           <Button variant="default" size="sm" onClick={onEdit}>
             <Edit className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Editar</span>
           </Button>
