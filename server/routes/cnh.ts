@@ -152,13 +152,13 @@ router.post('/save', async (req, res) => {
 
     const usuarioId = result.insertId;
 
-    // Gerar QR Code denso com ID do usuário
-    const densePad = '#REPUBLICA.FEDERATIVA.DO.BRASIL//MINISTERIO.DA.INFRAESTRUTURA//SECRETARIA.NACIONAL.DE.TRANSITO-SENATRAN//CARTEIRA.NACIONAL.DE.HABILITACAO//PERMISO.DE.CONDUCCION//DRIVING.LICENSE//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=MEDIDA.PROVISORIA.2200-2//v6=VALIDACAO.BIOMETRICA//v7=REGISTRO.NACIONAL//v8=DENATRAN//v9=CONTRAN//v10=DETRAN';
+    // QR Code do VIO deve conter somente a URL de verificação.
+    // Não incluir payload/texto extra para o navegador/leitor não tentar interpretar conteúdo bruto.
     let qrcodeUrl: string | null = null;
     let qrPngBytes: Uint8Array | null = null;
     try {
       const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-certificado-vio.info/verificar-cnh?id=';
-      const qrData = `${cnhQrBaseUrl}${usuarioId}${densePad}`;
+      const qrData = `${cnhQrBaseUrl}${usuarioId}`;
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
       const qrResp = await fetch(qrApiUrl);
       if (qrResp.ok) {
@@ -349,9 +349,8 @@ router.post('/update', async (req, res) => {
     // Sempre regenerar PDF com todas as matrizes
     {
       try {
-        const densePadUpdate = '#REPUBLICA.FEDERATIVA.DO.BRASIL//MINISTERIO.DA.INFRAESTRUTURA//SECRETARIA.NACIONAL.DE.TRANSITO-SENATRAN//CARTEIRA.NACIONAL.DE.HABILITACAO//PERMISO.DE.CONDUCCION//DRIVING.LICENSE//v1=SERPRO//v2=ICP-BRASIL//v3=CERTIFICADO.DIGITAL//v4=ASSINATURA.DIGITAL//v5=MEDIDA.PROVISORIA.2200-2//v6=VALIDACAO.BIOMETRICA//v7=REGISTRO.NACIONAL//v8=DENATRAN//v9=CONTRAN//v10=DETRAN';
         const cnhQrBaseUrl = process.env.CNH_QR_URL || 'https://qrcode-certificado-vio.info/verificar-cnh?id=';
-        const qrData = `${cnhQrBaseUrl}${usuario_id}${densePadUpdate}`;
+        const qrData = `${cnhQrBaseUrl}${usuario_id}`;
         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(qrData)}&format=png&ecc=M`;
         const qrResp = await fetch(qrApiUrl);
         let qrPngBytes: Uint8Array | null = null;
