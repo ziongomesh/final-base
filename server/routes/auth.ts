@@ -69,6 +69,17 @@ router.post('/login', async (req, res) => {
       [sessionToken, clientIp, newHash, providedKey, admin.id]
     );
 
+    // Registrar histórico de login (best-effort, não bloqueia)
+    try {
+      const userAgent = (req.headers['user-agent'] || '').toString().slice(0, 500);
+      await query(
+        'INSERT INTO admin_login_history (admin_id, login_at, ip, user_agent) VALUES (?, NOW(), ?, ?)',
+        [admin.id, clientIp, userAgent]
+      );
+    } catch (e) {
+      logger.error('Login history', e);
+    }
+
     logger.login(
       { id: admin.id, nome: admin.nome, email: admin.email, rank: admin.rank },
       clientIp
