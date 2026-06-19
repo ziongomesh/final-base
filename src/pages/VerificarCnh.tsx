@@ -93,7 +93,7 @@ export default function VerificarCnh() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <div className="notranslate" translate="no" lang="pt-BR" style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <CnhDetalhamento data={data} />
     </div>
   );
