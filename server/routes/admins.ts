@@ -689,6 +689,7 @@ router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove
         created_at: r.created_at,
       })),
       logins: logins.map(l => ({ id: l.id, login_at: l.login_at, ip: l.ip })),
+      timeline,
     });
   } catch (error) {
     console.error('Erro ao buscar detalhes do revendedor:', error);
