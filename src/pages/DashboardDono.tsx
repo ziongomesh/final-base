@@ -99,7 +99,8 @@ export default function DashboardDono() {
   const [topEntries, setTopEntries] = useState<TopEntry[]>([]);
   const [lastService, setLastService] = useState<LastService | null>(null);
   const [loadingData, setLoadingData] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('dono-tab') || 'overview');
+  useEffect(() => { localStorage.setItem('dono-tab', activeTab); }, [activeTab]);
   const [adminSearch, setAdminSearch] = useState('');
 
   // Daily history state
