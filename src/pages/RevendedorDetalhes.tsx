@@ -66,6 +66,7 @@ interface ResellerDetailsResponse {
     created_at: string;
   }[];
   logins: { id: number; login_at: string; ip: string | null }[];
+  timeline?: { today: number; last3d: number; last5d: number; last30d: number };
 }
 
 const formatDate = (s?: string | null) => {
