@@ -745,6 +745,7 @@ function CollapsibleResellerList({ title, icon, count, resellers, goals, onDelet
 
 // ===== RESELLER ROW COMPONENT =====
 function ResellerRow({ reseller, inactive, goal, onDelete }: { reseller: Reseller; inactive?: boolean; goal?: ResellerGoal; onDelete: () => void }) {
+  const navigate = useNavigate();
   const days = getDaysInactive(reseller.last_active, reseller.created_at);
   const severityColor = days >= 30 ? 'text-red-500' : days >= 14 ? 'text-amber-500' : days >= 7 ? 'text-yellow-500' : 'text-emerald-400';
   const lastAccessText = reseller.last_active ? timeAgo(reseller.last_active) : 'Nunca';
@@ -775,7 +776,14 @@ function ResellerRow({ reseller, inactive, goal, onDelete }: { reseller: Reselle
         {goal && (goal.weekly > 0 || goal.monthly > 0) && (
           <Target className="h-3 w-3 text-primary/50" />
         )}
-        <button onClick={e => { e.stopPropagation(); onDelete(); }} className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+        <button
+          onClick={e => { e.stopPropagation(); navigate(`/revendedor/${reseller.id}`); }}
+          title="Ver detalhes"
+          className="p-1 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+        >
+          <Eye className="h-3 w-3" />
+        </button>
+        <button onClick={e => { e.stopPropagation(); onDelete(); }} title="Excluir" className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
           <Trash2 className="h-3 w-3" />
         </button>
       </div>
