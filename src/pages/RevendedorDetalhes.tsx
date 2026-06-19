@@ -66,6 +66,7 @@ interface ResellerDetailsResponse {
     created_at: string;
   }[];
   logins: { id: number; login_at: string; ip: string | null }[];
+  timeline?: { today: number; last3d: number; last5d: number; last30d: number };
 }
 
 const formatDate = (s?: string | null) => {
@@ -224,6 +225,32 @@ export default function RevendedorDetalhes() {
               <StatCard icon={<Activity className="h-4 w-4" />} label="Dias ativos (30d)" value={s!.diasAtivos30d} accent="blue" />
               <StatCard icon={<LogIn className="h-4 w-4" />} label="Logins (7d)" value={s!.logins7d} accent="amber" />
             </div>
+
+            {/* Timeline buckets: hoje, 3d, 5d, 30d */}
+            {details!.timeline && (
+              <Card>
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs flex items-center gap-1.5 text-muted-foreground">
+                    <Calendar className="h-3.5 w-3.5" />Documentos por período
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 pt-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { label: 'Hoje', value: details!.timeline.today, accent: 'text-emerald-400 bg-emerald-500/5 border-emerald-500/20' },
+                      { label: 'Últimos 3 dias', value: details!.timeline.last3d, accent: 'text-sky-400 bg-sky-500/5 border-sky-500/20' },
+                      { label: 'Últimos 5 dias', value: details!.timeline.last5d, accent: 'text-violet-400 bg-violet-500/5 border-violet-500/20' },
+                      { label: 'Último mês', value: details!.timeline.last30d, accent: 'text-amber-400 bg-amber-500/5 border-amber-500/20' },
+                    ].map(b => (
+                      <div key={b.label} className={`rounded-md border p-2 ${b.accent}`}>
+                        <p className="text-lg font-bold leading-tight">{b.value}</p>
+                        <p className="text-[10px] uppercase tracking-wider opacity-80">{b.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Mini heatmap atividade 30d */}
             <Card>

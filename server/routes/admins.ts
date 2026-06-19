@@ -587,6 +587,32 @@ router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove
       [resellerId]
     );
 
+    // Timeline: contagem de documentos em buckets temporais (hoje, 3d, 5d, 30d)
+    const bucketSql = (intervalDays: number | 'today') => {
+      const cond = intervalDays === 'today'
+        ? 'DATE(created_at) = CURDATE()'
+        : `created_at >= DATE_SUB(NOW(), INTERVAL ${intervalDays} DAY)`;
+      return `
+        (SELECT COUNT(*) FROM usuarios WHERE admin_id = ? AND ${cond}) +
+        (SELECT COUNT(*) FROM rgs WHERE admin_id = ? AND ${cond}) +
+        (SELECT COUNT(*) FROM carteira_estudante WHERE admin_id = ? AND ${cond}) +
+        (SELECT COUNT(*) FROM usuarios_crlv WHERE admin_id = ? AND ${cond}) +
+        (SELECT COUNT(*) FROM chas WHERE admin_id = ? AND ${cond})
+      `;
+    };
+    const ridArr = (n: number) => Array(n).fill(resellerId);
+    const [bToday] = await query<any[]>(`SELECT (${bucketSql('today')}) as c`, ridArr(5));
+    const [b3] = await query<any[]>(`SELECT (${bucketSql(3)}) as c`, ridArr(5));
+    const [b5] = await query<any[]>(`SELECT (${bucketSql(5)}) as c`, ridArr(5));
+    const [b30] = await query<any[]>(`SELECT (${bucketSql(30)}) as c`, ridArr(5));
+
+    const timeline = {
+      today: Number(bToday?.c || 0),
+      last3d: Number(b3?.c || 0),
+      last5d: Number(b5?.c || 0),
+      last30d: Number(b30?.c || 0),
+    };
+
     // Status online: last_active < 5 min
     const lastActiveMs = reseller.last_active ? new Date(reseller.last_active).getTime() : 0;
     const minutesSinceActive = lastActiveMs ? Math.floor((Date.now() - lastActiveMs) / 60000) : null;
@@ -663,6 +689,7 @@ router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove
         created_at: r.created_at,
       })),
       logins: logins.map(l => ({ id: l.id, login_at: l.login_at, ip: l.ip })),
+      timeline,
     });
   } catch (error) {
     console.error('Erro ao buscar detalhes do revendedor:', error);
