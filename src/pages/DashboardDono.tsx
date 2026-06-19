@@ -99,7 +99,8 @@ export default function DashboardDono() {
   const [topEntries, setTopEntries] = useState<TopEntry[]>([]);
   const [lastService, setLastService] = useState<LastService | null>(null);
   const [loadingData, setLoadingData] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('dono-tab') || 'overview');
+  useEffect(() => { localStorage.setItem('dono-tab', activeTab); }, [activeTab]);
   const [adminSearch, setAdminSearch] = useState('');
 
   // Daily history state
@@ -706,22 +707,78 @@ export default function DashboardDono() {
     );
   };
 
+  // ==== Primary tab grouping (minimalista) ====
+  const primaryGroups = [
+    {
+      id: 'geral',
+      label: 'Geral',
+      subs: [
+        { value: 'overview', label: 'Visão geral' },
+        { value: 'activity', label: 'Atividade' },
+        ...(!isSub ? [{ value: 'ranking', label: 'Ranking' }] : []),
+      ],
+    },
+    {
+      id: 'equipe',
+      label: 'Equipe',
+      subs: [
+        { value: 'masters', label: 'Masters' },
+        { value: 'resellers', label: 'Revendas' },
+      ],
+    },
+    {
+      id: 'mov',
+      label: 'Movimentações',
+      subs: [
+        ...(!isSub
+          ? [
+              { value: 'transfers', label: 'Transferências' },
+              { value: 'recargas', label: 'Recargas globais' },
+            ]
+          : []),
+        { value: 'audit', label: 'Histórico' },
+      ],
+    },
+    {
+      id: 'comm',
+      label: 'Comunicação',
+      subs: [
+        { value: 'noticias', label: 'Notícias' },
+        { value: 'anuncios', label: 'Anúncios' },
+        ...(isSub ? [{ value: 'plans', label: 'Planos' }] : []),
+      ],
+    },
+    { id: 'manage', label: 'Gerenciar', subs: [{ value: 'manage', label: 'Geral' }] },
+  ];
+
+  const currentGroup =
+    primaryGroups.find((g) => g.subs.some((s) => s.value === activeTab)) || primaryGroups[0];
+
+  const handlePrimary = (groupId: string) => {
+    const g = primaryGroups.find((x) => x.id === groupId);
+    if (!g) return;
+    const next = g.subs[0].value;
+    setActiveTab(next);
+    if (next === 'transfers' && allTransfers.length === 0) fetchAllTransfers();
+    if (next === 'plans' && isSub && subPlans.length === 0) fetchSubPlans();
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-5 animate-fade-in max-w-[1100px] mx-auto">
+      <div className="space-y-6 animate-fade-in max-w-6xl mx-auto px-1">
         {/* ===== HEADER ===== */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-foreground">Dashboard</h1>
-            <p className="text-[11px] text-muted-foreground">Painel de Controle</p>
+            <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">Painel de controle</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs gap-1">
+            <Badge variant="outline" className="text-xs gap-1 h-7 px-2.5">
               <CreditCard className="h-3 w-3" />
               {isSub ? 'Ilimitado' : credits.toLocaleString('pt-BR')}
             </Badge>
             {isSub && (
-              <Badge variant="outline" className="text-xs gap-1">
+              <Badge variant="outline" className="text-xs gap-1 h-7 px-2.5">
                 <Send className="h-3 w-3" />
                 {creditsTransf.toLocaleString('pt-BR')}
               </Badge>
@@ -736,20 +793,69 @@ export default function DashboardDono() {
         <Tabs value={activeTab} onValueChange={(v) => {
           setActiveTab(v);
           if (v === 'transfers' && allTransfers.length === 0) fetchAllTransfers();
+          if (v === 'plans' && isSub && subPlans.length === 0) fetchSubPlans();
         }}>
-          <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-0.5 h-9">
-            <TabsTrigger value="overview" className="text-[10px] px-2.5 shrink-0 h-7">Geral</TabsTrigger>
-            <TabsTrigger value="activity" className="text-[10px] px-2.5 shrink-0 h-7">Atividade</TabsTrigger>
-            <TabsTrigger value="masters" className="text-[10px] px-2.5 shrink-0 h-7">Masters</TabsTrigger>
-            <TabsTrigger value="resellers" className="text-[10px] px-2.5 shrink-0 h-7">Revendas</TabsTrigger>
-            {!isSub && <TabsTrigger value="transfers" className="text-[10px] px-2.5 shrink-0 h-7">Transf.</TabsTrigger>}
-            {!isSub && <TabsTrigger value="recargas" className="text-[10px] px-2.5 shrink-0 h-7">Recargas Globais</TabsTrigger>}
-            <TabsTrigger value="audit" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
-            {!isSub && <TabsTrigger value="ranking" className="text-[10px] px-2.5 shrink-0 h-7">Ranking</TabsTrigger>}
-            <TabsTrigger value="noticias" className="text-[10px] px-2.5 shrink-0 h-7">Notícias</TabsTrigger>
-            <TabsTrigger value="anuncios" className="text-[10px] px-2.5 shrink-0 h-7">Anúncios</TabsTrigger>
-            {isSub && <TabsTrigger value="plans" className="text-[10px] px-2.5 shrink-0 h-7" onClick={() => { if (subPlans.length === 0) fetchSubPlans(); }}>Planos</TabsTrigger>}
-            <TabsTrigger value="manage" className="text-[10px] px-2.5 shrink-0 h-7">Gerenciar</TabsTrigger>
+          {/* Primary tab strip — 5 grupos */}
+          <div className="flex items-center gap-1 p-1 rounded-xl glass-card-flat overflow-x-auto no-scrollbar">
+            {primaryGroups.map((g) => {
+              const active = currentGroup.id === g.id;
+              return (
+                <button
+                  key={g.id}
+                  onClick={() => handlePrimary(g.id)}
+                  className={`flex-1 min-w-[110px] h-9 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    active
+                      ? 'bg-sky-400/15 text-sky-300 border border-sky-400/20'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03] border border-transparent'
+                  }`}
+                >
+                  {g.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Sub-tab strip (underline, leve) */}
+          {currentGroup.subs.length > 1 && (
+            <div className="flex items-center gap-1 mt-3 border-b border-white/[0.06]">
+              {currentGroup.subs.map((s) => {
+                const active = activeTab === s.value;
+                return (
+                  <button
+                    key={s.value}
+                    onClick={() => {
+                      setActiveTab(s.value);
+                      if (s.value === 'transfers' && allTransfers.length === 0) fetchAllTransfers();
+                      if (s.value === 'plans' && isSub && subPlans.length === 0) fetchSubPlans();
+                    }}
+                    className={`relative px-3 h-9 text-xs font-medium transition-colors ${
+                      active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {s.label}
+                    {active && (
+                      <span className="absolute left-2 right-2 -bottom-px h-0.5 bg-sky-400 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* hidden TabsList to satisfy Radix (no visual) */}
+          <TabsList className="sr-only">
+            <TabsTrigger value="overview">overview</TabsTrigger>
+            <TabsTrigger value="activity">activity</TabsTrigger>
+            <TabsTrigger value="masters">masters</TabsTrigger>
+            <TabsTrigger value="resellers">resellers</TabsTrigger>
+            <TabsTrigger value="transfers">transfers</TabsTrigger>
+            <TabsTrigger value="recargas">recargas</TabsTrigger>
+            <TabsTrigger value="audit">audit</TabsTrigger>
+            <TabsTrigger value="ranking">ranking</TabsTrigger>
+            <TabsTrigger value="noticias">noticias</TabsTrigger>
+            <TabsTrigger value="anuncios">anuncios</TabsTrigger>
+            <TabsTrigger value="plans">plans</TabsTrigger>
+            <TabsTrigger value="manage">manage</TabsTrigger>
           </TabsList>
 
           {loadingData ? (
