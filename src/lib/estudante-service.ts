@@ -38,6 +38,7 @@ export interface EstudanteRecord {
   created_at: string;
   qrcode: string | null;
   data_expiracao?: string | null;
+  pdf_url?: string | null;
 }
 
 function getApiUrl(): string {
