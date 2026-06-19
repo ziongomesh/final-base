@@ -134,16 +134,44 @@
 }
 
 @layer utilities {
-  .gradient-green {
-    background: var(--gradient-green);
+  .gradient-green { background: var(--gradient-green); }
+  .gradient-pink { background: var(--gradient-pink); }
+  .gradient-blue { background: var(--gradient-blue); }
+
+  /* === Sleek Glassmorphism design tokens === */
+  .glass-card {
+    background: hsl(0 0% 100% / 0.03);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px hsl(220 40% 4% / 0.4);
   }
-  
-  .gradient-pink {
-    background: var(--gradient-pink);
+  .glass-card-flat {
+    background: hsl(0 0% 100% / 0.025);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    border-radius: 0.75rem;
   }
-  
-  .gradient-blue {
-    background: var(--gradient-blue);
+  .glass-input {
+    background: hsl(220 30% 6% / 0.5);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    color: hsl(210 20% 92%);
+    border-radius: 0.75rem;
+    transition: all 200ms ease;
+  }
+  .glass-input:hover { border-color: hsl(0 0% 100% / 0.12); }
+  .glass-input:focus,
+  .glass-input:focus-visible {
+    outline: none;
+    border-color: hsl(201 55% 59% / 0.5);
+    box-shadow: 0 0 0 4px hsl(201 55% 59% / 0.1);
+  }
+  .glass-pill {
+    background: hsl(0 0% 100% / 0.04);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 9999px;
   }
 }
 

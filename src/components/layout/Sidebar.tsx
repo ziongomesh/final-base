@@ -48,34 +48,26 @@ export function Sidebar() {
   );
 
   return (
-    <div
-      className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1.5"
-      style={{
-        background: 'hsl(215 35% 9% / 0.85)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid hsl(210 40% 15% / 0.5)',
-        boxShadow: '0 8px 32px hsl(210 30% 5% / 0.5)',
-      }}
-    >
+    <div className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1.5 glass-card">
       {/* Profile initial */}
       {firstName && (
         <div
-          className="h-8 w-8 rounded-full flex items-center justify-center mb-1 cursor-pointer"
+          className="h-8 w-8 rounded-full flex items-center justify-center mb-1 cursor-pointer transition-transform hover:scale-105"
           title={`${firstName} — ${role}`}
           onClick={() => guardedNavigate('/configuracoes')}
           style={{
-            background: 'linear-gradient(135deg, hsl(201 55% 45%), hsl(201 55% 35%))',
-            border: '2px solid hsl(201 55% 59% / 0.3)',
+            background: 'linear-gradient(135deg, hsl(201 55% 50%), hsl(201 55% 38%))',
+            border: '1px solid hsl(201 55% 65% / 0.4)',
           }}
         >
-          <span className="text-xs font-bold" style={{ color: 'hsl(201 55% 85%)' }}>
+          <span className="text-xs font-semibold text-white">
             {firstName.charAt(0).toUpperCase()}
           </span>
         </div>
       )}
 
       {/* Divider */}
-      <div className="w-5 h-px my-0.5" style={{ background: 'hsl(201 55% 59% / 0.15)' }} />
+      <div className="w-5 h-px my-0.5 bg-white/10" />
 
       {/* Nav icons */}
       {filteredItems.map((item) => {
@@ -87,15 +79,10 @@ export function Sidebar() {
             title={item.label}
             className={cn(
               'h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200',
-              isActive ? '' : 'hover:bg-white/[0.05]'
+              isActive
+                ? 'bg-sky-400/15 text-sky-300 shadow-[0_0_12px_-2px_hsl(201_55%_59%_/_0.3)]'
+                : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
             )}
-            style={isActive ? {
-              background: 'hsl(201 55% 59% / 0.12)',
-              color: 'hsl(201 55% 59%)',
-              boxShadow: '0 0 8px hsl(201 55% 59% / 0.1)',
-            } : {
-              color: 'hsl(210 20% 45%)',
-            }}
           >
             <item.icon className="h-4 w-4" />
           </button>
@@ -103,19 +90,17 @@ export function Sidebar() {
       })}
 
       {/* Divider */}
-      <div className="w-5 h-px my-0.5" style={{ background: 'hsl(201 55% 59% / 0.15)' }} />
+      <div className="w-5 h-px my-0.5 bg-white/10" />
 
       {/* Logout */}
       <button
         onClick={signOut}
         title="Sair"
-        className="h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-red-500/10"
-        style={{ color: 'hsl(210 20% 35%)' }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'hsl(0 60% 60%)'; }}
-        onMouseLeave={e => { e.currentTarget.style.color = 'hsl(210 20% 35%)'; }}
+        className="h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 text-white/35 hover:text-red-400 hover:bg-red-500/10"
       >
         <LogOut className="h-4 w-4" />
       </button>
     </div>
   );
 }
+

@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Play, Home } from 'lucide-react';
+import { Loader2, Home } from 'lucide-react';
 import { PinPad } from './PinPad';
 import { TurnstileWidget, TURNSTILE_ENABLED } from './TurnstileWidget';
 import api from '@/lib/api';
@@ -171,111 +171,122 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full space-y-10">
-      {/* Home icon - top left */}
-      <button
-        onClick={() => navigate('/')}
-        className="text-white/40 hover:text-white transition-colors"
-      >
-        <Home className="h-5 w-5" />
-      </button>
-
-      {/* Logo + Title - centered */}
-      <div className="flex flex-col items-center text-center">
-        <img src={logoImage} alt="Logo" className="h-32 w-auto invert brightness-200" draggable={false} />
-        <h1 className="mt-6 text-[28px] font-extrabold leading-none text-white">
+    <div className="w-full">
+      {/* Logo + Title */}
+      <div className="flex flex-col items-center mb-8">
+        <img
+          src={logoImage}
+          alt="Logo"
+          className="h-20 w-auto invert brightness-200 mb-5"
+          draggable={false}
+        />
+        <h1 className="text-2xl font-semibold text-white tracking-tight">
           Iniciar Sessão
         </h1>
+        <p className="text-[11px] mt-1 uppercase tracking-widest font-medium text-white/40">
+          Painel Administrativo
+        </p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="w-full space-y-4">
-        {/* Usuário input */}
-        <div className="rounded-sm bg-white/[0.08] border border-white/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.2)]">
-          <div className="px-4 pt-2 text-[11px] tracking-wider text-white/50">
-            Usuário
-          </div>
-          <Input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="username"
-            className="h-8 bg-transparent border-0 px-4 py-1 text-white placeholder:text-white/25 rounded-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
-        </div>
-
-        {/* Senha input */}
-        <div className="rounded-sm bg-white/[0.08] border border-white/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.2)]">
-          <div className="px-4 pt-2 text-[11px] tracking-wider text-white/50">
-            Senha
-          </div>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            className="h-8 bg-transparent border-0 px-4 py-1 text-white placeholder:text-white/25 rounded-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
-        </div>
-
-        {TURNSTILE_ENABLED && (
-          <div className="mt-6">
-            <TurnstileWidget
-              key={turnstileKey}
-              onVerify={handleTurnstileVerify}
-              onExpire={handleTurnstileExpire}
+      {/* Login Card */}
+      <div className="glass-card p-7 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Usuário */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-medium text-white/50 uppercase tracking-wider ml-1">
+              Usuário
+            </label>
+            <Input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="username"
+              placeholder="Digite seu usuário"
+              className="glass-input h-11 px-4 text-sm placeholder:text-white/25 shadow-none"
             />
           </div>
-        )}
 
-        {/* Play button */}
-        <div className="pt-10 flex flex-col items-center gap-6">
-          <div className="relative">
-            {!isDisabled && (
-              <div className="absolute -inset-3 rounded-[28px] bg-sky-300/20 blur-xl pointer-events-none animate-pulse" />
-            )}
-            <Button
-              type="submit"
-              disabled={isDisabled}
-              className={`
-                relative h-20 w-20 rounded-3xl border border-white/15 transition-all
-                ${isDisabled
-                  ? 'bg-gray-500/25 text-gray-300 opacity-40 cursor-not-allowed shadow-none'
-                  : 'bg-sky-300/70 text-black hover:bg-sky-300/80 active:scale-[0.98] shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
-                }
-              `}
-              size="icon"
-            >
-              {loading ? (
-                <Loader2 className="h-6 w-6 animate-spin" />
-              ) : (
-                <Play className="h-7 w-7 ml-0.5" />
-              )}
-            </Button>
+          {/* Senha */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-end px-1">
+              <label className="text-[10px] font-medium text-white/50 uppercase tracking-wider">
+                Senha
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowRecoverAccount(true)}
+                className="text-[10px] text-sky-300 hover:text-sky-200 transition-colors"
+              >
+                Esqueceu o acesso?
+              </button>
+            </div>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              placeholder="••••••••"
+              className="glass-input h-11 px-4 text-sm placeholder:text-white/25 shadow-none"
+            />
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowRecoverAccount(true)}
-            className="text-xs text-white/35 hover:text-white/60 transition-colors"
-          >
-            Esqueceu o acesso?
-          </button>
+          {TURNSTILE_ENABLED && (
+            <div className="pt-1">
+              <TurnstileWidget
+                key={turnstileKey}
+                onVerify={handleTurnstileVerify}
+                onExpire={handleTurnstileExpire}
+              />
+            </div>
+          )}
 
-          <p className="text-sm text-white/55 text-center">
+          {/* Primary CTA */}
+          <Button
+            type="submit"
+            disabled={isDisabled}
+            className={`
+              w-full h-12 rounded-xl text-sm font-semibold transition-all duration-200
+              ${isDisabled
+                ? 'bg-white/5 text-white/30 cursor-not-allowed shadow-none'
+                : 'bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-[0_8px_24px_-8px_rgba(91,168,212,0.6)] active:scale-[0.99]'
+              }
+            `}
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              'Entrar no Painel'
+            )}
+          </Button>
+        </form>
+
+        <div className="mt-7 pt-5 border-t border-white/5 text-center">
+          <p className="text-xs text-white/45">
             Não tem uma conta?{' '}
             <button
               type="button"
               onClick={() => setShowCreateAccount(true)}
-              className="text-sky-300 hover:underline font-medium"
+              className="text-white font-medium hover:text-sky-300 transition-colors"
             >
               Criar Conta
             </button>
           </p>
         </div>
-      </form>
+      </div>
+
+      {/* Home link below card */}
+      <div className="mt-6 flex justify-center">
+        <button
+          onClick={() => navigate('/')}
+          className="p-2 rounded-full glass-pill text-white/40 hover:text-white transition-colors"
+          aria-label="Início"
+        >
+          <Home className="h-4 w-4" />
+        </button>
+      </div>
+
 
       {/* Create Account Modal */}
       {showCreateAccount && createPortal(

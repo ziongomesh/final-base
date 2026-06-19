@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import defaultAvatar from '@/assets/default-avatar.jpg';
+
 
 const searchableItems = [
   { label: 'CNH Digital', route: '/servicos/cnh-digital', keywords: ['cnh', 'habilitação', 'carteira'] },
@@ -37,44 +37,32 @@ export default function LauncherTopBar() {
   const rank = admin?.rank || 'revendedor';
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between gap-3 mb-6 flex-wrap sm:flex-nowrap">
       {/* Left: Greeting */}
-      <div>
-        <h1 className="text-xl font-bold text-white">
+      <div className="min-w-0 flex-1">
+        <h1 className="text-xl font-semibold text-white tracking-tight truncate">
           Olá, {firstName}
         </h1>
-        <p className="text-xs mt-0.5" style={{ color: 'hsl(210 20% 45%)' }}>
+        <p className="text-xs mt-0.5 text-white/40">
           Bem-vindo de volta ao painel
         </p>
       </div>
 
-      {/* Right: Search + Credits + Profile */}
-      <div className="flex items-center gap-3">
+      {/* Right: Search + Credits */}
+      <div className="flex items-center gap-2 shrink-0">
         {/* Search */}
         <div className="relative">
           <button
             onClick={() => setFocused(!focused)}
-            className="h-9 px-4 rounded-xl flex items-center gap-2 transition-colors"
-            style={{
-              background: 'hsl(215 30% 12%)',
-              border: '1px solid hsl(210 40% 18%)',
-              color: 'hsl(210 20% 45%)',
-            }}
+            className="h-9 px-3 sm:px-4 rounded-xl flex items-center gap-2 transition-colors glass-card-flat hover:bg-white/[0.05] text-white/45 hover:text-white"
           >
             <Search className="h-3.5 w-3.5" />
             <span className="text-xs hidden sm:inline">Pesquisar...</span>
           </button>
 
           {focused && (
-            <div
-              className="absolute top-12 right-0 w-80 rounded-xl overflow-hidden z-50"
-              style={{
-                background: 'hsl(215 30% 10%)',
-                border: '1px solid hsl(210 40% 18%)',
-                boxShadow: '0 20px 60px hsl(220 40% 4% / 0.6)',
-              }}
-            >
-              <div className="p-3" style={{ borderBottom: '1px solid hsl(210 40% 15%)' }}>
+            <div className="absolute top-12 right-0 w-72 sm:w-80 rounded-xl overflow-hidden z-50 glass-card">
+              <div className="p-3 border-b border-white/5">
                 <input
                   type="text"
                   placeholder="Pesquise o que você quer..."
@@ -91,8 +79,7 @@ export default function LauncherTopBar() {
                     <button
                       key={item.route}
                       onClick={() => { navigate(item.route); setQuery(''); setFocused(false); }}
-                      className="w-full text-left px-4 py-3 text-sm hover:bg-white/[0.04] transition-colors"
-                      style={{ color: 'hsl(210 20% 60%)' }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-white/65 hover:text-white hover:bg-white/[0.04] transition-colors"
                     >
                       {item.label}
                     </button>
@@ -100,22 +87,16 @@ export default function LauncherTopBar() {
                 </div>
               )}
               {query.length > 0 && filtered.length === 0 && (
-                <p className="px-4 py-3 text-xs" style={{ color: 'hsl(210 20% 30%)' }}>Nenhum resultado</p>
+                <p className="px-4 py-3 text-xs text-white/30">Nenhum resultado</p>
               )}
             </div>
           )}
         </div>
 
         {/* Credits */}
-        <div
-          className="h-9 px-4 rounded-xl flex items-center gap-2"
-          style={{
-            background: 'hsl(201 55% 59% / 0.08)',
-            border: '1px solid hsl(201 55% 59% / 0.15)',
-          }}
-        >
-          <CreditCard className="h-3.5 w-3.5" style={{ color: 'hsl(201 55% 59%)' }} />
-          <span className="text-sm font-semibold" style={{ color: 'hsl(201 55% 59%)' }}>
+        <div className="h-9 px-3 sm:px-4 rounded-xl flex items-center gap-2 bg-sky-400/10 border border-sky-400/20">
+          <CreditCard className="h-3.5 w-3.5 text-sky-300" />
+          <span className="text-sm font-semibold text-sky-300 tabular-nums">
             {credits.toLocaleString('pt-BR')}
           </span>
         </div>
@@ -123,3 +104,4 @@ export default function LauncherTopBar() {
     </div>
   );
 }
+
