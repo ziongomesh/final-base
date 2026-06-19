@@ -439,6 +439,8 @@ export const mysqlApi = {
       const qs = params.toString();
       return fetchAPI(`/owner/daily-history${qs ? '?' + qs : ''}`);
     },
+    getAllResellersRechargeStats: async () => fetchAPI('/owner/all-resellers-recharge-stats'),
+    getRechargeOverview: async () => fetchAPI('/owner/recharge-overview'),
   },
 
   noticias: {
