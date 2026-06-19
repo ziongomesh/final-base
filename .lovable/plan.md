@@ -1,136 +1,61 @@
+# Refatoração minimalista do painel do Dono
 
-# Visibilidade Total: Revendedor / Master / Dono
+## Objetivo
+Painel mais simples, arejado e focado. Menos abas, menos ruído visual, sem sobreposição.
 
-Plano consolidado pra fechar todos os gaps de informação dos 3 cargos. Inclui mudanças de banco (MySQL), backend (Node) e frontend.
+## Consolidação de abas (11 → 5)
 
----
+| Nova aba       | Absorve                                         |
+| -------------- | ----------------------------------------------- |
+| **Geral**      | Geral (overview) + Atividade + Ranking          |
+| **Equipe**     | Masters + Revendas (com sub-tabs internas)      |
+| **Movimentações** | Transferências + Recargas Globais + Histórico (Audit) |
+| **Comunicação** | Notícias + Anúncios                            |
+| **Gerenciar**  | Gerenciar (planos do sub viram dialog interno)  |
 
-## 1. Mudanças de banco (MySQL — migration única)
+A barra de abas deixa de ter scroll horizontal — cabem 5 numa linha em desktop.
 
-```sql
--- Snapshot de saldo no momento que o documento foi criado
-ALTER TABLE usuarios            ADD COLUMN creditos_no_momento INT NULL;
-ALTER TABLE usuarios_rg         ADD COLUMN creditos_no_momento INT NULL;
-ALTER TABLE usuarios_crlv       ADD COLUMN creditos_no_momento INT NULL;
-ALTER TABLE chas                ADD COLUMN creditos_no_momento INT NULL;
-ALTER TABLE carteira_estudante  ADD COLUMN creditos_no_momento INT NULL;
-ALTER TABLE hapvida_atestados   ADD COLUMN creditos_no_momento INT NULL;
+## Densidade arejada
 
--- Histórico de logins (frequência / heatmap de atividade)
-CREATE TABLE admin_login_history (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  admin_id INT NOT NULL,
-  login_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  ip VARCHAR(45),
-  user_agent TEXT,
-  INDEX idx_admin_login (admin_id, login_at)
-);
-```
+- Tipografia: `text-[10px]` → `text-sm` em conteúdo, `text-xs` só em metadados
+- Padding de cards: `p-3` → `p-5`/`p-6`
+- Espaçamento entre seções: `space-y-3` → `space-y-6`
+- Altura de abas: `h-7` → `h-9`
+- Limite de largura central: `max-w-7xl` para evitar linhas longas
+- Hierarquia clara: título da seção (text-base font-medium) + descrição (text-xs muted) acima de cada bloco
 
-Registros antigos ficam com `creditos_no_momento = NULL` → UI mostra "—".
+## Glass mais sutil
 
----
+- Reduzir `backdrop-blur(16px)` → `backdrop-blur(8px)`
+- Bordas: usar `border border-white/[0.06]` consistente, sem múltiplas variações
+- Remover sombras coloridas/glow; manter só `shadow-sm` discreto
+- Accent sky-blue só em: aba ativa, botões primários, valores positivos. Resto em `text-foreground`/`text-muted-foreground`
+- Remover gradientes em cards; fundo `bg-card/40` uniforme
 
-## 2. Backend (`server/routes/`)
+## Arquivos a alterar
 
-### 2.1 Login passa a gravar histórico
-- `auth.ts`: ao validar login, INSERT em `admin_login_history`.
+- `src/pages/DashboardDono.tsx`  
+  - Reestruturar `TabsList` para 5 abas
+  - Criar sub-tabs internas em "Equipe" (Masters/Revendas) e "Movimentações" (Transferências/Recargas/Histórico)
+  - Remover scroll horizontal da `TabsList` em desktop (manter só em mobile)
+  - Aplicar nova densidade em todos os `TabsContent`
+  - Mover dialog de Planos do Sub pra dentro de "Gerenciar"
+- `src/index.css`  
+  - Ajustar `.glass-card` para blur mais sutil e borda única
+  - Adicionar utilitário `.section-header` (título + descrição padronizados)
+- `src/components/dashboard/RechargeOverviewTab.tsx`  
+  - Aplicar nova densidade (padding, tipografia)
+- `src/components/dashboard/LauncherTopBar.tsx`  
+  - Pequenos ajustes para combinar com a densidade arejada
 
-### 2.2 Salvar documento grava saldo do momento
-Em cada rota de criação de documento (`cnh.ts`, `rg.ts`, `crlv.ts`, `cnh-nautica.ts`, `craf.ts`, `estudante.ts`, `hapvida.ts`): antes de debitar, capturar saldo atual e gravar em `creditos_no_momento`.
+## Não muda
+- Nenhuma lógica de negócio, query ou endpoint
+- Nenhum dado é removido — só agrupado visualmente
+- Painéis de Master e Revendedor (não solicitados nesta passagem)
 
-### 2.3 Endpoint enriquecido de detalhes do revendedor
-`GET /admins/reseller-details/:id` (libera Dono + Sub também):
-- Perfil completo (nome, email, cargo, criado_por, telefone)
-- **Status**: online (last_active < 5min), offline há X dias, último acesso formatado
-- **6 stats**: saldo atual, total recebido, total usado, total docs, dias ativos (30d), logins/semana
-- **Atividade dos últimos 30 dias** (array de `{data, count}` para mini-gráfico)
-- **Documentos** com novo campo `creditos_no_momento` em cada linha
-- **Recargas recebidas** (histórico de `credit_transactions WHERE to_admin_id = :id`)
-- **Logins recentes** (últimos 50 de `admin_login_history`)
+## Detalhes técnicos
 
-### 2.4 Novos endpoints exclusivos do Dono em `owner.ts`
-
-```
-GET /owner/all-resellers-recharge-stats
-  → todos revendedores com: id, nome, total_recarregado, num_recargas, ultima_recarga_data, saldo_atual, dias_offline
-
-GET /owner/recharge-overview
-  → estatísticas globais:
-    - total_geral_recarregado_na_base
-    - total_recargas_count
-    - ultima_recarga_global (data, admin, valor)
-    - media_semanal_ultimas_4_semanas
-    - media_semanal_ultimas_12_semanas
-    - top_10_revendedores_por_recarga
-    - serie_temporal (últimas 12 semanas, valor total / semana → para gráfico)
-```
-
-### 2.5 Permissões
-`reseller-details` aceita: master (só dos seus), sub e dono (qualquer revendedor).
-
----
-
-## 3. Frontend
-
-### 3.1 `RevendedorDetalhes.tsx` reformulado (Dono / Sub / Master)
-Libera acesso pro Dono (hoje bloqueia em `role !== 'master' && role !== 'sub'`).
-
-**Layout novo:**
-- Header: avatar + nome + cargo + criado por + **badge online/offline com dias** + último acesso formatado
-- Grid de 6 cards: Saldo atual / Créditos recebidos / Créditos usados / Total docs / Dias ativos (30d) / Logins/semana
-- Mini-gráfico de barras (atividade últimos 30 dias)
-- 3 tabs:
-  - **Documentos**: tipo, nome, CPF, **saldo no momento**, data — dropdown para filtrar por tipo
-  - **Recargas**: data, valor R$, créditos comprados, status — soma total no rodapé
-  - **Atividade**: lista de logins (data/hora + IP), heatmap simples por dia da semana
-
-### 3.2 Dashboard do Dono — nova aba "Recargas Globais" em `DashboardDono.tsx`
-- 4 cards no topo: Total Geral / Última Recarga (data + admin) / Média Semanal (4 sem) / Média Semanal (12 sem)
-- Gráfico de linha das últimas 12 semanas (valor recarregado por semana)
-- Tabela "Top 10 revendedores por recarga total"
-- Tabela completa de "Todos revendedores" com colunas: nome / saldo / total recarregado / nº recargas / última recarga / dias offline → ordenável por qualquer coluna + botão 👁️ que leva pra `/revendedor/:id`
-
-### 3.3 Dashboard do Master (`DashboardMaster.tsx`)
-- Já tem botão Ver Detalhes (feito ontem). Sem mudanças adicionais nesta entrega — o `RevendedorDetalhes` reformulado já cobre o que o Master precisa ver.
-
-### 3.4 Dashboard do Revendedor (`Dashboard.tsx`)
-- Card destacado de **Saldo atual** + **Créditos gastos esta semana / mês**
-- Card de **Última recarga** (data + valor)
-- Mantém: gráfico de docs, atalhos, feed de notícias, últimos registros
-
----
-
-## Ordem de execução
-
-1. Migration MySQL (todas as alterações de schema juntas)
-2. Backend: hook de login no `auth.ts` + capturar `creditos_no_momento` em cada rota de doc
-3. Backend: enriquecer `reseller-details` + criar 2 endpoints novos do Dono
-4. Frontend: reformular `RevendedorDetalhes.tsx` + liberar Dono
-5. Frontend: nova aba "Recargas Globais" no Dono
-6. Frontend: enriquecer Dashboard do Revendedor
-7. Smoke test em cada cargo
-
----
-
-## Arquivos afetados
-
-**Banco**:
-- novo: `docs/mysql-migration-visibilidade.sql`
-
-**Backend**:
-- editado: `server/routes/auth.ts`, `admins.ts`, `owner.ts`, `cnh.ts`, `rg.ts`, `crlv.ts`, `cnh-nautica.ts`, `craf.ts`, `estudante.ts`, `hapvida.ts`
-
-**Frontend**:
-- editado: `src/pages/RevendedorDetalhes.tsx`, `DashboardDono.tsx`, `Dashboard.tsx`
-- novos componentes: `src/components/dashboard/RechargeOverviewTab.tsx`, `src/components/reseller/ActivityHeatmap.tsx`
-
----
-
-## Pontos a confirmar
-
-- **Sub**: você pediu pra focar em revendedor/master/dono e não citou o Sub. Mantenho o Sub com o que já tem hoje (acesso ao `RevendedorDetalhes` continua), mas **sem dar pra ele a aba "Recargas Globais"** (exclusiva do Dono). OK?
-- **Backfill de saldo no momento**: registros antigos não têm como ter esse dado. UI mostra "—". OK?
-- Migration é **destrutiva apenas no sentido aditivo** (adiciona colunas/tabela, não remove nada). Roda direto sem risco de perder dado.
-
-Confirma que pode executar?
+- Sub-tabs internas usam `Tabs` aninhado com `variant` visualmente mais leve (underline em vez de pill)
+- Estado da aba ativa persiste em `localStorage` por chave (`dono-tab`, `dono-equipe-tab`, `dono-mov-tab`) para o usuário não perder contexto ao recarregar
+- Mobile: `TabsList` volta a ter overflow-x-auto; desktop usa grid-cols-5
+- Sem mudanças em rotas — tudo continua em `/dashboard`
