@@ -41,12 +41,12 @@ export function MobileNav() {
   );
 
   return (
-    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-sidebar-background/95 backdrop-blur-md border-b border-sidebar-border">
+    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[hsl(220_30%_6%/0.7)] border-b border-white/5">
       <div className="flex items-center justify-between px-4 py-2.5">
-        <Link to="/dashboard" className="flex items-center gap-2">
-          <Logo className="h-6 w-6" />
-          <span className="text-sm font-semibold text-sidebar-foreground">Data</span>
-          <span className="text-[8px] font-bold uppercase tracking-widest px-1 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
+        <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
+          <Logo className="h-6 w-6 shrink-0" />
+          <span className="text-sm font-semibold text-white truncate">Data</span>
+          <span className="text-[8px] font-bold uppercase tracking-widest px-1 py-0.5 rounded bg-sky-400/15 text-sky-300 border border-sky-400/20 shrink-0">
             Beta
           </span>
         </Link>
