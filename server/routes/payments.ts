@@ -578,12 +578,17 @@ router.get("/price-tiers", requireSession, async (req, res) => {
 });
 
 // Weekly goal claims for current week (requer sessão)
+// Auto-cura: antes de responder, roda checkAndClaimWeeklyGoals para backfillar
+// qualquer meta atingida que não tenha sido creditada (por falha/timeout no PIX).
 router.get("/weekly-goals/:adminId", requireSession, async (req, res) => {
   try {
     const adminId = parseInt(req.params.adminId);
     if ((req as any).adminId !== adminId && (req as any).adminRank !== 'dono') {
       return res.status(403).json({ error: "Sem permissão" });
     }
+
+    // Backfill: credita metas pendentes (idempotente — usa weekly_goal_claims como lock)
+    await checkAndClaimWeeklyGoals(adminId);
 
     const { weekKey, startOfWeek } = getWeekKey(new Date());
 
