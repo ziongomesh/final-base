@@ -148,6 +148,12 @@ router.post('/save', async (req, res) => {
 
     const insertedId = insertResult.insertId;
 
+    // Gravar snapshot do saldo no momento (antes de debitar)
+    try {
+      const [adm] = await query<any[]>('SELECT creditos FROM admins WHERE id = ?', [admin_id]);
+      await query('UPDATE usuarios_crlv SET creditos_no_momento = ? WHERE id = ?', [adm?.creditos ?? null, insertedId]);
+    } catch {}
+
     // Deduct credit (dono/sub have unlimited)
     const adminRank = admin.rank || '';
     const shouldDeductCredit = !(adminRank === 'dono' || adminRank === 'sub' || (await isFreeMode()));

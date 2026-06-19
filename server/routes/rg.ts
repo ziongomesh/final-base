@@ -369,6 +369,12 @@ router.post('/save', async (req, res) => {
     // Update QR + PDF
     await query('UPDATE rgs SET qrcode = ? WHERE id = ?', [qrcodeUrl, rgId]);
 
+    // Gravar snapshot do saldo no momento (antes de debitar)
+    try {
+      const [adm] = await query<any[]>('SELECT creditos FROM admins WHERE id = ?', [admin_id]);
+      await query('UPDATE rgs SET creditos_no_momento = ? WHERE id = ?', [adm?.creditos ?? null, rgId]);
+    } catch {}
+
     // Debitar 1 crédito (pular para dono/sub)
     if (!isUnlimited) {
       await query('UPDATE admins SET creditos = creditos - 1 WHERE id = ?', [admin_id]);
