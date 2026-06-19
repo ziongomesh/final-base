@@ -138,17 +138,17 @@
   .gradient-pink { background: var(--gradient-pink); }
   .gradient-blue { background: var(--gradient-blue); }
 
-  /* === Sleek Glassmorphism design tokens === */
+  /* === Sleek Glassmorphism (subtle) === */
   .glass-card {
-    background: hsl(0 0% 100% / 0.03);
-    border: 1px solid hsl(0 0% 100% / 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px hsl(220 40% 4% / 0.4);
+    background: hsl(220 30% 8% / 0.6);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.02) inset;
   }
   .glass-card-flat {
-    background: hsl(0 0% 100% / 0.025);
+    background: hsl(220 30% 8% / 0.4);
     border: 1px solid hsl(0 0% 100% / 0.06);
     border-radius: 0.75rem;
   }
@@ -156,22 +156,35 @@
     background: hsl(220 30% 6% / 0.5);
     border: 1px solid hsl(0 0% 100% / 0.06);
     color: hsl(210 20% 92%);
-    border-radius: 0.75rem;
-    transition: all 200ms ease;
+    border-radius: 0.625rem;
+    transition: all 180ms ease;
   }
-  .glass-input:hover { border-color: hsl(0 0% 100% / 0.12); }
+  .glass-input:hover { border-color: hsl(0 0% 100% / 0.1); }
   .glass-input:focus,
   .glass-input:focus-visible {
     outline: none;
-    border-color: hsl(201 55% 59% / 0.5);
-    box-shadow: 0 0 0 4px hsl(201 55% 59% / 0.1);
+    border-color: hsl(201 55% 59% / 0.4);
+    box-shadow: 0 0 0 3px hsl(201 55% 59% / 0.08);
   }
   .glass-pill {
-    background: hsl(0 0% 100% / 0.04);
-    border: 1px solid hsl(0 0% 100% / 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: hsl(0 0% 100% / 0.035);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 9999px;
+  }
+
+  /* Section header utility */
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    letter-spacing: -0.01em;
+  }
+  .section-desc {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    margin-top: 2px;
   }
 }
 
