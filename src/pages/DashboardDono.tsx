@@ -22,6 +22,7 @@ import { mysqlApi } from '@/lib/api-mysql';
 import { isUsingMySQL } from '@/lib/db-config';
 import { supabase } from '@/integrations/supabase/client';
 import AnnouncementsManager from '@/components/dashboard/AnnouncementsManager';
+import { RechargeOverviewTab } from '@/components/dashboard/RechargeOverviewTab';
 import {
   Crown, Users, CreditCard, FileText, Shield, Eye, KeyRound, Send,
   Car, IdCard, GraduationCap, Truck, Ship, Trophy, Medal, Award,
@@ -742,6 +743,7 @@ export default function DashboardDono() {
             <TabsTrigger value="masters" className="text-[10px] px-2.5 shrink-0 h-7">Masters</TabsTrigger>
             <TabsTrigger value="resellers" className="text-[10px] px-2.5 shrink-0 h-7">Revendas</TabsTrigger>
             {!isSub && <TabsTrigger value="transfers" className="text-[10px] px-2.5 shrink-0 h-7">Transf.</TabsTrigger>}
+            {!isSub && <TabsTrigger value="recargas" className="text-[10px] px-2.5 shrink-0 h-7">Recargas Globais</TabsTrigger>}
             <TabsTrigger value="audit" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
             {!isSub && <TabsTrigger value="ranking" className="text-[10px] px-2.5 shrink-0 h-7">Ranking</TabsTrigger>}
             <TabsTrigger value="noticias" className="text-[10px] px-2.5 shrink-0 h-7">Notícias</TabsTrigger>
@@ -1336,6 +1338,14 @@ export default function DashboardDono() {
               <TabsContent value="anuncios" className="mt-4">
                 <AnnouncementsManager adminId={admin?.id || 0} />
               </TabsContent>
+
+              {/* ===== RECARGAS GLOBAIS (apenas Dono) ===== */}
+              {!isSub && (
+                <TabsContent value="recargas" className="mt-4">
+                  <RechargeOverviewTab />
+                </TabsContent>
+              )}
+
 
               {/* ===== GERENCIAR ===== */}
               <TabsContent value="manage" className="space-y-4 mt-4">

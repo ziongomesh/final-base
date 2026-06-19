@@ -607,4 +607,171 @@ router.get('/daily-history', async (req, res) => {
   }
 });
 
+// ============================================================
+// GET /owner/all-resellers-recharge-stats
+// Tabela completa de revendedores com totais de recarga, última
+// recarga, saldo, dias offline. Apenas Dono (Sub é bloqueado).
+// ============================================================
+router.get('/all-resellers-recharge-stats', async (req, res) => {
+  try {
+    const rank = (req as any).ownerRank;
+    if (rank !== 'dono') {
+      return res.status(403).json({ error: 'Apenas dono' });
+    }
+
+    const rows = await query<any[]>(
+      `SELECT
+         a.id,
+         a.nome,
+         a.email,
+         a.\`rank\`,
+         a.creditos as saldo_atual,
+         a.last_active,
+         a.created_at,
+         COALESCE(stats.total_recarregado, 0) as total_recarregado,
+         COALESCE(stats.num_recargas, 0) as num_recargas,
+         stats.ultima_recarga
+       FROM admins a
+       LEFT JOIN (
+         SELECT
+           to_admin_id,
+           SUM(amount) as total_recarregado,
+           COUNT(*) as num_recargas,
+           MAX(created_at) as ultima_recarga
+         FROM credit_transactions
+         WHERE transaction_type IN ('recharge', 'transfer')
+         GROUP BY to_admin_id
+       ) stats ON stats.to_admin_id = a.id
+       WHERE a.\`rank\` IN ('revendedor', 'master')
+       ORDER BY total_recarregado DESC`
+    );
+
+    const now = Date.now();
+    res.json(rows.map(r => {
+      const lastMs = r.last_active ? new Date(r.last_active).getTime() : 0;
+      const daysOffline = lastMs ? Math.floor((now - lastMs) / 86400000) : null;
+      return {
+        id: r.id,
+        nome: r.nome,
+        email: r.email,
+        rank: r.rank,
+        saldo_atual: Number(r.saldo_atual || 0),
+        total_recarregado: Number(r.total_recarregado || 0),
+        num_recargas: Number(r.num_recargas || 0),
+        ultima_recarga: r.ultima_recarga,
+        last_active: r.last_active,
+        days_offline: daysOffline,
+        created_at: r.created_at,
+      };
+    }));
+  } catch (error) {
+    console.error('Erro all-resellers-recharge-stats:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// ============================================================
+// GET /owner/recharge-overview
+// Estatísticas globais de recarga: total, última, médias, top 10,
+// série temporal por semana. Apenas Dono.
+// ============================================================
+router.get('/recharge-overview', async (req, res) => {
+  try {
+    const rank = (req as any).ownerRank;
+    if (rank !== 'dono') {
+      return res.status(403).json({ error: 'Apenas dono' });
+    }
+
+    // Apenas pix_payments PAID conta como "recarga real" (entrada de R$)
+    const [tot] = await query<any[]>(
+      `SELECT
+         COALESCE(SUM(amount), 0) as total_valor,
+         COALESCE(SUM(credits), 0) as total_creditos,
+         COUNT(*) as total_count
+       FROM pix_payments WHERE status = 'PAID'`
+    );
+
+    const [last] = await query<any[]>(
+      `SELECT pp.id, pp.admin_id, pp.admin_name, pp.amount, pp.credits, pp.paid_at, a.nome
+       FROM pix_payments pp
+       LEFT JOIN admins a ON a.id = pp.admin_id
+       WHERE pp.status = 'PAID'
+       ORDER BY pp.paid_at DESC LIMIT 1`
+    );
+
+    const [avg4w] = await query<any[]>(
+      `SELECT COALESCE(SUM(amount), 0) as total
+       FROM pix_payments
+       WHERE status = 'PAID' AND paid_at >= DATE_SUB(NOW(), INTERVAL 4 WEEK)`
+    );
+    const [avg12w] = await query<any[]>(
+      `SELECT COALESCE(SUM(amount), 0) as total
+       FROM pix_payments
+       WHERE status = 'PAID' AND paid_at >= DATE_SUB(NOW(), INTERVAL 12 WEEK)`
+    );
+
+    // Top 10 revendedores/masters por valor recarregado
+    const top10 = await query<any[]>(
+      `SELECT pp.admin_id, a.nome, a.\`rank\`,
+              SUM(pp.amount) as total_valor,
+              SUM(pp.credits) as total_creditos,
+              COUNT(*) as num_recargas,
+              MAX(pp.paid_at) as ultima_recarga
+       FROM pix_payments pp
+       JOIN admins a ON a.id = pp.admin_id
+       WHERE pp.status = 'PAID'
+       GROUP BY pp.admin_id, a.nome, a.\`rank\`
+       ORDER BY total_valor DESC
+       LIMIT 10`
+    );
+
+    // Série temporal últimas 12 semanas
+    const serie = await query<any[]>(
+      `SELECT
+         YEARWEEK(paid_at, 1) as week_key,
+         MIN(DATE(paid_at)) as week_start,
+         COALESCE(SUM(amount), 0) as total
+       FROM pix_payments
+       WHERE status = 'PAID' AND paid_at >= DATE_SUB(NOW(), INTERVAL 12 WEEK)
+       GROUP BY YEARWEEK(paid_at, 1)
+       ORDER BY week_key ASC`
+    );
+
+    res.json({
+      totais: {
+        total_valor: Number(tot?.total_valor || 0),
+        total_creditos: Number(tot?.total_creditos || 0),
+        total_count: Number(tot?.total_count || 0),
+      },
+      ultima_recarga: last ? {
+        id: last.id,
+        admin_id: last.admin_id,
+        admin_nome: last.nome || last.admin_name,
+        amount: Number(last.amount),
+        credits: last.credits,
+        paid_at: last.paid_at,
+      } : null,
+      media_semanal_4w: Number(avg4w?.total || 0) / 4,
+      media_semanal_12w: Number(avg12w?.total || 0) / 12,
+      top_10: top10.map(t => ({
+        admin_id: t.admin_id,
+        nome: t.nome,
+        rank: t.rank,
+        total_valor: Number(t.total_valor),
+        total_creditos: Number(t.total_creditos),
+        num_recargas: Number(t.num_recargas),
+        ultima_recarga: t.ultima_recarga,
+      })),
+      serie_temporal: serie.map(s => ({
+        week_key: String(s.week_key),
+        week_start: s.week_start,
+        total: Number(s.total),
+      })),
+    });
+  } catch (error) {
+    console.error('Erro recharge-overview:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 export default router;

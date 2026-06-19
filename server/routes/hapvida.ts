@@ -100,6 +100,12 @@ router.post('/save', async (req, res) => {
       ]
     );
 
+    // Gravar snapshot do saldo no momento (antes de debitar)
+    try {
+      const [adm] = await query<any[]>('SELECT creditos FROM admins WHERE id = ?', [admin_id]);
+      await query('UPDATE hapvida_atestados SET creditos_no_momento = ? WHERE id = ?', [adm?.creditos ?? null, result.insertId]);
+    } catch {}
+
     // Debitar 1 crédito
     if (!isUnlimited) {
       await query('UPDATE admins SET creditos = creditos - 1 WHERE id = ?', [admin_id]);

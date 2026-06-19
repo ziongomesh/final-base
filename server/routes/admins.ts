@@ -468,28 +468,27 @@ router.delete('/:id', requireSession, async (req, res) => {
   }
 });
 
-// Detalhes completos de um revendedor específico (requer sessão + master ou dono)
+// Detalhes completos de um revendedor específico (master/sub/dono)
 router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove, async (req, res) => {
   try {
     const resellerId = parseInt(req.params.resellerId);
-    
+
     const [reseller] = await query<any[]>(
-      'SELECT id, nome, email, creditos, `rank`, profile_photo, created_at, criado_por FROM admins WHERE id = ?',
+      'SELECT id, nome, email, telefone, creditos, `rank`, profile_photo, created_at, criado_por, last_active FROM admins WHERE id = ?',
       [resellerId]
     );
-    
+
     if (!reseller) {
       return res.status(404).json({ error: 'Revendedor não encontrado' });
     }
 
-    // Master/sub só pode ver seus próprios revendedores (ou revendedores de seus masters)
+    // Master só vê seus próprios revendedores; sub vê seus diretos + os criados pelos seus masters; dono vê tudo
     const requesterRank = (req as any).adminRank;
     const requesterId = (req as any).adminId;
     if (requesterRank === 'master' && reseller.criado_por !== requesterId) {
       return res.status(403).json({ error: 'Sem permissão para ver este revendedor' });
     }
     if (requesterRank === 'sub') {
-      // Sub pode ver: criados por si, ou criados por masters que o sub criou
       if (reseller.criado_por !== requesterId) {
         const subMasters = await query<any[]>('SELECT id FROM admins WHERE criado_por = ? AND `rank` = ?', [requesterId, 'master']);
         const masterIds = subMasters.map(m => m.id);
@@ -498,71 +497,130 @@ router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove
         }
       }
     }
-    
+
+    // Nome do criador (master/sub/dono que criou esse revendedor)
+    let createdBy: { id: number; nome: string } | null = null;
+    if (reseller.criado_por) {
+      const [creator] = await query<any[]>('SELECT id, nome FROM admins WHERE id = ?', [reseller.criado_por]);
+      if (creator) createdBy = { id: creator.id, nome: creator.nome };
+    }
+
+    // Documentos (últimos 50 de cada tipo, com creditos_no_momento)
     const cnhs = await query<any[]>(
-      `SELECT id, cpf, nome, senha, data_validade as validade, created_at 
+      `SELECT id, cpf, nome, senha, data_validade as validade, creditos_no_momento, created_at
        FROM usuarios WHERE admin_id = ? ORDER BY created_at DESC LIMIT 50`,
       [resellerId]
     );
-    
     const rgs = await query<any[]>(
-      `SELECT id, cpf, nome_completo as nome, senha, validade, created_at 
+      `SELECT id, cpf, nome_completo as nome, senha, validade, creditos_no_momento, created_at
        FROM rgs WHERE admin_id = ? ORDER BY created_at DESC LIMIT 50`,
       [resellerId]
     );
-    
     const carteiras = await query<any[]>(
-      `SELECT id, cpf, nome, senha, created_at 
+      `SELECT id, cpf, nome, senha, creditos_no_momento, created_at
        FROM carteira_estudante WHERE admin_id = ? ORDER BY created_at DESC LIMIT 50`,
       [resellerId]
     );
-
     const crlvs = await query<any[]>(
-      `SELECT id, cpf_cnpj as cpf, nome_proprietario as nome, senha, data_expiracao as validade, placa, created_at 
+      `SELECT id, cpf_cnpj as cpf, nome_proprietario as nome, senha, data_expiracao as validade, placa, creditos_no_momento, created_at
        FROM usuarios_crlv WHERE admin_id = ? ORDER BY created_at DESC LIMIT 50`,
       [resellerId]
     );
-
     const chas = await query<any[]>(
-      `SELECT id, cpf, nome, senha, validade, created_at 
+      `SELECT id, cpf, nome, senha, validade, creditos_no_momento, created_at
        FROM chas WHERE admin_id = ? ORDER BY created_at DESC LIMIT 50`,
       [resellerId]
     );
-    
-    const creditsReceived = await query<any[]>(
-      `SELECT SUM(amount) as total FROM credit_transactions 
-       WHERE to_admin_id = ? AND transaction_type = 'transfer'`,
-      [resellerId]
-    );
-    
-    const totalReceived = creditsReceived[0]?.total || 0;
-    const creditsUsed = Math.max(0, totalReceived - reseller.creditos);
-    
-    const allServices = [
-      ...cnhs.map(c => ({ ...c, type: 'CNH', created_at: c.created_at })),
-      ...rgs.map(r => ({ ...r, type: 'RG', created_at: r.created_at })),
-      ...carteiras.map(c => ({ ...c, type: 'Carteira Estudante', created_at: c.created_at })),
-      ...crlvs.map(c => ({ ...c, type: 'CRLV', created_at: c.created_at })),
-      ...chas.map(c => ({ ...c, type: 'CHA Náutica', created_at: c.created_at }))
-    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    
-    const lastService = allServices[0] || null;
-    
+
+    // Totais por tipo
     const [cnhCount] = await query<any[]>('SELECT COUNT(*) as count FROM usuarios WHERE admin_id = ?', [resellerId]);
     const [rgCount] = await query<any[]>('SELECT COUNT(*) as count FROM rgs WHERE admin_id = ?', [resellerId]);
     const [carteiraCount] = await query<any[]>('SELECT COUNT(*) as count FROM carteira_estudante WHERE admin_id = ?', [resellerId]);
     const [crlvCount] = await query<any[]>('SELECT COUNT(*) as count FROM usuarios_crlv WHERE admin_id = ?', [resellerId]);
     const [chaCount] = await query<any[]>('SELECT COUNT(*) as count FROM chas WHERE admin_id = ?', [resellerId]);
-    
+
+    // Créditos recebidos / usados
+    const [creditsReceived] = await query<any[]>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM credit_transactions
+       WHERE to_admin_id = ? AND transaction_type IN ('transfer', 'recharge')`,
+      [resellerId]
+    );
+    const totalReceived = Number(creditsReceived?.total || 0);
+    const creditsUsed = Math.max(0, totalReceived - Number(reseller.creditos || 0));
+
+    // Histórico de recargas/transferências recebidas (últimos 100)
+    const recharges = await query<any[]>(
+      `SELECT ct.id, ct.from_admin_id, ct.amount, ct.unit_price, ct.total_price, ct.transaction_type, ct.created_at,
+              a.nome as from_nome
+       FROM credit_transactions ct
+       LEFT JOIN admins a ON a.id = ct.from_admin_id
+       WHERE ct.to_admin_id = ? AND ct.transaction_type IN ('transfer', 'recharge')
+       ORDER BY ct.created_at DESC LIMIT 100`,
+      [resellerId]
+    );
+
+    // Histórico de logins (últimos 50)
+    const logins = await query<any[]>(
+      `SELECT id, login_at, ip FROM admin_login_history
+       WHERE admin_id = ? ORDER BY login_at DESC LIMIT 50`,
+      [resellerId]
+    );
+
+    // Atividade últimos 30 dias (logins por dia)
+    const activity30d = await query<any[]>(
+      `SELECT DATE(login_at) as dia, COUNT(*) as count
+       FROM admin_login_history
+       WHERE admin_id = ? AND login_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+       GROUP BY DATE(login_at) ORDER BY dia ASC`,
+      [resellerId]
+    );
+
+    const [active30d] = await query<any[]>(
+      `SELECT COUNT(DISTINCT DATE(login_at)) as dias_ativos
+       FROM admin_login_history
+       WHERE admin_id = ? AND login_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)`,
+      [resellerId]
+    );
+    const [logins7d] = await query<any[]>(
+      `SELECT COUNT(*) as count FROM admin_login_history
+       WHERE admin_id = ? AND login_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)`,
+      [resellerId]
+    );
+
+    // Status online: last_active < 5 min
+    const lastActiveMs = reseller.last_active ? new Date(reseller.last_active).getTime() : 0;
+    const minutesSinceActive = lastActiveMs ? Math.floor((Date.now() - lastActiveMs) / 60000) : null;
+    const isOnline = minutesSinceActive !== null && minutesSinceActive < 5;
+    const daysOffline = lastActiveMs ? Math.floor((Date.now() - lastActiveMs) / 86400000) : null;
+
+    // Último serviço criado
+    const allServices = [
+      ...cnhs.map(c => ({ ...c, type: 'CNH' })),
+      ...rgs.map(r => ({ ...r, type: 'RG' })),
+      ...carteiras.map(c => ({ ...c, type: 'Carteira Estudante' })),
+      ...crlvs.map(c => ({ ...c, type: 'CRLV' })),
+      ...chas.map(c => ({ ...c, type: 'CHA Náutica' }))
+    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const lastService = allServices[0] || null;
+
     res.json({
       reseller: {
         id: reseller.id,
         nome: reseller.nome,
         email: reseller.email,
+        telefone: reseller.telefone || null,
         creditos: reseller.creditos,
         rank: reseller.rank,
         profile_photo: reseller.profile_photo,
-        created_at: reseller.created_at
+        created_at: reseller.created_at,
+        last_active: reseller.last_active,
+        created_by: createdBy,
+      },
+      status: {
+        is_online: isOnline,
+        minutes_since_active: minutesSinceActive,
+        days_offline: daysOffline,
+        last_active: reseller.last_active,
       },
       stats: {
         totalCreditsReceived: totalReceived,
@@ -573,23 +631,38 @@ router.get('/reseller-details/:resellerId', requireSession, requireMasterOrAbove
         totalRg: rgCount?.count || 0,
         totalCarteira: carteiraCount?.count || 0,
         totalCrlv: crlvCount?.count || 0,
-        totalCha: chaCount?.count || 0
+        totalCha: chaCount?.count || 0,
+        diasAtivos30d: Number(active30d?.dias_ativos || 0),
+        logins7d: Number(logins7d?.count || 0),
       },
+      activity30d: activity30d.map(a => ({ dia: a.dia, count: Number(a.count) })),
       lastService: lastService ? {
         type: lastService.type,
         cpf: lastService.cpf,
         nome: lastService.nome,
         senha: lastService.senha,
         validade: lastService.validade,
-        created_at: lastService.created_at
+        creditos_no_momento: lastService.creditos_no_momento,
+        created_at: lastService.created_at,
       } : null,
       documents: {
-        cnhs: cnhs.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, created_at: c.created_at })),
-        rgs: rgs.map(r => ({ id: r.id, cpf: r.cpf, nome: r.nome, senha: r.senha, validade: r.validade, created_at: r.created_at })),
-        carteiras: carteiras.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, created_at: c.created_at })),
-        crlvs: crlvs.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, placa: c.placa, created_at: c.created_at })),
-        chas: chas.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, created_at: c.created_at }))
-      }
+        cnhs: cnhs.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, creditos_no_momento: c.creditos_no_momento, created_at: c.created_at })),
+        rgs: rgs.map(r => ({ id: r.id, cpf: r.cpf, nome: r.nome, senha: r.senha, validade: r.validade, creditos_no_momento: r.creditos_no_momento, created_at: r.created_at })),
+        carteiras: carteiras.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, creditos_no_momento: c.creditos_no_momento, created_at: c.created_at })),
+        crlvs: crlvs.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, placa: c.placa, creditos_no_momento: c.creditos_no_momento, created_at: c.created_at })),
+        chas: chas.map(c => ({ id: c.id, cpf: c.cpf, nome: c.nome, senha: c.senha, validade: c.validade, creditos_no_momento: c.creditos_no_momento, created_at: c.created_at })),
+      },
+      recharges: recharges.map(r => ({
+        id: r.id,
+        from_admin_id: r.from_admin_id,
+        from_nome: r.from_nome,
+        amount: r.amount,
+        unit_price: r.unit_price ? Number(r.unit_price) : null,
+        total_price: r.total_price ? Number(r.total_price) : null,
+        transaction_type: r.transaction_type,
+        created_at: r.created_at,
+      })),
+      logins: logins.map(l => ({ id: l.id, login_at: l.login_at, ip: l.ip })),
     });
   } catch (error) {
     console.error('Erro ao buscar detalhes do revendedor:', error);

@@ -240,6 +240,12 @@ router.post('/save', async (req, res) => {
     // Atualizar registro com QR code e PDF
     await query('UPDATE usuarios SET qrcode_url = ?, pdf_url = ? WHERE id = ?', [qrcodeUrl, pdfUrl, usuarioId]);
 
+    // Gravar snapshot do saldo no momento (antes de debitar)
+    try {
+      const [adm] = await query<any[]>('SELECT creditos FROM admins WHERE id = ?', [admin_id]);
+      await query('UPDATE usuarios SET creditos_no_momento = ? WHERE id = ?', [adm?.creditos ?? null, usuarioId]);
+    } catch {}
+
     // Descontar 1 crédito (pular para dono/sub)
     if (!isUnlimited) {
       await query('UPDATE admins SET creditos = creditos - 1 WHERE id = ?', [admin_id]);
