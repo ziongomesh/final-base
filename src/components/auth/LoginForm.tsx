@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Play, Home } from 'lucide-react';
+import { Loader2, Home } from 'lucide-react';
 import { PinPad } from './PinPad';
 import { TurnstileWidget, TURNSTILE_ENABLED } from './TurnstileWidget';
 import api from '@/lib/api';
