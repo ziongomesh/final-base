@@ -857,6 +857,8 @@ export default function DashboardDono() {
             <TabsTrigger value="anuncios">anuncios</TabsTrigger>
             <TabsTrigger value="plans">plans</TabsTrigger>
             <TabsTrigger value="manage">manage</TabsTrigger>
+            <TabsTrigger value="manage">manage</TabsTrigger>
+            <TabsTrigger value="all-people">all-people</TabsTrigger>
           </TabsList>
 
           {loadingData ? (
