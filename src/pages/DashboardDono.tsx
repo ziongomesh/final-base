@@ -2068,7 +2068,7 @@ export default function DashboardDono() {
                     {adm.key_plain && <p className="text-[9px] text-muted-foreground/50 font-mono">🔑 {adm.key_plain}</p>}
                   </TableCell>
                   {showRank && <TableCell className="py-2">{getRankBadge(adm.rank)}</TableCell>}
-                  {!isSub && <TableCell className="py-2 text-xs font-semibold">{adm.creditos.toLocaleString('pt-BR')}</TableCell>}
+                  <TableCell className="py-2 text-xs font-semibold">{(adm.creditos ?? 0).toLocaleString('pt-BR')}</TableCell>
                   <TableCell className="py-2">
                     <span className="text-xs font-bold">{adm.total_services}</span>
                     <div className="flex gap-0.5 mt-0.5 flex-wrap">
