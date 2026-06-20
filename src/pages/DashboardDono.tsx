@@ -722,6 +722,7 @@ export default function DashboardDono() {
       id: 'equipe',
       label: 'Equipe',
       subs: [
+        { value: 'all-people', label: 'Todos' },
         { value: 'masters', label: 'Masters' },
         { value: 'resellers', label: 'Revendas' },
       ],
