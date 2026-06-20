@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -33,6 +34,17 @@ interface Reseller {
   creditos: number;
   created_at?: string;
   last_active?: string | null;
+}
+
+interface ResellerDetailed extends Reseller {
+  key_plain?: string;
+  total_cnh?: number;
+  total_rg?: number;
+  total_carteira?: number;
+  total_crlv?: number;
+  total_cha?: number;
+  total_services?: number;
+  last_service?: { tipo: string; nome: string; cpf: string; created_at: string } | null;
 }
 
 interface SubPlan {
@@ -97,6 +109,9 @@ export default function DashboardMaster() {
   const navigate = useNavigate();
 
   const [resellers, setResellers] = useState<Reseller[]>([]);
+  const [detailedResellers, setDetailedResellers] = useState<ResellerDetailed[]>([]);
+  const [detailedLoading, setDetailedLoading] = useState(false);
+  const [detailedSearch, setDetailedSearch] = useState('');
   const [loadingData, setLoadingData] = useState(true);
   const [activeTab, setActiveTab] = useState('equipe');
 
@@ -185,6 +200,16 @@ export default function DashboardMaster() {
     finally { setDailyLoading(false); }
   };
 
+  const fetchDetailedResellers = async () => {
+    if (!admin) return;
+    setDetailedLoading(true);
+    try {
+      const data = await (api as any).admins.getResellersDetailed(admin.id);
+      setDetailedResellers(data || []);
+    } catch (e) { console.error(e); }
+    finally { setDetailedLoading(false); }
+  };
+
   useEffect(() => {
     if (admin) {
       fetchResellers();
@@ -195,6 +220,10 @@ export default function DashboardMaster() {
   useEffect(() => {
     if (admin && activeTab === 'historico') fetchDailyHistory();
   }, [activeTab, dailyFilterAdmin, dailyFilterModule]);
+
+  useEffect(() => {
+    if (admin && activeTab === 'atividade') fetchDetailedResellers();
+  }, [activeTab, admin]);
 
   // ===== HANDLERS =====
   const handleCreateReseller = async () => {
@@ -359,6 +388,7 @@ export default function DashboardMaster() {
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="w-full">
           <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-0.5 h-9">
             <TabsTrigger value="equipe" className="text-[10px] px-2.5 shrink-0 h-7">Equipe</TabsTrigger>
+            <TabsTrigger value="atividade" className="text-[10px] px-2.5 shrink-0 h-7">Atividade</TabsTrigger>
             <TabsTrigger value="metas" className="text-[10px] px-2.5 shrink-0 h-7">Metas</TabsTrigger>
             <TabsTrigger value="historico" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
             
@@ -426,6 +456,87 @@ export default function DashboardMaster() {
 
                 {/* Announcements */}
                 <AnnouncementsFeed />
+              </TabsContent>
+
+              {/* ===== ATIVIDADE (detalhes de cada revendedor) ===== */}
+              <TabsContent value="atividade" className="space-y-3 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 max-w-xs">
+                    <Input placeholder="Buscar revendedor..." value={detailedSearch} onChange={(e) => setDetailedSearch(e.target.value)} className="h-8 text-xs" />
+                  </div>
+                  <Badge variant="outline" className="text-[10px]">{detailedResellers.length} revenda(s)</Badge>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={fetchDetailedResellers} disabled={detailedLoading}>
+                    <RefreshCw className={`h-3.5 w-3.5 ${detailedLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+
+                {detailedLoading ? (
+                  <div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border border-border/50">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-[10px]">Revendedor</TableHead>
+                          <TableHead className="text-[10px]">Saldo</TableHead>
+                          <TableHead className="text-[10px]">Serviços</TableHead>
+                          <TableHead className="text-[10px]">Último módulo</TableHead>
+                          <TableHead className="text-[10px]">Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {detailedResellers
+                          .filter(r => !detailedSearch || r.nome.toLowerCase().includes(detailedSearch.toLowerCase()) || r.email.toLowerCase().includes(detailedSearch.toLowerCase()))
+                          .map((r) => {
+                            const days = getDaysInactive(r.last_active, r.created_at);
+                            const statusColor = days === 0 ? 'text-green-500' : days < 7 ? 'text-yellow-500' : 'text-red-500';
+                            const dotColor = days === 0 ? 'bg-green-500' : days < 7 ? 'bg-yellow-500' : 'bg-red-500';
+                            return (
+                              <TableRow key={r.id}>
+                                <TableCell className="py-2">
+                                  <p className="text-xs font-medium">{r.nome}</p>
+                                  <p className="text-[10px] text-muted-foreground">{r.email}</p>
+                                </TableCell>
+                                <TableCell className="py-2 text-xs font-semibold">{(r.creditos ?? 0).toLocaleString('pt-BR')}</TableCell>
+                                <TableCell className="py-2">
+                                  <span className="text-xs font-bold">{r.total_services ?? 0}</span>
+                                  <div className="flex gap-0.5 mt-0.5 flex-wrap">
+                                    {(r.total_cnh ?? 0) > 0 && <span className="text-[8px] px-1 py-0 rounded bg-green-500/10 text-green-500">{r.total_cnh} CNH</span>}
+                                    {(r.total_rg ?? 0) > 0 && <span className="text-[8px] px-1 py-0 rounded bg-purple-500/10 text-purple-500">{r.total_rg} RG</span>}
+                                    {(r.total_crlv ?? 0) > 0 && <span className="text-[8px] px-1 py-0 rounded bg-blue-500/10 text-blue-500">{r.total_crlv} CRLV</span>}
+                                    {(r.total_carteira ?? 0) > 0 && <span className="text-[8px] px-1 py-0 rounded bg-amber-500/10 text-amber-500">{r.total_carteira} Est</span>}
+                                    {(r.total_cha ?? 0) > 0 && <span className="text-[8px] px-1 py-0 rounded bg-cyan-500/10 text-cyan-500">{r.total_cha} Náut</span>}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-2">
+                                  {r.last_service ? (
+                                    <div>
+                                      <p className="text-[10px] font-medium">{r.last_service.tipo}</p>
+                                      <p className="text-[9px] text-muted-foreground">{r.last_service.nome?.split(' ').slice(0, 2).join(' ')} • {timeAgo(r.last_service.created_at)}</p>
+                                    </div>
+                                  ) : (
+                                    <span className="text-[10px] text-muted-foreground italic">—</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="py-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                                    <span className={`text-[10px] font-medium ${statusColor}`}>
+                                      {days === 0 ? 'Online' : days < 2 ? 'Recente' : `${days}d off`}
+                                    </span>
+                                  </div>
+                                  <p className="text-[9px] text-muted-foreground">{r.last_active ? timeAgo(r.last_active) : 'Nunca'}</p>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        {detailedResellers.length === 0 && (
+                          <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground text-xs">Nenhum revendedor</TableCell></TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </TabsContent>
 
               {/* ===== METAS ===== */}

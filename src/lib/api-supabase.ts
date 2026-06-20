@@ -178,6 +178,8 @@ export const supabaseApi = {
       return data || [];
     },
 
+    getResellersDetailed: async (masterId: number) => fetchNodeAPI(`/admins/resellers-detailed/${masterId}`),
+
     getAllMasters: async () => {
       const session = getStoredSession();
       if (!session) throw new Error('Sessão inválida');
