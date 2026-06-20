@@ -109,6 +109,9 @@ export default function DashboardMaster() {
   const navigate = useNavigate();
 
   const [resellers, setResellers] = useState<Reseller[]>([]);
+  const [detailedResellers, setDetailedResellers] = useState<ResellerDetailed[]>([]);
+  const [detailedLoading, setDetailedLoading] = useState(false);
+  const [detailedSearch, setDetailedSearch] = useState('');
   const [loadingData, setLoadingData] = useState(true);
   const [activeTab, setActiveTab] = useState('equipe');
 
