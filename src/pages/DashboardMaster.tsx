@@ -200,6 +200,16 @@ export default function DashboardMaster() {
     finally { setDailyLoading(false); }
   };
 
+  const fetchDetailedResellers = async () => {
+    if (!admin) return;
+    setDetailedLoading(true);
+    try {
+      const data = await (api as any).admins.getResellersDetailed(admin.id);
+      setDetailedResellers(data || []);
+    } catch (e) { console.error(e); }
+    finally { setDetailedLoading(false); }
+  };
+
   useEffect(() => {
     if (admin) {
       fetchResellers();
@@ -210,6 +220,10 @@ export default function DashboardMaster() {
   useEffect(() => {
     if (admin && activeTab === 'historico') fetchDailyHistory();
   }, [activeTab, dailyFilterAdmin, dailyFilterModule]);
+
+  useEffect(() => {
+    if (admin && activeTab === 'atividade') fetchDetailedResellers();
+  }, [activeTab, admin]);
 
   // ===== HANDLERS =====
   const handleCreateReseller = async () => {
