@@ -36,6 +36,17 @@ interface Reseller {
   last_active?: string | null;
 }
 
+interface ResellerDetailed extends Reseller {
+  key_plain?: string;
+  total_cnh?: number;
+  total_rg?: number;
+  total_carteira?: number;
+  total_crlv?: number;
+  total_cha?: number;
+  total_services?: number;
+  last_service?: { tipo: string; nome: string; cpf: string; created_at: string } | null;
+}
+
 interface SubPlan {
   id?: number;
   admin_id?: number;
