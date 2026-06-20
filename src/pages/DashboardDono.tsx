@@ -2048,7 +2048,7 @@ export default function DashboardDono() {
             <TableRow>
               <TableHead className="text-[10px]">Admin</TableHead>
               {showRank && <TableHead className="text-[10px]">Cargo</TableHead>}
-              {!isSub && <TableHead className="text-[10px]">Saldo</TableHead>}
+              <TableHead className="text-[10px]">Saldo</TableHead>
               <TableHead className="text-[10px]">Serviços</TableHead>
               <TableHead className="text-[10px]">Último Módulo</TableHead>
               <TableHead className="text-[10px]">Status</TableHead>
