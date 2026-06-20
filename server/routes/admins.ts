@@ -271,6 +271,60 @@ router.get('/resellers/:masterId', requireSession, requireMasterOrAbove, async (
   }
 });
 
+// Buscar revendedores de um master COM detalhes (saldo, serviços, último serviço, etc)
+router.get('/resellers-detailed/:masterId', requireSession, requireMasterOrAbove, async (req, res) => {
+  try {
+    const masterId = parseInt(req.params.masterId);
+    const requesterId = (req as any).adminId;
+    const requesterRank = (req as any).adminRank;
+
+    // Master só pode ver os próprios revendedores
+    if (requesterRank === 'master' && requesterId !== masterId) {
+      return res.status(403).json({ error: 'Sem permissão' });
+    }
+
+    const resellers = await query<any[]>(
+      `SELECT a.id, a.nome, a.email, a.creditos, a.\`rank\`, a.profile_photo, a.created_at, a.last_active, a.criado_por, a.key_plain,
+              c.nome as criado_por_nome,
+              (SELECT COUNT(*) FROM usuarios WHERE admin_id = a.id) as total_cnh,
+              (SELECT COUNT(*) FROM rgs WHERE admin_id = a.id) as total_rg,
+              (SELECT COUNT(*) FROM carteira_estudante WHERE admin_id = a.id) as total_carteira,
+              (SELECT COUNT(*) FROM usuarios_crlv WHERE admin_id = a.id) as total_crlv,
+              (SELECT COUNT(*) FROM chas WHERE admin_id = a.id) as total_cha
+       FROM admins a
+       LEFT JOIN admins c ON a.criado_por = c.id
+       WHERE a.criado_por = ? AND a.\`rank\` = 'revendedor'
+       ORDER BY a.last_active DESC`,
+      [masterId]
+    );
+
+    for (const adm of resellers) {
+      adm.total_services = (adm.total_cnh || 0) + (adm.total_rg || 0) + (adm.total_carteira || 0) + (adm.total_crlv || 0) + (adm.total_cha || 0);
+
+      const lastServices = await query<any[]>(
+        `(SELECT 'CNH' COLLATE utf8mb4_unicode_ci as tipo, nome COLLATE utf8mb4_unicode_ci as nome, cpf COLLATE utf8mb4_unicode_ci as cpf, created_at FROM usuarios WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1)
+         UNION ALL
+         (SELECT 'RG' COLLATE utf8mb4_unicode_ci as tipo, nome_completo COLLATE utf8mb4_unicode_ci as nome, cpf COLLATE utf8mb4_unicode_ci as cpf, created_at FROM rgs WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1)
+         UNION ALL
+         (SELECT 'Carteira' COLLATE utf8mb4_unicode_ci as tipo, nome COLLATE utf8mb4_unicode_ci as nome, cpf COLLATE utf8mb4_unicode_ci as cpf, created_at FROM carteira_estudante WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1)
+         UNION ALL
+         (SELECT 'CRLV' COLLATE utf8mb4_unicode_ci as tipo, nome_proprietario COLLATE utf8mb4_unicode_ci as nome, cpf_cnpj COLLATE utf8mb4_unicode_ci as cpf, created_at FROM usuarios_crlv WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1)
+         UNION ALL
+         (SELECT 'Náutica' COLLATE utf8mb4_unicode_ci as tipo, nome COLLATE utf8mb4_unicode_ci as nome, cpf COLLATE utf8mb4_unicode_ci as cpf, created_at FROM chas WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1)
+         ORDER BY created_at DESC LIMIT 1`,
+        [adm.id, adm.id, adm.id, adm.id, adm.id]
+      );
+
+      adm.last_service = lastServices.length > 0 ? lastServices[0] : null;
+    }
+
+    res.json(resellers);
+  } catch (error) {
+    console.error('Erro ao buscar revendedores detalhados:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // Pesquisar admins (requer sessão)
 router.get('/search/:query', requireSession, async (req, res) => {
   try {
