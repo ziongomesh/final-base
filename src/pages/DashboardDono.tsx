@@ -156,6 +156,8 @@ export default function DashboardDono() {
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [alertTargetId, setAlertTargetId] = useState<string>('');
   const [sendingAlert, setSendingAlert] = useState(false);
+  const [peopleFilter, setPeopleFilter] = useState<'all' | 'dono' | 'sub' | 'master' | 'revendedor'>('all');
+  const [peopleSearch, setPeopleSearch] = useState('');
 
   // Maintenance
   const MODULES = [
@@ -722,6 +724,7 @@ export default function DashboardDono() {
       id: 'equipe',
       label: 'Equipe',
       subs: [
+        { value: 'all-people', label: 'Todos' },
         { value: 'masters', label: 'Masters' },
         { value: 'resellers', label: 'Revendas' },
       ],
@@ -856,6 +859,8 @@ export default function DashboardDono() {
             <TabsTrigger value="anuncios">anuncios</TabsTrigger>
             <TabsTrigger value="plans">plans</TabsTrigger>
             <TabsTrigger value="manage">manage</TabsTrigger>
+            <TabsTrigger value="manage">manage</TabsTrigger>
+            <TabsTrigger value="all-people">all-people</TabsTrigger>
           </TabsList>
 
           {loadingData ? (
@@ -1000,6 +1005,64 @@ export default function DashboardDono() {
                       ))}
                   </div>
                 </div>
+              </TabsContent>
+
+              {/* ===== ALL PEOPLE (todos os cargos) ===== */}
+              <TabsContent value="all-people" className="space-y-3 mt-4">
+                {(() => {
+                  const filtered = allAdmins
+                    .filter(a => peopleFilter === 'all' || a.rank === peopleFilter)
+                    .filter(a => !peopleSearch || a.nome.toLowerCase().includes(peopleSearch.toLowerCase()) || a.email.toLowerCase().includes(peopleSearch.toLowerCase()))
+                    .sort((a, b) => {
+                      const order: Record<string, number> = { dono: 0, sub: 1, master: 2, revendedor: 3 };
+                      const ra = order[a.rank] ?? 9, rb = order[b.rank] ?? 9;
+                      if (ra !== rb) return ra - rb;
+                      const la = a.last_active ? new Date(a.last_active).getTime() : 0;
+                      const lb = b.last_active ? new Date(b.last_active).getTime() : 0;
+                      return lb - la;
+                    });
+                  const counts = {
+                    all: allAdmins.length,
+                    dono: allAdmins.filter(a => a.rank === 'dono').length,
+                    sub: allAdmins.filter(a => a.rank === 'sub').length,
+                    master: allAdmins.filter(a => a.rank === 'master').length,
+                    revendedor: allAdmins.filter(a => a.rank === 'revendedor').length,
+                  };
+                  const filters: Array<{ key: typeof peopleFilter; label: string }> = [
+                    { key: 'all', label: `Todos (${counts.all})` },
+                    { key: 'dono', label: `Donos (${counts.dono})` },
+                    { key: 'sub', label: `Subs (${counts.sub})` },
+                    { key: 'master', label: `Masters (${counts.master})` },
+                    { key: 'revendedor', label: `Revendas (${counts.revendedor})` },
+                  ];
+                  return (
+                    <>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="relative flex-1 min-w-[180px] max-w-xs">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input placeholder="Buscar por nome ou email..." value={peopleSearch} onChange={(e) => setPeopleSearch(e.target.value)} className="pl-8 h-8 text-xs" />
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {filters.map(f => (
+                            <button
+                              key={f.key}
+                              onClick={() => setPeopleFilter(f.key)}
+                              className={`h-7 px-2.5 rounded-md text-[10px] font-medium border transition-colors ${
+                                peopleFilter === f.key
+                                  ? 'bg-sky-400/15 text-sky-300 border-sky-400/20'
+                                  : 'border-border/50 text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
+                              }`}
+                            >
+                              {f.label}
+                            </button>
+                          ))}
+                        </div>
+                        <Badge variant="outline" className="text-[10px] ml-auto">{filtered.length} pessoa(s)</Badge>
+                      </div>
+                      {renderAdminTable(filtered, { showRank: true })}
+                    </>
+                  );
+                })()}
               </TabsContent>
 
               {/* ===== MASTERS ===== */}
@@ -1976,13 +2039,15 @@ export default function DashboardDono() {
   );
 
   // ===== ADMIN TABLE =====
-  function renderAdminTable(admins: AdminItem[]) {
+  function renderAdminTable(admins: AdminItem[], opts?: { showRank?: boolean }) {
+    const showRank = !!opts?.showRank;
     return (
       <div className="overflow-x-auto rounded-lg border border-border/50">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="text-[10px]">Admin</TableHead>
+              {showRank && <TableHead className="text-[10px]">Cargo</TableHead>}
               {!isSub && <TableHead className="text-[10px]">Saldo</TableHead>}
               <TableHead className="text-[10px]">Serviços</TableHead>
               <TableHead className="text-[10px]">Último Módulo</TableHead>
@@ -2002,6 +2067,7 @@ export default function DashboardDono() {
                     <p className="text-[10px] text-muted-foreground">{adm.email}</p>
                     {adm.key_plain && <p className="text-[9px] text-muted-foreground/50 font-mono">🔑 {adm.key_plain}</p>}
                   </TableCell>
+                  {showRank && <TableCell className="py-2">{getRankBadge(adm.rank)}</TableCell>}
                   {!isSub && <TableCell className="py-2 text-xs font-semibold">{adm.creditos.toLocaleString('pt-BR')}</TableCell>}
                   <TableCell className="py-2">
                     <span className="text-xs font-bold">{adm.total_services}</span>
@@ -2048,7 +2114,7 @@ export default function DashboardDono() {
             })}
             {admins.length === 0 && (
               <TableRow>
-                <TableCell colSpan={isSub ? 6 : 7} className="text-center py-8 text-muted-foreground text-xs">
+                <TableCell colSpan={(isSub ? 6 : 7) + (showRank ? 1 : 0)} className="text-center py-8 text-muted-foreground text-xs">
                   Nenhum admin encontrado
                 </TableCell>
               </TableRow>
