@@ -2114,7 +2114,7 @@ export default function DashboardDono() {
             })}
             {admins.length === 0 && (
               <TableRow>
-                <TableCell colSpan={(isSub ? 6 : 7) + (showRank ? 1 : 0)} className="text-center py-8 text-muted-foreground text-xs">
+                <TableCell colSpan={7 + (showRank ? 1 : 0)} className="text-center py-8 text-muted-foreground text-xs">
                   Nenhum admin encontrado
                 </TableCell>
               </TableRow>
