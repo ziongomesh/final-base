@@ -156,6 +156,8 @@ export default function DashboardDono() {
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [alertTargetId, setAlertTargetId] = useState<string>('');
   const [sendingAlert, setSendingAlert] = useState(false);
+  const [peopleFilter, setPeopleFilter] = useState<'all' | 'dono' | 'sub' | 'master' | 'revendedor'>('all');
+  const [peopleSearch, setPeopleSearch] = useState('');
 
   // Maintenance
   const MODULES = [
