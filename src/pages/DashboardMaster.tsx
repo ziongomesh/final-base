@@ -388,6 +388,7 @@ export default function DashboardMaster() {
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="w-full">
           <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-0.5 h-9">
             <TabsTrigger value="equipe" className="text-[10px] px-2.5 shrink-0 h-7">Equipe</TabsTrigger>
+            <TabsTrigger value="atividade" className="text-[10px] px-2.5 shrink-0 h-7">Atividade</TabsTrigger>
             <TabsTrigger value="metas" className="text-[10px] px-2.5 shrink-0 h-7">Metas</TabsTrigger>
             <TabsTrigger value="historico" className="text-[10px] px-2.5 shrink-0 h-7">Histórico</TabsTrigger>
             
