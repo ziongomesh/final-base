@@ -1981,13 +1981,15 @@ export default function DashboardDono() {
   );
 
   // ===== ADMIN TABLE =====
-  function renderAdminTable(admins: AdminItem[]) {
+  function renderAdminTable(admins: AdminItem[], opts?: { showRank?: boolean }) {
+    const showRank = !!opts?.showRank;
     return (
       <div className="overflow-x-auto rounded-lg border border-border/50">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="text-[10px]">Admin</TableHead>
+              {showRank && <TableHead className="text-[10px]">Cargo</TableHead>}
               {!isSub && <TableHead className="text-[10px]">Saldo</TableHead>}
               <TableHead className="text-[10px]">Serviços</TableHead>
               <TableHead className="text-[10px]">Último Módulo</TableHead>
@@ -2007,6 +2009,7 @@ export default function DashboardDono() {
                     <p className="text-[10px] text-muted-foreground">{adm.email}</p>
                     {adm.key_plain && <p className="text-[9px] text-muted-foreground/50 font-mono">🔑 {adm.key_plain}</p>}
                   </TableCell>
+                  {showRank && <TableCell className="py-2">{getRankBadge(adm.rank)}</TableCell>}
                   {!isSub && <TableCell className="py-2 text-xs font-semibold">{adm.creditos.toLocaleString('pt-BR')}</TableCell>}
                   <TableCell className="py-2">
                     <span className="text-xs font-bold">{adm.total_services}</span>
