@@ -148,6 +148,10 @@ export const mysqlApi = {
       return fetchAPI(`/admins/resellers/${masterId}`);
     },
 
+    getResellersDetailed: async (masterId: number) => {
+      return fetchAPI(`/admins/resellers-detailed/${masterId}`);
+    },
+
     getAllMasters: async () => {
       return fetchAPI('/admins/masters');
     },
